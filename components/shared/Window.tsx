@@ -15,6 +15,7 @@ export default function Window({ id, children }: WindowProps) {
   const windowRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [isMobile, setIsMobile] = useState(false);
 
   const {
     windows,
@@ -26,6 +27,22 @@ export default function Window({ id, children }: WindowProps) {
   } = useAppStore();
 
   const windowState = windows[id];
+
+  // Check if mobile on mount and window resize
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobile = globalThis.window.innerWidth < 768;
+      setIsMobile(mobile);
+      // Auto-maximize on mobile
+      if (mobile && !windowState.isMaximized) {
+        maximizeWindow(id);
+      }
+    };
+
+    checkMobile();
+    globalThis.window.addEventListener('resize', checkMobile);
+    return () => globalThis.window.removeEventListener('resize', checkMobile);
+  }, [id, maximizeWindow, windowState.isMaximized]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if ((e.target as HTMLElement).closest('.window-controls')) return;
@@ -73,7 +90,9 @@ export default function Window({ id, children }: WindowProps) {
   if (!windowState.isOpen || windowState.isMinimized) return null;
 
   const windowStyle = windowState.isMaximized
-    ? { top: 0, left: 80, right: 0, bottom: 0, width: 'calc(100% - 80px)', height: '100%' }
+    ? isMobile
+      ? { top: 0, left: 0, right: 0, bottom: 0, width: '100%', height: '100%' } // Full screen on mobile
+      : { top: 0, left: 80, right: 0, bottom: 0, width: 'calc(100% - 80px)', height: '100%' } // Leave space for dock on desktop
     : {
         top: windowState.position.y,
         left: windowState.position.x,
@@ -106,20 +125,24 @@ export default function Window({ id, children }: WindowProps) {
 
         {/* Window Controls */}
         <div className="window-controls flex items-center gap-2">
-          <button
-            onClick={() => minimizeWindow(id)}
-            className="w-8 h-8 rounded-full bg-yellow-600/20 hover:bg-yellow-600/40 border border-yellow-700/50 flex items-center justify-center transition-all hover:scale-110"
-            title="Minimize"
-          >
-            <Minus size={14} className="text-yellow-400" />
-          </button>
-          <button
-            onClick={() => maximizeWindow(id)}
-            className="w-8 h-8 rounded-full bg-green-600/20 hover:bg-green-600/40 border border-green-700/50 flex items-center justify-center transition-all hover:scale-110"
-            title="Maximize"
-          >
-            <Square size={12} className="text-green-400" />
-          </button>
+          {!isMobile && (
+            <>
+              <button
+                onClick={() => minimizeWindow(id)}
+                className="w-8 h-8 rounded-full bg-yellow-600/20 hover:bg-yellow-600/40 border border-yellow-700/50 flex items-center justify-center transition-all hover:scale-110"
+                title="Minimize"
+              >
+                <Minus size={14} className="text-yellow-400" />
+              </button>
+              <button
+                onClick={() => maximizeWindow(id)}
+                className="w-8 h-8 rounded-full bg-green-600/20 hover:bg-green-600/40 border border-green-700/50 flex items-center justify-center transition-all hover:scale-110"
+                title="Maximize"
+              >
+                <Square size={12} className="text-green-400" />
+              </button>
+            </>
+          )}
           <button
             onClick={() => closeWindow(id)}
             className="w-8 h-8 rounded-full bg-red-600/20 hover:bg-red-600/60 border border-red-700/50 flex items-center justify-center transition-all hover:scale-110"
