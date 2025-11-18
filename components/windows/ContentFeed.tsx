@@ -63,7 +63,7 @@ export default function ContentFeed() {
 
   const filters: PlatformFilter[] = ['All', 'Substack', 'Gumroad'];
 
-  const platformColors = {
+  const platformColors: Record<string, string> = {
     Substack: 'bg-orange-600/20 text-orange-400 border-orange-600/30',
     Gumroad: 'bg-pink-600/20 text-pink-400 border-pink-600/30',
   };

@@ -72,7 +72,7 @@ export class AnalyticsTracker {
   }
 
   async trackEvent(
-    type: 'page_view' | 'product_click' | 'email_capture' | 'sam_chat' | 'window_open' | 'external_link',
+    type: 'page_view' | 'product_click' | 'email_capture' | 'sam_chat' | 'window_open' | 'external_link' | 'session_end',
     data: Record<string, any> = {}
   ) {
     try {

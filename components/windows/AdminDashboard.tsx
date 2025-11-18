@@ -263,7 +263,7 @@ export default function AdminDashboard() {
 }
 
 function StatCard({ icon, title, value, subtitle, color }: any) {
-  const colors = {
+  const colors: Record<string, string> = {
     green: 'from-green-600 to-emerald-600',
     blue: 'from-blue-600 to-cyan-600',
     purple: 'from-purple-600 to-pink-600',
@@ -276,7 +276,7 @@ function StatCard({ icon, title, value, subtitle, color }: any) {
       animate={{ opacity: 1, scale: 1 }}
       className="p-4 bg-gradient-to-br from-gray-900/60 to-black/60 border border-gray-800 rounded-xl"
     >
-      <div className={`w-10 h-10 bg-gradient-to-br ${colors[color]} rounded-lg flex items-center justify-center mb-3`}>
+      <div className={`w-10 h-10 bg-gradient-to-br ${colors[color] || colors.blue} rounded-lg flex items-center justify-center mb-3`}>
         {icon}
       </div>
       <div className="text-sm text-gray-400 mb-1">{title}</div>
