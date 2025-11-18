@@ -1,65 +1,126 @@
-import Image from "next/image";
+'use client';
+
+import { useEffect } from 'react';
+import { useAppStore } from '@/lib/store';
+import { AppId } from '@/types';
+import Dock from '@/components/dock/Dock';
+import Window from '@/components/shared/Window';
+import ContentFeed from '@/components/windows/ContentFeed';
+import BibleStudy from '@/components/windows/BibleStudy';
+import SalesBeastAI from '@/components/windows/SalesBeastAI';
+import ProductsHub from '@/components/windows/ProductsHub';
+import RadioPlayer from '@/components/windows/RadioPlayer';
+import CounselingChat from '@/components/windows/CounselingChat';
+import ContactForm from '@/components/windows/ContactForm';
 
 export default function Home() {
+  const { windows } = useAppStore();
+
+  useEffect(() => {
+    // Listen for custom events to open windows
+    const handleOpenWindow = (e: CustomEvent) => {
+      const windowId = e.detail as AppId;
+      if (useAppStore.getState().windows[windowId]) {
+        useAppStore.getState().openWindow(windowId);
+      }
+    };
+
+    window.addEventListener('open-window' as any, handleOpenWindow as EventListener);
+
+    return () => {
+      window.removeEventListener('open-window' as any, handleOpenWindow as EventListener);
+    };
+  }, []);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="relative w-screen h-screen overflow-hidden bg-gradient-to-br from-black via-red-950/10 to-black">
+      {/* Background Pattern */}
+      <div
+        className="absolute inset-0 opacity-5"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ff0000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+        }}
+      />
+
+      {/* Main Content Area */}
+      <div className="relative w-full h-full">
+        {/* Sidebar Dock */}
+        <Dock />
+
+        {/* Window Container */}
+        <div className="absolute left-20 top-0 right-0 bottom-0">
+          {/* Content Feed Window */}
+          {windows['content-feed'].isOpen && (
+            <Window id="content-feed">
+              <ContentFeed />
+            </Window>
+          )}
+
+          {/* Bible Study Window */}
+          {windows['bible-study'].isOpen && (
+            <Window id="bible-study">
+              <BibleStudy />
+            </Window>
+          )}
+
+          {/* Sales Beast AI Window */}
+          {windows['sales-beast'].isOpen && (
+            <Window id="sales-beast">
+              <SalesBeastAI />
+            </Window>
+          )}
+
+          {/* Products Hub Window */}
+          {windows['products'].isOpen && (
+            <Window id="products">
+              <ProductsHub />
+            </Window>
+          )}
+
+          {/* Radio Player Window */}
+          {windows['radio'].isOpen && (
+            <Window id="radio">
+              <RadioPlayer />
+            </Window>
+          )}
+
+          {/* Counseling Chat Window */}
+          {windows['counseling'].isOpen && (
+            <Window id="counseling">
+              <CounselingChat />
+            </Window>
+          )}
+
+          {/* Contact Form Window */}
+          {windows['contact'].isOpen && (
+            <Window id="contact">
+              <ContactForm />
+            </Window>
+          )}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+
+        {/* Welcome Message (shown when no windows are open) */}
+        {Object.values(windows).every((w) => !w.isOpen) && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="text-center max-w-2xl px-8">
+              <div className="mb-6 inline-block">
+                <div className="w-24 h-24 bg-gradient-to-br from-red-600 to-red-900 rounded-2xl flex items-center justify-center shadow-2xl shadow-red-900/50">
+                  <span className="text-5xl font-bold text-white">†</span>
+                </div>
+              </div>
+              <h1 className="text-5xl font-bold text-red-100 mb-4 tracking-tight">
+                The Biblical Man Hub
+              </h1>
+              <p className="text-xl text-gray-400 mb-8">
+                Your command center for Biblical transformation.
+              </p>
+              <p className="text-sm text-gray-500">
+                Click an icon on the left to get started
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
