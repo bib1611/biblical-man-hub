@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { Search, ExternalLink, Filter } from 'lucide-react';
 import { ContentFeedItem } from '@/types';
 
-type PlatformFilter = 'All' | 'Substack' | 'Beehiiv' | 'Gumroad' | 'Twitter';
+type PlatformFilter = 'All' | 'Substack' | 'Gumroad';
 
 export default function ContentFeed() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -21,13 +21,33 @@ export default function ContentFeed() {
 
   const fetchContent = async () => {
     try {
-      const response = await fetch('/api/content-feed');
-      const data = await response.json();
-      setItems(data);
+      // Fetch from Substack and Gumroad
+      const [substackRes, gumroadRes] = await Promise.all([
+        fetch('/api/feeds/substack'),
+        fetch('/api/feeds/gumroad'),
+      ]);
+
+      const substackData = await substackRes.json();
+      const gumroadData = await gumroadRes.json();
+
+      // Combine and sort by date
+      const allContent: ContentFeedItem[] = [
+        ...(substackData.posts || []),
+        ...(gumroadData.products || []).map((p: any) => ({
+          id: p.id,
+          title: p.title,
+          platform: p.platform,
+          preview: p.preview,
+          url: p.url,
+          date: p.date,
+          imageUrl: p.imageUrl,
+        })),
+      ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+      setItems(allContent);
     } catch (error) {
       console.error('Failed to fetch content:', error);
-      // Use mock data for now
-      setItems(mockData);
+      setItems([]);
     } finally {
       setLoading(false);
     }
@@ -41,13 +61,11 @@ export default function ContentFeed() {
     return matchesSearch && matchesFilter;
   });
 
-  const filters: PlatformFilter[] = ['All', 'Substack', 'Beehiiv', 'Gumroad', 'Twitter'];
+  const filters: PlatformFilter[] = ['All', 'Substack', 'Gumroad'];
 
   const platformColors = {
     Substack: 'bg-orange-600/20 text-orange-400 border-orange-600/30',
-    Beehiiv: 'bg-yellow-600/20 text-yellow-400 border-yellow-600/30',
     Gumroad: 'bg-pink-600/20 text-pink-400 border-pink-600/30',
-    Twitter: 'bg-blue-600/20 text-blue-400 border-blue-600/30',
   };
 
   if (selectedItem) {
@@ -149,9 +167,20 @@ export default function ContentFeed() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
-              onClick={() => setSelectedItem(item)}
+              onClick={() => window.open(item.url, '_blank')}
               className="p-4 bg-gradient-to-r from-red-950/20 to-black/40 border border-red-900/20 rounded-lg hover:border-red-600/40 cursor-pointer transition-all group"
             >
+              {/* Image if available */}
+              {item.imageUrl && (
+                <div className="mb-3 -mx-4 -mt-4 rounded-t-lg overflow-hidden">
+                  <img
+                    src={item.imageUrl}
+                    alt={item.title}
+                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+              )}
+
               <div className="flex items-start justify-between gap-3 mb-2">
                 <h3 className="text-base font-bold text-red-100 group-hover:text-red-300 transition-colors flex-1">
                   {item.title}
@@ -166,8 +195,18 @@ export default function ContentFeed() {
               </div>
               <p className="text-sm text-gray-400 mb-2 line-clamp-2">{item.preview}</p>
               <div className="flex items-center justify-between text-xs text-gray-500">
-                <span>{new Date(item.date).toLocaleDateString()}</span>
-                <span className="text-red-400 group-hover:text-red-300">Read more →</span>
+                <div className="flex items-center gap-2">
+                  <span>{new Date(item.date).toLocaleDateString()}</span>
+                  {item.author && (
+                    <>
+                      <span>•</span>
+                      <span className="text-gray-400">{item.author}</span>
+                    </>
+                  )}
+                </div>
+                <span className="text-red-400 group-hover:text-red-300 flex items-center gap-1">
+                  Open <ExternalLink size={12} />
+                </span>
               </div>
             </motion.div>
           ))
@@ -177,7 +216,7 @@ export default function ContentFeed() {
   );
 }
 
-// Mock data for testing
+// Mock data for testing (not used - using live feeds)
 const mockData: ContentFeedItem[] = [
   {
     id: '1',
@@ -198,14 +237,5 @@ const mockData: ContentFeedItem[] = [
       'A complete system for building a marriage that glorifies God and creates generational wealth. Based on Biblical principles, not modern compromise.',
     url: '#',
     date: new Date(Date.now() - 86400000).toISOString(),
-  },
-  {
-    id: '3',
-    title: 'Stop Praying Weak Prayers',
-    platform: 'Beehiiv',
-    preview:
-      'Your prayers reveal your theology. If your prayers are timid, your God is small. Learn to pray like men who actually believe God can move mountains.',
-    url: '#',
-    date: new Date(Date.now() - 172800000).toISOString(),
   },
 ];

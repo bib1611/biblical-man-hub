@@ -88,11 +88,11 @@ export default function CounselingChat() {
 
   if (!isPaid) {
     return (
-      <div className="h-full flex flex-col items-center justify-center bg-gradient-to-br from-cyan-950/20 via-black/60 to-blue-950/20 text-gray-100 p-8">
+      <div className="h-full overflow-auto flex flex-col items-center justify-center bg-gradient-to-br from-cyan-950/20 via-black/60 to-blue-950/20 text-gray-100 p-8">
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="max-w-md w-full"
+          className="max-w-md w-full my-8"
         >
           {/* Lock Icon */}
           <div className="flex justify-center mb-6">

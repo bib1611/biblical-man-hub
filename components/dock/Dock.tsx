@@ -9,6 +9,7 @@ import {
   Radio,
   MessageCircle,
   Mail,
+  BarChart3,
 } from 'lucide-react';
 import { AppId } from '@/types';
 import { useAppStore } from '@/lib/store';
@@ -34,10 +35,10 @@ const dockItems: DockItem[] = [
     color: 'text-amber-400',
   },
   {
-    id: 'sales-beast',
-    label: 'Sales Beast AI',
-    icon: <DollarSign size={24} />,
-    color: 'text-green-400',
+    id: 'sam',
+    label: 'Chat with Sam',
+    icon: <MessageCircle size={24} />,
+    color: 'text-blue-400',
   },
   {
     id: 'products',
@@ -62,6 +63,12 @@ const dockItems: DockItem[] = [
     label: 'Message Adam',
     icon: <Mail size={24} />,
     color: 'text-orange-400',
+  },
+  {
+    id: 'admin',
+    label: 'Admin Dashboard',
+    icon: <BarChart3 size={24} />,
+    color: 'text-green-400',
   },
 ];
 

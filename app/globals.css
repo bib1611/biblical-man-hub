@@ -24,3 +24,40 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Mechanical Button Styles */
+button, a[role="button"], [role="button"] {
+  user-select: none;
+  transition: all 0.1s ease;
+}
+
+button:active:not(:disabled),
+a[role="button"]:active,
+[role="button"]:active {
+  transform: scale(0.97) translateY(1px);
+}
+
+button:not(:disabled):hover,
+a[role="button"]:hover,
+[role="button"]:hover {
+  transform: translateY(-1px);
+}
+
+/* Disable mechanical effect for disabled buttons */
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Add subtle shadow for depth */
+button:not(:disabled),
+a[role="button"],
+[role="button"] {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+button:active:not(:disabled),
+a[role="button"]:active,
+[role="button"]:active {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}

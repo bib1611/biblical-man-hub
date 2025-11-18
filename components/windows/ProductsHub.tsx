@@ -69,7 +69,7 @@ export default function ProductsHub() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProducts.map((product, index) => {
             const categoryInfo = categories.find((c) => c.id === product.category);
-            const isBundle = product.id === 'complete-bundle';
+            const isTopRated = product.features.some(f => f.includes('5/5'));
 
             return (
               <motion.div
@@ -77,17 +77,13 @@ export default function ProductsHub() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className={`relative flex flex-col p-6 rounded-xl border transition-all hover:scale-105 ${
-                  isBundle
-                    ? 'bg-gradient-to-br from-yellow-900/30 to-red-900/30 border-yellow-600/50 shadow-lg shadow-yellow-900/20'
-                    : 'bg-gradient-to-br from-purple-950/30 to-black/40 border-purple-900/30 hover:border-purple-600/50'
-                }`}
+                className="relative flex flex-col p-6 rounded-xl border transition-all hover:scale-105 bg-gradient-to-br from-purple-950/30 to-black/40 border-purple-900/30 hover:border-purple-600/50"
               >
-                {/* Bundle Badge */}
-                {isBundle && (
-                  <div className="absolute -top-3 -right-3 px-3 py-1 bg-gradient-to-r from-yellow-500 to-red-500 rounded-full text-xs font-bold text-white shadow-lg flex items-center gap-1">
+                {/* Top Rated Badge */}
+                {isTopRated && (
+                  <div className="absolute -top-3 -right-3 px-3 py-1 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full text-xs font-bold text-white shadow-lg flex items-center gap-1">
                     <Sparkles size={12} />
-                    BEST VALUE
+                    TOP RATED
                   </div>
                 )}
 
@@ -98,7 +94,15 @@ export default function ProductsHub() {
                   >
                     {categoryInfo?.name}
                   </span>
-                  <div className="text-2xl font-bold text-purple-400">${product.price}</div>
+                  {product.price === 0 ? (
+                    <div className="px-3 py-1 bg-green-600/20 border border-green-600/50 rounded-full text-sm font-bold text-green-300">
+                      PAY WHAT YOU WANT
+                    </div>
+                  ) : (
+                    <div className="px-3 py-1 bg-purple-600/20 border border-purple-600/50 rounded-full text-sm font-bold text-purple-300">
+                      ${product.price}
+                    </div>
+                  )}
                 </div>
 
                 {/* Product Info */}
@@ -120,14 +124,10 @@ export default function ProductsHub() {
                   href={product.gumroadUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`w-full py-3 rounded-lg font-bold text-white transition-all flex items-center justify-center gap-2 group ${
-                    isBundle
-                      ? 'bg-gradient-to-r from-yellow-600 to-red-600 hover:from-yellow-500 hover:to-red-500'
-                      : 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500'
-                  }`}
+                  className="w-full py-3 rounded-lg font-bold text-white transition-all flex items-center justify-center gap-2 group bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500"
                 >
                   <ShoppingCart size={18} />
-                  Buy Now - ${product.price}
+                  {product.price === 0 ? 'Get Resource' : `Get for $${product.price}`}
                   <ExternalLink
                     size={14}
                     className="group-hover:translate-x-1 transition-transform"
@@ -150,16 +150,16 @@ export default function ProductsHub() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-semibold text-purple-200">
-              Need help choosing? Talk to Sales Beast AI
+              Need help choosing? Chat with Sam
             </p>
-            <p className="text-xs text-gray-400">Get personalized product recommendations</p>
+            <p className="text-xs text-gray-400">Get personalized recommendations</p>
           </div>
           <button
             onClick={() => {
-              // This would open the Sales Beast AI window
-              window.dispatchEvent(new CustomEvent('open-window', { detail: 'sales-beast' }));
+              // Open Sam assistant window
+              window.dispatchEvent(new CustomEvent('open-window', { detail: 'sam' }));
             }}
-            className="px-6 py-2 bg-green-600/30 hover:bg-green-600/50 border border-green-600/50 rounded-lg text-sm font-semibold text-green-200 transition-all"
+            className="px-6 py-2 bg-blue-600/30 hover:bg-blue-600/50 border border-blue-600/50 rounded-lg text-sm font-semibold text-blue-200 transition-all"
           >
             Get Recommendations
           </button>

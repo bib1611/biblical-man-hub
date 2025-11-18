@@ -3,11 +3,12 @@
 export type AppId =
   | 'content-feed'
   | 'bible-study'
-  | 'sales-beast'
+  | 'sam'
   | 'products'
   | 'radio'
   | 'counseling'
-  | 'contact';
+  | 'contact'
+  | 'admin';
 
 export interface WindowState {
   id: AppId;
@@ -28,6 +29,8 @@ export interface ContentFeedItem {
   url: string;
   date: string;
   content?: string;
+  imageUrl?: string | null;
+  author?: string;
 }
 
 export interface BibleVerse {
@@ -78,4 +81,73 @@ export interface Highlight {
   verse: number;
   color: string;
   createdAt: string;
+}
+
+// Analytics & Admin Types
+export interface Visitor {
+  id: string;
+  sessionId: string;
+  email?: string;
+  name?: string;
+  firstSeen: string;
+  lastSeen: string;
+  country?: string;
+  city?: string;
+  referrer?: string;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
+  pageViews: number;
+  totalTimeOnSite: number;
+  isActive: boolean;
+}
+
+export interface AnalyticsEvent {
+  id: string;
+  visitorId: string;
+  sessionId: string;
+  type: 'page_view' | 'product_click' | 'email_capture' | 'sam_chat' | 'window_open' | 'external_link';
+  data: Record<string, any>;
+  timestamp: string;
+}
+
+export interface Lead {
+  id: string;
+  email: string;
+  name?: string;
+  phone?: string;
+  source: 'email_capture' | 'sam_chat' | 'counseling_inquiry';
+  score: number;
+  status: 'new' | 'contacted' | 'converted' | 'lost';
+  firstContact: string;
+  lastContact: string;
+  tags: string[];
+  notes: string;
+  conversationHistory?: ChatMessage[];
+}
+
+export interface ConversationLog {
+  id: string;
+  visitorId: string;
+  leadId?: string;
+  messages: ChatMessage[];
+  quality: number;
+  intent: 'browsing' | 'interested' | 'ready_to_buy' | 'needs_help';
+  productsDiscussed: string[];
+  outcome?: 'purchased' | 'escalated' | 'abandoned';
+  startTime: string;
+  endTime?: string;
+}
+
+export interface AnalyticsSnapshot {
+  visitorsToday: number;
+  visitorsOnline: number;
+  emailCaptureRate: number;
+  topProducts: { id: string; name: string; clicks: number; conversions: number }[];
+  topPages: { path: string; views: number }[];
+  conversationQuality: number;
+  leadsToday: number;
+  conversionRate: number;
+  averageTimeOnSite: number;
+  trafficSources: { source: string; visitors: number }[];
 }

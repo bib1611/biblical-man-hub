@@ -10,8 +10,8 @@ export default function RadioPlayer() {
   const [isMuted, setIsMuted] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // FFBR stream URL - replace with actual stream URL
-  const streamUrl = 'https://stream.ffbr.com/live'; // Placeholder
+  // FFBR stream URL (via RadioBoss FM - 128kbps MP3)
+  const streamUrl = 'https://c13.radioboss.fm:8639/stream';
 
   useEffect(() => {
     if (audioRef.current) {
@@ -154,12 +154,42 @@ export default function RadioPlayer() {
       </div>
 
       {/* Info Box */}
-      <div className="mt-8 p-4 bg-black/40 border border-red-900/30 rounded-lg max-w-md">
+      <div className="mt-8 p-4 bg-black/40 border border-red-900/30 rounded-lg max-w-md w-full">
         <h3 className="text-sm font-bold text-red-200 mb-2">Now Playing</h3>
         <p className="text-xs text-gray-400">
-          This player connects to Final Fight Bible Radio's live stream. Contact FFBR for their
-          official stream URL to replace the placeholder.
+          Uncompromising Biblical teaching from the KJV 1611
         </p>
+        <p className="text-xs text-gray-500 mt-2">
+          Stream provided by Final Fight Bible Radio
+        </p>
+      </div>
+
+      {/* Subscription CTA */}
+      <div className="mt-6 p-6 bg-gradient-to-r from-red-900/30 to-orange-900/30 border border-red-600/30 rounded-lg max-w-md w-full">
+        <h3 className="text-lg font-bold text-red-100 mb-2">
+          Support Biblical Radio
+        </h3>
+        <p className="text-sm text-gray-300 mb-4">
+          Get access to exclusive teachings, archives, and Biblical man community
+        </p>
+        <div className="space-y-2">
+          <a
+            href="https://biblicalman.gumroad.com/l/ijaba"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block w-full px-4 py-3 bg-red-600 hover:bg-red-500 text-white rounded-lg font-semibold text-center transition-colors"
+          >
+            Premium Access - $365/yr
+          </a>
+          <a
+            href="https://biblicalman.substack.com/subscribe"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block w-full px-4 py-3 bg-black/40 hover:bg-black/60 text-red-200 border border-red-600/30 rounded-lg text-center transition-colors"
+          >
+            Free Newsletter
+          </a>
+        </div>
       </div>
 
       {/* Hidden Audio Element */}

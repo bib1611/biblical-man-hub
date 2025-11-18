@@ -34,9 +34,9 @@ const defaultWindows: Record<AppId, WindowState> = {
     size: { width: 900, height: 700 },
     zIndex: 1,
   },
-  'sales-beast': {
-    id: 'sales-beast',
-    title: 'Sales Beast AI',
+  sam: {
+    id: 'sam',
+    title: 'Chat with Sam',
     isOpen: false,
     isMinimized: false,
     isMaximized: false,
@@ -70,8 +70,8 @@ const defaultWindows: Record<AppId, WindowState> = {
     isOpen: false,
     isMinimized: false,
     isMaximized: false,
-    position: { x: 350, y: 350 },
-    size: { width: 600, height: 700 },
+    position: { x: 300, y: 100 },
+    size: { width: 700, height: 800 },
     zIndex: 1,
   },
   contact: {
@@ -82,6 +82,16 @@ const defaultWindows: Record<AppId, WindowState> = {
     isMaximized: false,
     position: { x: 400, y: 400 },
     size: { width: 500, height: 500 },
+    zIndex: 1,
+  },
+  admin: {
+    id: 'admin',
+    title: 'Admin Dashboard',
+    isOpen: false,
+    isMinimized: false,
+    isMaximized: false,
+    position: { x: 50, y: 50 },
+    size: { width: 1200, height: 800 },
     zIndex: 1,
   },
 };
