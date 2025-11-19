@@ -53,9 +53,13 @@ function getUTMParams() {
   };
 }
 
-// Get device fingerprint (simplified)
+// Get device fingerprint (simplified) - cached for performance
+let cachedFingerprint: string | null = null;
 function getDeviceFingerprint(): string {
   if (typeof window === 'undefined') return '';
+
+  // Return cached fingerprint to avoid expensive canvas operations
+  if (cachedFingerprint) return cachedFingerprint;
 
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
@@ -63,7 +67,8 @@ function getDeviceFingerprint(): string {
     ctx.textBaseline = 'top';
     ctx.font = '14px Arial';
     ctx.fillText('fingerprint', 2, 2);
-    return canvas.toDataURL().slice(-50); // Last 50 chars as simple fingerprint
+    cachedFingerprint = canvas.toDataURL().slice(-50); // Last 50 chars as simple fingerprint
+    return cachedFingerprint;
   }
   return '';
 }
@@ -73,6 +78,8 @@ export function useAnalytics() {
   const [sessionId] = useState(getSessionId);
   const startTime = useRef(Date.now());
   const heartbeatInterval = useRef<NodeJS.Timeout | undefined>(undefined);
+  const eventQueue = useRef<Array<{type: string, data: Record<string, any>}>>([]);
+  const flushTimeout = useRef<NodeJS.Timeout | undefined>(undefined);
 
   // Track page view on mount
   useEffect(() => {
@@ -88,40 +95,95 @@ export function useAnalytics() {
       ...utmParams,
     });
 
-    // Heartbeat to track time on site
+    // Heartbeat to track time on site - reduced to 60s for better performance
     heartbeatInterval.current = setInterval(() => {
       const timeOnSite = Math.floor((Date.now() - startTime.current) / 1000);
       trackEvent('heartbeat', {
         timeOnSite,
         page: window.location.pathname,
       });
-    }, 30000); // Every 30 seconds
+    }, 60000); // Every 60 seconds (reduced from 30s)
 
     return () => {
       if (heartbeatInterval.current) {
         clearInterval(heartbeatInterval.current);
       }
+      if (flushTimeout.current) {
+        clearTimeout(flushTimeout.current);
+      }
+      // Flush remaining events on unmount
+      if (eventQueue.current.length > 0) {
+        flushEvents();
+      }
     };
   }, []);
+
+  // Flush events to server - batch processing for better performance
+  const flushEvents = async () => {
+    if (eventQueue.current.length === 0) return;
+
+    const events = [...eventQueue.current];
+    eventQueue.current = [];
+
+    try {
+      // For critical events (email, purchase), send immediately
+      // For others, use batch endpoint if available or send individually
+      await Promise.all(events.map(({ type, data }) =>
+        fetch('/api/analytics/track', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            visitorId,
+            sessionId,
+            type,
+            data,
+            timestamp: new Date().toISOString(),
+          }),
+        })
+      ));
+    } catch (error) {
+      console.error('Analytics tracking error:', error);
+    }
+  };
 
   const trackEvent = async (
     type: 'page_view' | 'window_open' | 'email_capture' | 'counselor_mode_enabled' | 'purchase' | 'sam_chat' | 'heartbeat' | 'custom',
     data: Record<string, any> = {}
   ) => {
-    try {
-      await fetch('/api/analytics/track', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          visitorId,
-          sessionId,
-          type,
-          data,
-          timestamp: new Date().toISOString(),
-        }),
-      });
-    } catch (error) {
-      console.error('Analytics tracking error:', error);
+    // Critical events get sent immediately
+    const criticalEvents = ['email_capture', 'purchase', 'counselor_mode_enabled'];
+
+    if (criticalEvents.includes(type)) {
+      try {
+        await fetch('/api/analytics/track', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            visitorId,
+            sessionId,
+            type,
+            data,
+            timestamp: new Date().toISOString(),
+          }),
+        });
+      } catch (error) {
+        console.error('Analytics tracking error:', error);
+      }
+    } else {
+      // Queue non-critical events for batching
+      eventQueue.current.push({ type, data });
+
+      // Clear existing timeout
+      if (flushTimeout.current) {
+        clearTimeout(flushTimeout.current);
+      }
+
+      // Flush after 5 seconds of inactivity or when queue reaches 10 events
+      if (eventQueue.current.length >= 10) {
+        flushEvents();
+      } else {
+        flushTimeout.current = setTimeout(flushEvents, 5000);
+      }
     }
   };
 

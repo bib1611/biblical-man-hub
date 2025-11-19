@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, memo } from 'react';
 import { motion } from 'framer-motion';
 import { X, Minus, Square } from 'lucide-react';
 import { AppId } from '@/types';
@@ -11,7 +11,7 @@ interface WindowProps {
   children: React.ReactNode;
 }
 
-export default function Window({ id, children }: WindowProps) {
+function Window({ id, children }: WindowProps) {
   const windowRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
@@ -103,11 +103,11 @@ export default function Window({ id, children }: WindowProps) {
   return (
     <motion.div
       ref={windowRef}
-      initial={{ opacity: 0, scale: 0.9 }}
+      initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      transition={{ duration: 0.2 }}
-      className="fixed overflow-hidden rounded-lg shadow-2xl border border-red-900/50 bg-black/95 backdrop-blur-md"
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{ duration: 0.15, ease: 'easeOut' }}
+      className="fixed overflow-hidden rounded-lg shadow-2xl border border-red-900/50 bg-black/95 backdrop-blur-md will-change-transform"
       style={{
         ...windowStyle,
         zIndex: windowState.zIndex,
@@ -160,3 +160,6 @@ export default function Window({ id, children }: WindowProps) {
     </motion.div>
   );
 }
+
+// Memoize to prevent unnecessary re-renders when parent updates
+export default memo(Window);

@@ -1,24 +1,51 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { useAppStore } from '@/lib/store';
 import { AppId } from '@/types';
 import { ArrowRight, BookOpen, MessageCircle, Shield, Mail, ExternalLink } from 'lucide-react';
 import Dock from '@/components/dock/Dock';
 import Window from '@/components/shared/Window';
-import ContentFeed from '@/components/windows/ContentFeed';
-import BibleStudy from '@/components/windows/BibleStudy';
-import SamAssistant from '@/components/windows/SamAssistant';
-import ProductsHub from '@/components/windows/ProductsHub';
-import RadioPlayer from '@/components/windows/RadioPlayer';
-import SubstackArticles from '@/components/windows/SubstackArticles';
-import ContactForm from '@/components/windows/ContactForm';
-import ProtectedAdminDashboard from '@/components/windows/ProtectedAdminDashboard';
-import About from '@/components/windows/About';
-import StartHere from '@/components/windows/StartHere';
-import CommunityChat from '@/components/windows/CommunityChat';
 import { AuthProvider } from '@/lib/contexts/AuthContext';
 import { products } from '@/lib/data/products';
+import ExitIntentPopup from '@/components/shared/ExitIntentPopup';
+import { AnimatePresence, motion } from 'framer-motion';
+
+// Dynamic imports for window components - loads only when opened
+const ContentFeed = dynamic(() => import('@/components/windows/ContentFeed'), {
+  loading: () => <div className="flex items-center justify-center h-full text-gray-400">Loading...</div>
+});
+const BibleStudy = dynamic(() => import('@/components/windows/BibleStudy'), {
+  loading: () => <div className="flex items-center justify-center h-full text-gray-400">Loading...</div>
+});
+const SamAssistant = dynamic(() => import('@/components/windows/SamAssistant'), {
+  loading: () => <div className="flex items-center justify-center h-full text-gray-400">Loading...</div>
+});
+const ProductsHub = dynamic(() => import('@/components/windows/ProductsHub'), {
+  loading: () => <div className="flex items-center justify-center h-full text-gray-400">Loading...</div>
+});
+const RadioPlayer = dynamic(() => import('@/components/windows/RadioPlayer'), {
+  loading: () => <div className="flex items-center justify-center h-full text-gray-400">Loading...</div>
+});
+const SubstackArticles = dynamic(() => import('@/components/windows/SubstackArticles'), {
+  loading: () => <div className="flex items-center justify-center h-full text-gray-400">Loading...</div>
+});
+const ContactForm = dynamic(() => import('@/components/windows/ContactForm'), {
+  loading: () => <div className="flex items-center justify-center h-full text-gray-400">Loading...</div>
+});
+const ProtectedAdminDashboard = dynamic(() => import('@/components/windows/ProtectedAdminDashboard'), {
+  loading: () => <div className="flex items-center justify-center h-full text-gray-400">Loading...</div>
+});
+const About = dynamic(() => import('@/components/windows/About'), {
+  loading: () => <div className="flex items-center justify-center h-full text-gray-400">Loading...</div>
+});
+const StartHere = dynamic(() => import('@/components/windows/StartHere'), {
+  loading: () => <div className="flex items-center justify-center h-full text-gray-400">Loading...</div>
+});
+const CommunityChat = dynamic(() => import('@/components/windows/CommunityChat'), {
+  loading: () => <div className="flex items-center justify-center h-full text-gray-400">Loading...</div>
+});
 
 export default function Home() {
   const { windows, openWindow } = useAppStore();
@@ -26,9 +53,50 @@ export default function Home() {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [showExitIntent, setShowExitIntent] = useState(false);
+  const [hasSeenExitIntent, setHasSeenExitIntent] = useState(false);
+  const [showStickyCTA, setShowStickyCTA] = useState(false);
 
   // Get featured products for homepage
   const featuredProducts = products.filter(p => p.isFeatured);
+
+  // Scroll detection for sticky CTA
+  useEffect(() => {
+    if (showHub) return;
+
+    const handleScroll = () => {
+      // Show sticky CTA after scrolling 300px
+      setShowStickyCTA(window.scrollY > 300);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [showHub]);
+
+  // Exit intent detection - only on landing page
+  useEffect(() => {
+    if (showHub || hasSeenExitIntent) return;
+
+    const handleMouseLeave = (e: MouseEvent) => {
+      // Detect when mouse moves to top of screen (likely to close tab/navigate away)
+      if (e.clientY <= 0 && !hasSeenExitIntent) {
+        setShowExitIntent(true);
+        setHasSeenExitIntent(true);
+        // Store in localStorage to not show again
+        localStorage.setItem('exit_intent_shown', 'true');
+      }
+    };
+
+    // Check if already shown
+    const alreadyShown = localStorage.getItem('exit_intent_shown');
+    if (!alreadyShown) {
+      document.addEventListener('mouseleave', handleMouseLeave);
+    }
+
+    return () => {
+      document.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, [showHub, hasSeenExitIntent]);
 
   useEffect(() => {
     const handleOpenWindow = (e: CustomEvent) => {
@@ -69,6 +137,18 @@ export default function Home() {
       setTimeout(() => setSubmitStatus('idle'), 5000);
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleExitIntentSubmit = async (exitEmail: string) => {
+    try {
+      await fetch('/api/newsletter/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: exitEmail, source: 'exit_intent' }),
+      });
+    } catch (error) {
+      console.error('Exit intent subscription failed:', error);
     }
   };
 
@@ -185,7 +265,17 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <>
+      <AnimatePresence>
+        {showExitIntent && (
+          <ExitIntentPopup
+            onClose={() => setShowExitIntent(false)}
+            onEmailSubmit={handleExitIntentSubmit}
+          />
+        )}
+      </AnimatePresence>
+
+      <div className="min-h-screen bg-black text-white">
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-black/80 backdrop-blur-md border-b border-red-900/20">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-4 flex items-center justify-between">
@@ -441,6 +531,47 @@ export default function Home() {
           <p className="text-sm">Built for men who lead.</p>
         </div>
       </footer>
+
+      {/* Sticky CTA Bar - appears after scroll */}
+      <AnimatePresence>
+        {showStickyCTA && (
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            className="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-r from-red-600 to-red-700 border-t-2 border-red-500 shadow-2xl"
+          >
+            <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div className="text-white text-center sm:text-left">
+                <p className="font-bold text-sm md:text-base">
+                  Ready to transform your life with Biblical truth?
+                </p>
+                <p className="text-xs md:text-sm text-red-100 hidden md:block">
+                  Join 20,000+ men building stronger marriages, wealth, and faith
+                </p>
+              </div>
+              <div className="flex gap-2 w-full sm:w-auto">
+                <button
+                  onClick={enterHub}
+                  className="flex-1 sm:flex-none px-6 py-2 bg-white text-red-600 hover:bg-gray-100 rounded-lg font-bold text-sm transition-all whitespace-nowrap"
+                >
+                  Enter Hub
+                </button>
+                <button
+                  onClick={() => {
+                    document.querySelector('form')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="flex-1 sm:flex-none px-6 py-2 bg-red-900 hover:bg-red-950 text-white rounded-lg font-bold text-sm transition-all whitespace-nowrap"
+                >
+                  Subscribe
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
+    </>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Search, ExternalLink, Filter } from 'lucide-react';
 import { ContentFeedItem } from '@/types';
@@ -164,19 +165,22 @@ export default function ContentFeed() {
           filteredItems.map((item, index) => (
             <motion.div
               key={item.id}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
+              transition={{ delay: Math.min(index * 0.03, 0.3), ease: 'easeOut' }}
               onClick={() => window.open(item.url, '_blank')}
-              className="p-4 bg-gradient-to-r from-red-950/20 to-black/40 border border-red-900/20 rounded-lg hover:border-red-600/40 cursor-pointer transition-all group"
+              className="p-4 bg-gradient-to-r from-red-950/20 to-black/40 border border-red-900/20 rounded-lg hover:border-red-600/40 cursor-pointer transition-all group will-change-transform"
             >
-              {/* Image if available */}
+              {/* Image if available - optimized with Next.js Image */}
               {item.imageUrl && (
-                <div className="mb-3 -mx-4 -mt-4 rounded-t-lg overflow-hidden">
-                  <img
+                <div className="mb-3 -mx-4 -mt-4 rounded-t-lg overflow-hidden relative h-48">
+                  <Image
                     src={item.imageUrl}
                     alt={item.title}
-                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    loading="lazy"
                   />
                 </div>
               )}
