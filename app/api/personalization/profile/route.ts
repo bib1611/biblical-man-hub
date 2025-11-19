@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDB } from '@/lib/db';
 import { generatePersonalizationConfig } from '@/hooks/usePersonalization';
+import {
+  buildPsychographicProfile,
+  generateTargetedMessaging,
+  getTimingTriggers,
+} from '@/lib/psychographics';
 
 export async function GET(request: NextRequest) {
   try {
@@ -36,14 +41,27 @@ export async function GET(request: NextRequest) {
       trafficMedium: visitor?.trafficMedium,
       country: visitor?.country,
       city: visitor?.city,
+      timezone: visitor?.timezone,
     };
 
     // Generate personalized config
     const config = generatePersonalizationConfig(profile);
 
+    // 🔥 ADVANCED: Build psychographic profile
+    const psychographic = buildPsychographicProfile(profile);
+
+    // 🔥 ADVANCED: Generate targeted messaging
+    const messaging = generateTargetedMessaging(psychographic);
+
+    // 🔥 ADVANCED: Get timing triggers
+    const timing = getTimingTriggers(profile);
+
     return NextResponse.json({
       profile,
       config,
+      psychographic,
+      messaging,
+      timing,
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
