@@ -293,7 +293,7 @@ export const products: Product[] = [
       'Your husband isn\'t broken. He\'s dormant. Learn how a godly woman awakens the king in her man.',
     price: 0,
     category: 'women',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/rydl',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/nptnwl',
     features: [
       'Awaken your husband',
       'Biblical wifely influence',
@@ -311,7 +311,7 @@ export const products: Product[] = [
       'Complete access to the entire Biblical Man resource library. Everything you need for total transformation.',
     price: 365,
     category: 'courses',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/ijaba',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/huyrp',
     features: [
       'Complete resource library',
       'Lifetime access',
