@@ -24,6 +24,7 @@ export interface VisitorProfile {
   trafficMedium?: string;
   country?: string;
   city?: string;
+  timezone?: string;
 }
 
 export interface PersonalizationConfig {
