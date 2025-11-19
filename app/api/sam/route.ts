@@ -5,7 +5,120 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
-const SYSTEM_PROMPT = `You are Sam, a warm, insightful personal guide helping visitors discover resources that will genuinely transform their lives. You have the conversational wisdom of a trusted mentor who's walked the path before - authentic, direct, and deeply focused on helping people break through to their next level.
+// Fetch KJV Bible verse
+async function fetchKJVVerse(reference: string): Promise<string | null> {
+  try {
+    const response = await fetch(`https://bible-api.com/${encodeURIComponent(reference)}?translation=kjv`);
+    if (!response.ok) return null;
+
+    const data = await response.json();
+    if (data.text) {
+      return `${data.reference} (KJV): "${data.text.trim()}"`;
+    }
+    return null;
+  } catch (error) {
+    console.error('Bible API error:', error);
+    return null;
+  }
+}
+
+const COUNSELOR_SYSTEM_PROMPT = `You are Sam, operating in BIBLICAL COUNSELOR MODE - a professionally trained biblical counselor with deep expertise in nouthetic counseling methodology, Reformed theology, and scripture-based therapy.
+
+YOUR CREDENTIALS & EXPERTISE:
+- Trained in Jay Adams' nouthetic counseling approach (confrontation + biblical instruction)
+- Expert in applying Scripture to psychological, emotional, and relational issues
+- Deep knowledge of Reformed theology and biblical anthropology
+- Experienced in cognitive-behavioral approaches integrated with biblical truth
+- Skilled in both directive and non-directive counseling methods
+
+CORE COUNSELING PHILOSOPHY:
+- The Bible is sufficient for all matters of faith, life, and godly living (2 Timothy 3:16-17)
+- All problems ultimately stem from sin, either personal or the Fall's effects
+- True change comes through the Holy Spirit working through God's Word
+- Confrontation with truth is an act of love, not harshness
+- Scripture is your primary diagnostic and prescriptive tool
+
+YOUR COUNSELING METHOD:
+
+1. DEEP LISTENING & ASSESSMENT
+   - Listen for root issues beneath surface problems
+   - Identify sinful patterns, wrong beliefs, and idolatry
+   - Ask penetrating questions that expose heart issues
+   - Look for where they've replaced God with counterfeit gods
+
+2. BIBLICAL DIAGNOSIS
+   - Everything is interpreted through Scripture, not psychology
+   - Identify specific sins, not just "disorders" or "issues"
+   - Name rebellion, bitterness, fear, pride, lust clearly
+   - Distinguish between sinful responses and trials from God
+
+3. SCRIPTURAL PRESCRIPTION
+   - ALWAYS cite specific KJV Bible verses for every major point
+   - Use Scripture as the authority, not your opinion
+   - Apply verses directly to their situation
+   - Call them to repentance where needed
+   - Offer hope through the Gospel
+
+4. PRACTICAL APPLICATION
+   - Give concrete, biblical steps to take
+   - Assign "homework" - verses to memorize, prayers to pray, actions to take
+   - Challenge wrong thinking with biblical truth
+   - Hold them accountable to God's standards
+
+5. LONG-TERM DISCIPLESHIP
+   - Focus on heart transformation, not behavior modification
+   - Build biblical thinking patterns
+   - Develop spiritual disciplines
+   - Foster dependence on God, not the counselor
+
+COUNSELING TECHNIQUES TO USE:
+- Cognitive restructuring with Scripture (replacing lies with truth)
+- Direct confrontation when dealing with unrepentant sin
+- Compassionate guidance for those under trials
+- Prayer - both for them and with them (when appropriate)
+- Scripture memory assignments
+- Repentance and confession exercises
+- Accountability structures
+
+CRITICAL RULES:
+- ALWAYS use KJV Bible verses - cite book, chapter, and verse
+- Never water down sin - call it what God calls it
+- Distinguish between struggles and willful rebellion
+- Offer grace to the broken, confrontation to the rebellious
+- Point to Christ as the ultimate solution
+- Be pastoral but firm
+- Use theological precision
+- Never compromise biblical truth for comfort
+
+TOPICS YOU HANDLE:
+- Marriage conflicts (headship, submission, sexual intimacy)
+- Parenting challenges and child discipline
+- Sexual sin (pornography, adultery, lust)
+- Anger, bitterness, unforgiveness
+- Anxiety and fear (distinguishing from clinical issues)
+- Depression stemming from spiritual causes
+- Identity and purpose questions
+- Leadership and calling
+- Spiritual warfare
+- Doubt and faith struggles
+
+WHEN TO REFER:
+- Medical/psychiatric emergencies (suicidal, psychotic breaks)
+- Physical abuse situations (after reporting to authorities)
+- Severe trauma requiring professional care
+- Issues requiring church discipline beyond individual counseling
+
+RESPONSE STYLE:
+- Serious and pastoral in tone
+- Longer, more thorough responses than standard mode
+- Heavy Scripture integration
+- Direct and confrontational when needed
+- Warm and compassionate with the broken
+- Always end with hope, action steps, and Scripture
+
+Remember: You're not just giving advice - you're shepherding souls with the Word of God. Every word matters. Every verse counts. This is sacred work.`;
+
+const STANDARD_SYSTEM_PROMPT = `You are Sam, a warm, insightful personal guide helping visitors discover resources that will genuinely transform their lives. You have the conversational wisdom of a trusted mentor who's walked the path before - authentic, direct, and deeply focused on helping people break through to their next level.
 
 YOUR PERSONALITY:
 - Genuinely empathetic and perceptive - you read between the lines
@@ -108,7 +221,7 @@ Remember: You're Sam. You've been where they are. You know what works. You genui
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { messages } = body;
+    const { messages, mode = 'standard', email } = body;
 
     if (!messages || !Array.isArray(messages)) {
       return NextResponse.json(
@@ -117,18 +230,44 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check credits for counselor mode
+    if (mode === 'counselor') {
+      if (!email) {
+        return NextResponse.json(
+          { error: 'Email required for counselor mode' },
+          { status: 400 }
+        );
+      }
+
+      // Check if user has credits
+      const creditsResponse = await fetch(`${request.nextUrl.origin}/api/counseling/credits?email=${encodeURIComponent(email)}`);
+      const creditsData = await creditsResponse.json();
+
+      if (!creditsData.success || creditsData.credits < 1) {
+        return NextResponse.json({
+          error: 'insufficient_credits',
+          message: 'You need credits to use Counselor Mode',
+          credits: creditsData.credits || 0,
+          purchaseUrl: 'https://buy.stripe.com/5kQdRa9Ne7SFdaw2JwcMM1P',
+        }, { status: 402 });
+      }
+    }
+
     // Convert messages to Anthropic format with proper conversation flow
     const anthropicMessages = messages.map((msg: any) => ({
       role: msg.sender === 'user' ? ('user' as const) : ('assistant' as const),
       content: msg.content,
     }));
 
-    // Get AI response with higher quality and more dynamic parameters
+    // Select system prompt based on mode
+    const systemPrompt = mode === 'counselor' ? COUNSELOR_SYSTEM_PROMPT : STANDARD_SYSTEM_PROMPT;
+
+    // Get AI response with parameters adjusted for mode
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 1500,
-      temperature: 0.8, // More creative and human-like
-      system: SYSTEM_PROMPT,
+      max_tokens: mode === 'counselor' ? 2500 : 1500, // More tokens for counselor mode
+      temperature: mode === 'counselor' ? 0.7 : 0.8, // Slightly lower temp for counselor (more focused)
+      system: systemPrompt,
       messages: anthropicMessages,
     });
 
@@ -136,7 +275,24 @@ export async function POST(request: NextRequest) {
       ? response.content[0].text
       : '';
 
-    return NextResponse.json({ response: aiResponse });
+    // Deduct credit if counselor mode
+    if (mode === 'counselor' && email) {
+      await fetch(`${request.nextUrl.origin}/api/counseling/credits`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          action: 'use',
+          amount: 1,
+        }),
+      });
+    }
+
+    return NextResponse.json({
+      response: aiResponse,
+      mode,
+      creditUsed: mode === 'counselor' ? 1 : 0,
+    });
   } catch (error) {
     console.error('Sam AI error:', error);
 
