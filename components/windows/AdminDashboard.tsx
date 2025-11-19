@@ -13,23 +13,37 @@ import {
   Star,
   ExternalLink,
   AlertCircle,
+  BookOpen,
+  Radio,
+  Brain,
+  Target,
+  Eye,
+  Ear,
+  Zap,
 } from 'lucide-react';
 import { AnalyticsSnapshot, Lead } from '@/types';
 
 export default function AdminDashboard() {
   const [analytics, setAnalytics] = useState<AnalyticsSnapshot | null>(null);
   const [leads, setLeads] = useState<Lead[]>([]);
+  const [engagement, setEngagement] = useState<any>(null);
+  const [psychographics, setPsychographics] = useState<any>(null);
   const [selectedLeadStatus, setSelectedLeadStatus] = useState<string>('all');
+  const [activeTab, setActiveTab] = useState<'overview' | 'engagement' | 'psychographics'>('overview');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchAnalytics();
     fetchLeads();
+    fetchEngagement();
+    fetchPsychographics();
 
     // Refresh every 30 seconds
     const interval = setInterval(() => {
       fetchAnalytics();
       fetchLeads();
+      fetchEngagement();
+      fetchPsychographics();
     }, 30000);
 
     return () => clearInterval(interval);
@@ -61,6 +75,26 @@ export default function AdminDashboard() {
     }
   };
 
+  const fetchEngagement = async () => {
+    try {
+      const response = await fetch('/api/admin/engagement');
+      const data = await response.json();
+      setEngagement(data);
+    } catch (error) {
+      console.error('Failed to fetch engagement:', error);
+    }
+  };
+
+  const fetchPsychographics = async () => {
+    try {
+      const response = await fetch('/api/admin/psychographics');
+      const data = await response.json();
+      setPsychographics(data);
+    } catch (error) {
+      console.error('Failed to fetch psychographics:', error);
+    }
+  };
+
   const updateLeadStatus = async (leadId: string, status: Lead['status']) => {
     try {
       await fetch('/api/admin/leads', {
@@ -89,7 +123,7 @@ export default function AdminDashboard() {
     <div className="h-full overflow-auto bg-gradient-to-br from-gray-950 via-black to-gray-950 text-gray-100">
       {/* Header */}
       <div className="p-6 border-b border-gray-800 bg-black/40 sticky top-0 z-10">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-4">
           <div>
             <h1 className="text-2xl font-bold text-green-400 mb-1">Admin Dashboard</h1>
             <p className="text-sm text-gray-400">Real-time analytics and lead management</p>
@@ -99,10 +133,50 @@ export default function AdminDashboard() {
             <span className="text-xs text-gray-400">Live</span>
           </div>
         </div>
+
+        {/* Tab Navigation */}
+        <div className="flex gap-2">
+          <button
+            onClick={() => setActiveTab('overview')}
+            className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+              activeTab === 'overview'
+                ? 'bg-green-600/40 text-green-200 border border-green-600/50'
+                : 'bg-gray-800/40 text-gray-400 border border-gray-700/30 hover:bg-gray-800/60'
+            }`}
+          >
+            <TrendingUp className="inline w-4 h-4 mr-2" />
+            Overview
+          </button>
+          <button
+            onClick={() => setActiveTab('engagement')}
+            className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+              activeTab === 'engagement'
+                ? 'bg-green-600/40 text-green-200 border border-green-600/50'
+                : 'bg-gray-800/40 text-gray-400 border border-gray-700/30 hover:bg-gray-800/60'
+            }`}
+          >
+            <Eye className="inline w-4 h-4 mr-2" />
+            Engagement (Eyes & Ears)
+          </button>
+          <button
+            onClick={() => setActiveTab('psychographics')}
+            className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+              activeTab === 'psychographics'
+                ? 'bg-green-600/40 text-green-200 border border-green-600/50'
+                : 'bg-gray-800/40 text-gray-400 border border-gray-700/30 hover:bg-gray-800/60'
+            }`}
+          >
+            <Brain className="inline w-4 h-4 mr-2" />
+            Psychographics (Psy-Ops)
+          </button>
+        </div>
       </div>
 
-      {/* Stats Grid */}
+      {/* Tab Content */}
       <div className="p-6">
+        {activeTab === 'overview' && (
+        <>
+        {/* Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <StatCard
             icon={<Users />}
@@ -269,6 +343,314 @@ export default function AdminDashboard() {
             )}
           </div>
         </div>
+        </>
+        )}
+
+        {/* ENGAGEMENT TAB (Eyes & Ears) */}
+        {activeTab === 'engagement' && engagement && (
+        <>
+          {/* Engagement Summary */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <StatCard
+              icon={<Zap />}
+              title="Avg Engagement"
+              value={`${engagement.summary?.avgEngagementScore || 0}/100`}
+              subtitle="Overall score"
+              color="purple"
+            />
+            <StatCard
+              icon={<BookOpen />}
+              title="Bible Users"
+              value={engagement.summary?.bibleUsers || 0}
+              subtitle={`${formatTime(engagement.summary?.avgBibleTime || 0)} avg`}
+              color="blue"
+            />
+            <StatCard
+              icon={<Radio />}
+              title="Radio Listeners"
+              value={engagement.summary?.radioUsers || 0}
+              subtitle={`${formatTime(engagement.summary?.avgRadioTime || 0)} avg`}
+              color="green"
+            />
+            <StatCard
+              icon={<MessageSquare />}
+              title="Sam Users"
+              value={engagement.summary?.samUsers || 0}
+              subtitle="AI interactions"
+              color="amber"
+            />
+          </div>
+
+          {/* Engagement Breakdown */}
+          <div className="grid md:grid-cols-3 gap-6 mb-6">
+            <div className="bg-gray-900/40 border border-gray-800 rounded-xl p-6">
+              <h3 className="text-lg font-bold text-gray-100 mb-4 flex items-center gap-2">
+                <Eye className="text-blue-500" size={20} />
+                Eyes (Visual Engagement)
+              </h3>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-400">High Engagement</span>
+                  <span className="text-lg font-bold text-green-400">{engagement.summary?.highEngagement || 0}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-400">Medium Engagement</span>
+                  <span className="text-lg font-bold text-yellow-400">{engagement.summary?.mediumEngagement || 0}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-400">Low Engagement</span>
+                  <span className="text-lg font-bold text-red-400">{engagement.summary?.lowEngagement || 0}</span>
+                </div>
+                <div className="pt-3 border-t border-gray-800">
+                  <span className="text-xs text-gray-500">Exit Intent Conversion</span>
+                  <div className="text-2xl font-bold text-purple-400">{engagement.summary?.exitIntentConversionRate || 0}%</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gray-900/40 border border-gray-800 rounded-xl p-6">
+              <h3 className="text-lg font-bold text-gray-100 mb-4 flex items-center gap-2">
+                <BookOpen className="text-blue-500" size={20} />
+                Bible Engagement
+              </h3>
+              <div className="space-y-3 text-sm">
+                <div>
+                  <span className="text-gray-400 block mb-1">Total Users</span>
+                  <span className="text-2xl font-bold text-blue-400">{engagement.summary?.bibleUsers || 0}</span>
+                </div>
+                <div>
+                  <span className="text-gray-400 block mb-1">Avg Reading Time</span>
+                  <span className="text-lg font-bold text-gray-200">{formatTime(engagement.summary?.avgBibleTime || 0)}</span>
+                </div>
+                <div className="text-xs text-gray-500 pt-2 border-t border-gray-800">
+                  Deep readers with highlights/notes indicate premium users
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gray-900/40 border border-gray-800 rounded-xl p-6">
+              <h3 className="text-lg font-bold text-gray-100 mb-4 flex items-center gap-2">
+                <Ear className="text-green-500" size={20} />
+                Audio Engagement (Ears)
+              </h3>
+              <div className="space-y-3 text-sm">
+                <div>
+                  <span className="text-gray-400 block mb-1">Radio Listeners</span>
+                  <span className="text-2xl font-bold text-green-400">{engagement.summary?.radioUsers || 0}</span>
+                </div>
+                <div>
+                  <span className="text-gray-400 block mb-1">Avg Listening Time</span>
+                  <span className="text-lg font-bold text-gray-200">{formatTime(engagement.summary?.avgRadioTime || 0)}</span>
+                </div>
+                <div className="text-xs text-gray-500 pt-2 border-t border-gray-800">
+                  Binge listeners (30+ min sessions) are highly engaged
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Top Engaged Visitors */}
+          <div className="bg-gray-900/40 border border-gray-800 rounded-xl p-6">
+            <h2 className="text-lg font-bold text-gray-100 mb-4 flex items-center gap-2">
+              <Target size={20} className="text-purple-500" />
+              Top Engaged Visitors
+            </h2>
+            <div className="space-y-2 max-h-96 overflow-auto">
+              {engagement.topEngaged && engagement.topEngaged.length > 0 ? (
+                engagement.topEngaged.map((visitor: any, i: number) => (
+                  <div
+                    key={visitor.visitorId}
+                    className="p-4 bg-black/40 rounded-lg border border-gray-800/50"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm font-bold text-gray-500 w-8">#{i + 1}</span>
+                        <div>
+                          <div className="font-semibold text-gray-200">
+                            {visitor.email || visitor.visitorId.slice(0, 20)}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {visitor.trafficSource} • {visitor.country}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-2xl font-bold text-purple-400">{visitor.engagementScore}</div>
+                        <div className="text-xs text-gray-500">engagement</div>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-3 gap-3 text-xs pt-3 border-t border-gray-800">
+                      <div>
+                        <span className="text-gray-500 block">Bible</span>
+                        <span className="text-blue-400 font-semibold">{visitor.bible?.versesRead || 0} verses</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-500 block">Radio</span>
+                        <span className="text-green-400 font-semibold">{formatTime(visitor.radio?.totalListeningTime || 0)}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-500 block">Time on Site</span>
+                        <span className="text-amber-400 font-semibold">{formatTime(visitor.timeOnSite || 0)}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  <p>No engagement data yet</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </>
+        )}
+
+        {/* PSYCHOGRAPHICS TAB (Psy-Ops) */}
+        {activeTab === 'psychographics' && psychographics && (
+        <>
+          {/* Psychographic Summary */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <StatCard
+              icon={<Brain />}
+              title="Avg Conversion Readiness"
+              value={`${psychographics.summary?.avgConversionReadiness || 0}/100`}
+              subtitle="Overall readiness"
+              color="purple"
+            />
+            <StatCard
+              icon={<Target />}
+              title="High Readiness"
+              value={psychographics.summary?.highReadiness || 0}
+              subtitle="70+ score"
+              color="green"
+            />
+            <StatCard
+              icon={<AlertCircle />}
+              title="Medium Readiness"
+              value={psychographics.summary?.mediumReadiness || 0}
+              subtitle="40-69 score"
+              color="amber"
+            />
+            <StatCard
+              icon={<Users />}
+              title="Low Readiness"
+              value={psychographics.summary?.lowReadiness || 0}
+              subtitle="<40 score"
+              color="blue"
+            />
+          </div>
+
+          {/* Personality Types & Message Framing */}
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
+            <div className="bg-gray-900/40 border border-gray-800 rounded-xl p-6">
+              <h3 className="text-lg font-bold text-gray-100 mb-4 flex items-center gap-2">
+                <Brain className="text-purple-500" size={20} />
+                Personality Types
+              </h3>
+              <div className="space-y-2">
+                {psychographics.summary?.personalityTypes && Object.entries(psychographics.summary.personalityTypes).map(([type, count]: [string, any]) => (
+                  <div key={type} className="flex justify-between items-center p-2 bg-black/40 rounded">
+                    <span className="text-sm text-gray-300 capitalize">{type}</span>
+                    <span className="text-lg font-bold text-purple-400">{count}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-gray-900/40 border border-gray-800 rounded-xl p-6">
+              <h3 className="text-lg font-bold text-gray-100 mb-4 flex items-center gap-2">
+                <MessageSquare className="text-blue-500" size={20} />
+                Message Framing Effectiveness
+              </h3>
+              <div className="space-y-2">
+                {psychographics.summary?.messageFramingStats && Object.entries(psychographics.summary.messageFramingStats).map(([frame, count]: [string, any]) => (
+                  <div key={frame} className="flex justify-between items-center p-2 bg-black/40 rounded">
+                    <span className="text-sm text-gray-300 capitalize">{frame}</span>
+                    <span className="text-lg font-bold text-blue-400">{count}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Top Pain Points & Motivators */}
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
+            <div className="bg-gray-900/40 border border-gray-800 rounded-xl p-6">
+              <h3 className="text-lg font-bold text-gray-100 mb-4">Top Pain Points</h3>
+              <div className="space-y-2">
+                {psychographics.topPainPoints && psychographics.topPainPoints.map((item: any, i: number) => (
+                  <div key={item.point} className="flex justify-between items-center p-2 bg-black/40 rounded">
+                    <span className="text-sm text-gray-300">{item.point.replace(/-/g, ' ')}</span>
+                    <span className="text-sm font-bold text-red-400">{item.count}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-gray-900/40 border border-gray-800 rounded-xl p-6">
+              <h3 className="text-lg font-bold text-gray-100 mb-4">Top Motivators</h3>
+              <div className="space-y-2">
+                {psychographics.topMotivators && psychographics.topMotivators.map((item: any, i: number) => (
+                  <div key={item.motivator} className="flex justify-between items-center p-2 bg-black/40 rounded">
+                    <span className="text-sm text-gray-300 capitalize">{item.motivator}</span>
+                    <span className="text-sm font-bold text-green-400">{item.count}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* High-Value Targets */}
+          <div className="bg-gray-900/40 border border-gray-800 rounded-xl p-6">
+            <h2 className="text-lg font-bold text-gray-100 mb-4 flex items-center gap-2">
+              <Target size={20} className="text-red-500" />
+              High-Value Targets (High Readiness + No Email)
+            </h2>
+            <p className="text-sm text-gray-400 mb-4">These visitors are ready to convert but haven't given their email yet. Priority targets for conversion.</p>
+            <div className="space-y-2 max-h-96 overflow-auto">
+              {psychographics.highValueTargets && psychographics.highValueTargets.length > 0 ? (
+                psychographics.highValueTargets.map((target: any) => (
+                  <div
+                    key={target.visitorId}
+                    className="p-4 bg-black/40 rounded-lg border border-red-900/30 hover:border-red-600/50 transition-all"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div>
+                        <div className="font-semibold text-gray-200">{target.visitorId.slice(0, 30)}...</div>
+                        <div className="text-xs text-gray-500">
+                          {target.profile?.trafficSource} • {target.profile?.country}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-2xl font-bold text-red-400">{target.psychographic?.conversionReadiness}/100</div>
+                        <div className="text-xs text-gray-500">readiness</div>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-3 gap-3 text-xs">
+                      <div>
+                        <span className="text-gray-500 block">Personality</span>
+                        <span className="text-purple-400 font-semibold capitalize">{target.psychographic?.personalityType}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-500 block">Message Framing</span>
+                        <span className="text-blue-400 font-semibold capitalize">{target.psychographic?.messageFraming}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-500 block">Lead Score</span>
+                        <span className="text-amber-400 font-semibold">{target.leadScore}/100</span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  <p>No high-value targets yet</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </>
+        )}
       </div>
     </div>
   );
