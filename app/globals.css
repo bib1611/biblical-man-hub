@@ -95,3 +95,23 @@ a,
   cursor: pointer !important;
   pointer-events: auto !important;
 }
+
+/* 📱 MOBILE OPTIMIZATION: Ensure minimum touch target size (48x48px) */
+@media (max-width: 768px) {
+  button,
+  a[role="button"],
+  [role="button"],
+  input[type="submit"],
+  input[type="button"] {
+    min-height: 48px !important;
+    min-width: 48px !important;
+    padding: 12px 16px !important;
+  }
+
+  /* Ensure proper spacing between clickable elements */
+  button + button,
+  button + a,
+  a + button {
+    margin-left: 12px !important;
+  }
+}
