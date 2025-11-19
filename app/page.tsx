@@ -19,6 +19,7 @@ import StartHere from '@/components/windows/StartHere';
 import CommunityChat from '@/components/windows/CommunityChat';
 import { AuthProvider } from '@/lib/contexts/AuthContext';
 import { products } from '@/lib/data/products';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 export default function Home() {
   const { windows, openWindow } = useAppStore();
@@ -26,6 +27,9 @@ export default function Home() {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  // Initialize analytics tracking
+  const { trackWindowOpen, trackEmailCapture } = useAnalytics();
 
   // Get featured products for homepage
   const featuredProducts = products.filter(p => p.isFeatured);
@@ -59,6 +63,10 @@ export default function Home() {
 
       if (response.ok) {
         setSubmitStatus('success');
+
+        // Track email capture in analytics
+        trackEmailCapture(email);
+
         setEmail('');
         setTimeout(() => setSubmitStatus('idle'), 5000);
       } else {
