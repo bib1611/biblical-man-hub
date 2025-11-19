@@ -214,125 +214,223 @@ export default function Home() {
 
       {/* Hero Section */}
       <section className="pt-24 md:pt-32 pb-12 md:pb-20 px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-6xl lg:text-8xl font-bold mb-6 leading-tight">
-            Stop Being Soft.
-            <br />
-            <span className="text-red-500">Start Leading.</span>
-          </h1>
-          <p className="text-lg md:text-xl lg:text-2xl text-gray-400 mb-8 max-w-2xl mx-auto">
-            Biblical masculinity for men who refuse to compromise
-          </p>
-          <button
-            onClick={enterHub}
-            className="inline-flex items-center justify-center gap-2 px-6 md:px-8 py-3 md:py-4 min-h-[48px] bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-lg text-base md:text-lg font-bold transition-all transform hover:scale-105 w-full sm:w-auto"
-          >
-            Access The Hub
-            <ArrowRight size={20} />
-          </button>
-        </div>
-      </section>
-
-      {/* Newsletter Section */}
-      <section className="py-12 md:py-20 px-6 bg-gradient-to-b from-red-950/20 to-black">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-8 md:mb-12">
-            <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-4">
-              Join 20,000+ Men and Women Who Refuse Mediocrity
-            </h2>
-            <p className="text-base md:text-lg lg:text-xl text-gray-400">
-              Get unfiltered Biblical truth delivered weekly. No fluff. No compromise.
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+              Stop Being Soft.
+              <br />
+              <span className="text-red-500">Start Leading.</span>
+            </h1>
+            <p className="text-lg md:text-xl lg:text-2xl text-gray-400 mb-8 max-w-2xl mx-auto">
+              Biblical masculinity for men who refuse to compromise
             </p>
           </div>
-          <form onSubmit={handleEmailSubmit} className="max-w-xl mx-auto">
-            {submitStatus === 'success' && (
-              <div className="mb-4 p-4 bg-green-900/20 border border-green-600/50 rounded-lg text-green-200 text-center">
-                <strong>Success!</strong> Check your email for your welcome message. (Check spam if you don't see it)
-              </div>
-            )}
-            {submitStatus === 'error' && (
-              <div className="mb-4 p-4 bg-red-900/20 border border-red-600/50 rounded-lg text-red-200 text-center">
-                <strong>Error!</strong> Something went wrong. Please try again.
-              </div>
-            )}
-            <div className="flex flex-col md:flex-row gap-3">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                className="flex-1 px-6 py-4 bg-white/5 border border-red-900/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-red-600/50 transition-colors"
-                required
-                disabled={isSubmitting}
-              />
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="px-8 py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 disabled:from-gray-600 disabled:to-gray-700 rounded-lg font-bold transition-all disabled:cursor-not-allowed w-full md:w-auto"
-              >
-                {isSubmitting ? 'Subscribing...' : 'Subscribe'}
-              </button>
-            </div>
-          </form>
-        </div>
-      </section>
 
-      {/* Features Grid */}
-      <section className="py-12 md:py-20 px-6">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-center mb-10 md:mb-16">
-            Everything You Need To Lead
-          </h2>
-          <div className="grid md:grid-cols-3 gap-6 md:gap-8">
-            <div className="p-6 md:p-8 bg-gradient-to-br from-red-950/40 to-black border border-red-900/30 rounded-xl">
-              <BookOpen className="w-10 h-10 md:w-12 md:h-12 text-red-500 mb-4" />
-              <h3 className="text-xl md:text-2xl font-bold mb-3">Bible Study</h3>
-              <p className="text-gray-400 mb-4">
-                Complete King James Bible with notes, highlights, and Alexander Scourby audio.
+          {/* Interactive Hook: Bible + Radio */}
+          <div className="grid md:grid-cols-2 gap-6 mb-12">
+            {/* Bible Study Hook */}
+            <div className="bg-gradient-to-br from-red-950/40 to-black border-2 border-red-900/50 rounded-2xl p-8 hover:border-red-600/70 transition-all group">
+              <div className="flex items-start justify-between mb-4">
+                <div className="w-14 h-14 bg-red-600/20 rounded-xl flex items-center justify-center border border-red-600/30">
+                  <BookOpen className="w-7 h-7 text-red-500" />
+                </div>
+                <span className="px-3 py-1 bg-green-600/20 border border-green-600/50 rounded-full text-xs font-bold text-green-300">
+                  FREE
+                </span>
+              </div>
+              <h3 className="text-2xl font-bold mb-3">Read the King James Bible</h3>
+              <p className="text-gray-400 mb-6 leading-relaxed">
+                Complete KJV Bible with Alexander Scourby audio narration, highlights, and notes. Study the Word the way God intended.
               </p>
               <button
                 onClick={() => {
                   setShowHub(true);
                   setTimeout(() => openWindow('bible-study'), 100);
+                  trackWindowOpen('bible-study');
                 }}
-                className="text-red-500 hover:text-red-400 font-semibold inline-flex items-center gap-2"
+                className="w-full py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-xl font-bold transition-all transform group-hover:scale-105 flex items-center justify-center gap-2"
               >
-                Explore <ArrowRight size={16} />
+                Open Bible Study
+                <ArrowRight size={20} />
               </button>
             </div>
 
-            <div className="p-6 md:p-8 bg-gradient-to-br from-red-950/40 to-black border border-red-900/30 rounded-xl">
-              <MessageCircle className="w-10 h-10 md:w-12 md:h-12 text-red-500 mb-4" />
-              <h3 className="text-xl md:text-2xl font-bold mb-3">Chat with Sam</h3>
-              <p className="text-gray-400 mb-4">
-                Your personal guide to finding the right resources for transformation in marriage, leadership, and faith.
+            {/* Radio Hook */}
+            <div className="bg-gradient-to-br from-red-950/40 to-black border-2 border-red-900/50 rounded-2xl p-8 hover:border-red-600/70 transition-all group">
+              <div className="flex items-start justify-between mb-4">
+                <div className="w-14 h-14 bg-red-600/20 rounded-xl flex items-center justify-center border border-red-600/30">
+                  <MessageCircle className="w-7 h-7 text-red-500" />
+                </div>
+                <span className="px-3 py-1 bg-green-600/20 border border-green-600/50 rounded-full text-xs font-bold text-green-300">
+                  FREE
+                </span>
+              </div>
+              <h3 className="text-2xl font-bold mb-3">24/7 Christian Radio</h3>
+              <p className="text-gray-400 mb-6 leading-relaxed">
+                Non-stop Biblical teaching from Voddie Baucham, John MacArthur, Paul Washer, and more. Stream truth anytime.
               </p>
+              <button
+                onClick={() => {
+                  setShowHub(true);
+                  setTimeout(() => openWindow('radio'), 100);
+                  trackWindowOpen('radio');
+                }}
+                className="w-full py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-xl font-bold transition-all transform group-hover:scale-105 flex items-center justify-center gap-2"
+              >
+                Start Listening
+                <ArrowRight size={20} />
+              </button>
+            </div>
+          </div>
+
+          {/* Main CTA */}
+          <div className="text-center">
+            <button
+              onClick={enterHub}
+              className="inline-flex items-center justify-center gap-2 px-8 md:px-10 py-4 md:py-5 bg-black border-2 border-red-600 hover:bg-red-600/10 rounded-xl text-lg font-bold transition-all transform hover:scale-105"
+            >
+              Access Full Hub (Bible, Radio, Chat & More)
+              <ArrowRight size={24} />
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Newsletter Section - Primary Conversion */}
+      <section className="py-16 md:py-24 px-6 bg-gradient-to-b from-red-950/30 to-black border-y border-red-900/30">
+        <div className="max-w-5xl mx-auto">
+          <div className="bg-gradient-to-br from-red-950/60 to-black border-2 border-red-600/50 rounded-2xl p-8 md:p-12">
+            <div className="text-center mb-10">
+              <div className="inline-block mb-4">
+                <span className="px-4 py-2 bg-red-600/20 border border-red-600/50 rounded-full text-sm font-bold text-red-300">
+                  <Mail className="inline w-4 h-4 mr-2" />
+                  FREE WEEKLY NEWSLETTER
+                </span>
+              </div>
+              <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6">
+                Join 20,000+ Men and Women
+                <br />
+                <span className="text-red-500">Who Refuse Mediocrity</span>
+              </h2>
+              <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto">
+                Get unfiltered Biblical truth delivered weekly. No fluff. No compromise. Real frameworks for leading your family and walking in truth.
+              </p>
+            </div>
+            <form onSubmit={handleEmailSubmit} className="max-w-2xl mx-auto">
+              {submitStatus === 'success' && (
+                <div className="mb-6 p-5 bg-green-900/30 border-2 border-green-600/60 rounded-xl text-green-200 text-center">
+                  <strong className="text-lg">🎉 Success!</strong>
+                  <p className="mt-2">Check your email for your welcome message. (Check spam if you don't see it)</p>
+                </div>
+              )}
+              {submitStatus === 'error' && (
+                <div className="mb-6 p-5 bg-red-900/30 border-2 border-red-600/60 rounded-xl text-red-200 text-center">
+                  <strong className="text-lg">Error!</strong>
+                  <p className="mt-2">Something went wrong. Please try again.</p>
+                </div>
+              )}
+              <div className="flex flex-col sm:flex-row gap-4">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email address"
+                  className="flex-1 px-6 py-5 bg-black/40 border-2 border-red-900/40 rounded-xl text-white text-lg placeholder-gray-500 focus:outline-none focus:border-red-600 transition-colors"
+                  required
+                  disabled={isSubmitting}
+                />
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="px-8 py-5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 disabled:from-gray-600 disabled:to-gray-700 rounded-xl text-lg font-bold transition-all disabled:cursor-not-allowed transform hover:scale-105"
+                >
+                  {isSubmitting ? 'Subscribing...' : 'Get Free Access'}
+                </button>
+              </div>
+              <p className="text-center text-sm text-gray-500 mt-4">
+                No spam. Unsubscribe anytime. We respect your inbox.
+              </p>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      {/* Sam AI Chat Feature */}
+      <section className="py-16 md:py-24 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div>
+              <div className="inline-block mb-4">
+                <span className="px-4 py-2 bg-blue-600/20 border border-blue-600/50 rounded-full text-sm font-bold text-blue-300">
+                  <MessageCircle className="inline w-4 h-4 mr-2" />
+                  AI-POWERED GUIDANCE
+                </span>
+              </div>
+              <h2 className="text-3xl md:text-5xl font-bold mb-6">
+                Get Instant Biblical Guidance
+                <br />
+                <span className="text-red-500">From Sam, Your AI Guide</span>
+              </h2>
+              <p className="text-lg text-gray-400 mb-8 leading-relaxed">
+                Struggling with marriage? Need leadership advice? Want to find the right resource? Sam is trained on Biblical truth and can help you navigate your specific situation with wisdom from Scripture and trusted teachers.
+              </p>
+              <div className="space-y-4 mb-8">
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-green-600/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <span className="text-green-500 text-sm">✓</span>
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-white mb-1">24/7 Biblical Counsel</h4>
+                    <p className="text-gray-400 text-sm">Get answers anytime, backed by Scripture</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-green-600/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <span className="text-green-500 text-sm">✓</span>
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-white mb-1">Resource Recommendations</h4>
+                    <p className="text-gray-400 text-sm">Find the exact book, course, or article you need</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-green-600/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <span className="text-green-500 text-sm">✓</span>
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-white mb-1">Marriage & Leadership Help</h4>
+                    <p className="text-gray-400 text-sm">Specific strategies for leading your family</p>
+                  </div>
+                </div>
+              </div>
               <button
                 onClick={() => {
                   setShowHub(true);
                   setTimeout(() => openWindow('sam'), 100);
+                  trackWindowOpen('sam');
                 }}
-                className="text-red-500 hover:text-red-400 font-semibold inline-flex items-center gap-2"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-xl font-bold transition-all transform hover:scale-105"
               >
-                Chat Now <ArrowRight size={16} />
+                Chat with Sam Now
+                <ArrowRight size={20} />
               </button>
             </div>
-
-            <div className="p-6 md:p-8 bg-gradient-to-br from-red-950/40 to-black border border-red-900/30 rounded-xl">
-              <BookOpen className="w-10 h-10 md:w-12 md:h-12 text-red-500 mb-4" />
-              <h3 className="text-xl md:text-2xl font-bold mb-3">Daily Biblical Truth</h3>
-              <p className="text-gray-400 mb-4">
-                Access our most impactful Substack articles on biblical manhood, marriage headship, and uncomfortable truths.
-              </p>
-              <button
-                onClick={() => {
-                  setShowHub(true);
-                  setTimeout(() => openWindow('counseling'), 100);
-                }}
-                className="text-red-500 hover:text-red-400 font-semibold inline-flex items-center gap-2"
-              >
-                Read Articles <ArrowRight size={16} />
-              </button>
+            <div className="bg-gradient-to-br from-red-950/40 to-black border border-red-900/30 rounded-2xl p-8 md:p-10">
+              <div className="space-y-4">
+                <div className="bg-black/40 rounded-xl p-4 border border-gray-800">
+                  <p className="text-sm text-gray-400 mb-2">User:</p>
+                  <p className="text-white">"How do I lead my wife biblically when she resists?"</p>
+                </div>
+                <div className="bg-red-950/30 rounded-xl p-4 border border-red-900/30">
+                  <p className="text-sm text-red-400 mb-2">Sam:</p>
+                  <p className="text-gray-200 text-sm leading-relaxed">
+                    Ephesians 5:25-28 calls husbands to love their wives as Christ loved the church. This means sacrificial leadership, not domination. Check out "The Excellent Wife" by Martha Peace and my analysis of biblical headship in the Resources Hub...
+                  </p>
+                </div>
+                <p className="text-center text-xs text-gray-500 mt-6">
+                  Real Biblical wisdom, instant responses
+                </p>
+              </div>
             </div>
           </div>
         </div>
