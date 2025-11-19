@@ -427,7 +427,7 @@ export const products: Product[] = [
       'The disciples nobody talks about. Learn from the forgotten men who followed Christ.',
     price: 0,
     category: 'devotionals',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/hbnzn',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/bhcvrj',
     features: [
       'Lesser-known disciples',
       'Hidden Bible stories',
@@ -443,7 +443,7 @@ export const products: Product[] = [
       'Modern martyrdom looks different. Learn how Christians are dying in the digital age.',
     price: 0,
     category: 'devotionals',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/ospfhs',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/pprfjq',
     features: [
       'Digital persecution',
       'Modern martyrdom',
