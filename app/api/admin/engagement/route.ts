@@ -18,57 +18,57 @@ export async function GET(request: NextRequest) {
       const visitorEvents = events.filter((e: any) => e.visitorId === visitor.id);
 
       // Bible engagement metrics
-      const bibleEvents = visitorEvents.filter((e) =>
+      const bibleEvents = visitorEvents.filter((e: any) =>
         e.type === 'custom' && e.data.eventName?.startsWith('bible_')
       );
 
       const versesRead = new Set(
         bibleEvents
-          .filter((e) => e.data.eventName === 'bible_verse_read')
-          .map((e) => e.data.verseRef)
+          .filter((e: any) => e.data.eventName === 'bible_verse_read')
+          .map((e: any) => e.data.verseRef)
       ).size;
 
       const highlightCount = bibleEvents.filter(
-        (e) => e.data.eventName === 'bible_verse_highlighted'
+        (e: any) => e.data.eventName === 'bible_verse_highlighted'
       ).length;
 
       const noteCount = bibleEvents.filter(
-        (e) => e.data.eventName === 'bible_note_added'
+        (e: any) => e.data.eventName === 'bible_note_added'
       ).length;
 
       const bibleReadingTime = bibleEvents
-        .filter((e) => e.data.eventName === 'bible_chapter_closed')
-        .reduce((sum, e) => sum + (e.data.readingTime || 0), 0);
+        .filter((e: any) => e.data.eventName === 'bible_chapter_closed')
+        .reduce((sum: number, e: any) => sum + (e.data.readingTime || 0), 0);
 
       const bibleAudioTime = bibleEvents
-        .filter((e) => e.data.eventName === 'bible_audio_completed')
-        .reduce((sum, e) => sum + (e.data.listeningTime || 0), 0);
+        .filter((e: any) => e.data.eventName === 'bible_audio_completed')
+        .reduce((sum: number, e: any) => sum + (e.data.listeningTime || 0), 0);
 
       const chaptersOpened = new Set(
         bibleEvents
-          .filter((e) => e.data.eventName === 'bible_chapter_opened')
-          .map((e) => `${e.data.book} ${e.data.chapter}`)
+          .filter((e: any) => e.data.eventName === 'bible_chapter_opened')
+          .map((e: any) => `${e.data.book} ${e.data.chapter}`)
       ).size;
 
       // Radio engagement metrics
-      const radioEvents = visitorEvents.filter((e) =>
+      const radioEvents = visitorEvents.filter((e: any) =>
         e.type === 'custom' && e.data.eventName?.startsWith('radio_')
       );
 
       const radioListeningTime = radioEvents
-        .filter((e) => e.data.eventName === 'radio_total_session')
-        .reduce((sum, e) => sum + (e.data.totalListeningTime || 0), 0);
+        .filter((e: any) => e.data.eventName === 'radio_total_session')
+        .reduce((sum: number, e: any) => sum + (e.data.totalListeningTime || 0), 0);
 
       const radioSessions = radioEvents.filter(
-        (e) => e.data.eventName === 'radio_play_started'
+        (e: any) => e.data.eventName === 'radio_play_started'
       ).length;
 
       const radioSkips = radioEvents
-        .filter((e) => e.data.eventName === 'radio_total_session')
-        .reduce((sum, e) => sum + (e.data.skips || 0), 0);
+        .filter((e: any) => e.data.eventName === 'radio_total_session')
+        .reduce((sum: number, e: any) => sum + (e.data.skips || 0), 0);
 
       const bingeSessions = radioEvents.filter(
-        (e) => e.data.eventName === 'radio_binge_session'
+        (e: any) => e.data.eventName === 'radio_binge_session'
       ).length;
 
       const avgRadioSession =
