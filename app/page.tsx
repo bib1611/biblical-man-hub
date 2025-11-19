@@ -597,7 +597,30 @@ export default function Home() {
         </div>
       </footer>
 
-      {/* DEBUG PANEL - Remove in production */}
+      {/* REAL-TIME PROFILING BADGE - Shows user we're tracking them */}
+      {psychographic && (
+        <div className="fixed top-20 right-4 bg-gradient-to-br from-purple-900/95 to-black/95 border-2 border-purple-500 rounded-xl p-4 max-w-xs shadow-2xl shadow-purple-900/50 z-50 animate-in slide-in-from-right duration-500">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse" />
+            <div className="font-bold text-purple-300 text-sm">🧠 Profile Detected</div>
+          </div>
+          <div className="space-y-2 text-xs">
+            <div className="bg-black/40 rounded-lg p-2 border border-purple-800/50">
+              <div className="text-gray-400 text-[10px]">PERSONALITY TYPE</div>
+              <div className="text-purple-200 font-bold uppercase">{psychographic.personalityType}</div>
+            </div>
+            <div className="bg-black/40 rounded-lg p-2 border border-purple-800/50">
+              <div className="text-gray-400 text-[10px]">CONVERSION READINESS</div>
+              <div className="text-purple-200 font-bold">{psychographic.conversionReadiness}/100</div>
+            </div>
+            <div className="text-[10px] text-gray-500 mt-2">
+              Personalized messaging active
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* DEBUG PANEL - Dev only */}
       {process.env.NODE_ENV === 'development' && psychographic && (
         <div className="fixed bottom-4 right-4 bg-black/90 border border-green-500 rounded-lg p-4 max-w-md text-xs text-green-400 font-mono z-50">
           <div className="font-bold text-green-300 mb-2">🧠 Psychographic Debug</div>

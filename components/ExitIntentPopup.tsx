@@ -34,7 +34,7 @@ export default function ExitIntentPopup() {
       }
     };
 
-    // TEST MODE: Show after 5 seconds for testing (change back to 30000 for production)
+    // AGGRESSIVE MODE: Show after 3 seconds - TAG AND BAG IMMEDIATELY
     const timer = setTimeout(() => {
       if (!hasShown && !profile?.hasEmail) {
         setIsVisible(true);
@@ -45,7 +45,7 @@ export default function ExitIntentPopup() {
           timeOnSite: profile?.timeOnSite || 0,
         });
       }
-    }, 5000); // Changed from 30000 to 5000 for testing
+    }, 3000); // AGGRESSIVE: 3 seconds to tag and bag
 
     document.addEventListener('mouseleave', handleMouseLeave);
 
