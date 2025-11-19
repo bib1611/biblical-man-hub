@@ -261,148 +261,207 @@ export default function Home() {
             )}
           </div>
 
-          {/* Interactive Hook: Bible + Radio */}
-          <div className="grid md:grid-cols-2 gap-6 mb-12">
-            {/* Bible Study Hook */}
-            <div className="bg-gradient-to-br from-red-950/40 to-black border-2 border-red-900/50 rounded-2xl p-8 transition-all">
-              <div className="flex items-start justify-between mb-4 pointer-events-none">
-                <div className="w-14 h-14 bg-red-600/20 rounded-xl flex items-center justify-center border border-red-600/30">
-                  <BookOpen className="w-7 h-7 text-red-500" />
+          {/* PRIMARY CTA: Newsletter Signup */}
+          <div className="max-w-2xl mx-auto mb-10">
+            <div className="bg-gradient-to-br from-red-950/60 to-black border-2 border-red-600/50 rounded-2xl p-8 md:p-10">
+              <div className="text-center mb-8">
+                <div className="inline-block mb-4">
+                  <span className="px-4 py-2 bg-red-600/20 border border-red-600/50 rounded-full text-sm font-bold text-red-300">
+                    <Mail className="inline w-4 h-4 mr-2" />
+                    FREE WEEKLY NEWSLETTER
+                  </span>
                 </div>
-                <span className="px-3 py-1 bg-green-600/20 border border-green-600/50 rounded-full text-xs font-bold text-green-300">
-                  FREE
-                </span>
+                <h3 className="text-2xl md:text-3xl font-bold mb-3">
+                  Join 20,000+ Men Who Refuse Mediocrity
+                </h3>
+                <p className="text-base md:text-lg text-gray-300">
+                  Get unfiltered Biblical truth delivered weekly. No fluff. No compromise.
+                </p>
+
+                {/* Social proof */}
+                {messaging?.socialProof && (
+                  <p className="text-sm text-gray-400 mt-3">
+                    {messaging.socialProof}
+                  </p>
+                )}
               </div>
-              <h3 className="text-2xl font-bold mb-3">Read the King James Bible</h3>
-              <p className="text-gray-400 mb-6 leading-relaxed">
-                Complete KJV Bible with Alexander Scourby audio narration, highlights, and notes. Study the Word the way God intended.
-              </p>
+
+              <form onSubmit={handleEmailSubmit} className="space-y-3">
+                {submitStatus === 'success' && (
+                  <div className="p-4 bg-green-900/30 border-2 border-green-600/60 rounded-xl text-green-200 text-center text-sm">
+                    <strong>🎉 Success!</strong> Check your email (and spam folder).
+                  </div>
+                )}
+                {submitStatus === 'error' && (
+                  <div className="p-4 bg-red-900/30 border-2 border-red-600/60 rounded-xl text-red-200 text-center text-sm">
+                    <strong>Error!</strong> Please try again.
+                  </div>
+                )}
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your email address"
+                    className="flex-1 px-6 py-4 bg-black/40 border-2 border-red-900/40 rounded-xl text-white text-lg placeholder-gray-500 focus:outline-none focus:border-red-600 transition-colors"
+                    required
+                    disabled={isSubmitting}
+                  />
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="px-8 py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 disabled:from-gray-600 disabled:to-gray-700 rounded-xl font-bold transition-all disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
+                  >
+                    {isSubmitting ? 'Sending...' : (messaging?.cta || 'Get Free Access')}
+                    <ArrowRight className="w-5 h-5" />
+                  </button>
+                </div>
+                <p className="text-center text-sm text-gray-500">
+                  No spam. Unsubscribe anytime. We respect your inbox.
+                </p>
+              </form>
+            </div>
+          </div>
+
+          {/* Secondary Quick Links */}
+          <div className="text-center">
+            <p className="text-gray-400 mb-4 text-sm">Or explore free resources:</p>
+            <div className="flex flex-wrap items-center justify-center gap-4 text-sm">
               <button
                 onClick={() => {
                   setShowHub(true);
                   setTimeout(() => openWindow('bible-study'), 100);
                   trackWindowOpen('bible-study');
                 }}
-                className="w-full py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-xl font-bold transition-all transform hover:scale-105 flex items-center justify-center gap-2 pointer-events-auto"
+                className="text-gray-300 hover:text-red-500 underline transition-colors"
               >
-                Open Bible Study
-                <ArrowRight size={20} className="pointer-events-none" />
+                📖 Read KJV Bible
               </button>
-            </div>
-
-            {/* Radio Hook */}
-            <div className="bg-gradient-to-br from-red-950/40 to-black border-2 border-red-900/50 rounded-2xl p-8 transition-all">
-              <div className="flex items-start justify-between mb-4 pointer-events-none">
-                <div className="w-14 h-14 bg-red-600/20 rounded-xl flex items-center justify-center border border-red-600/30">
-                  <MessageCircle className="w-7 h-7 text-red-500" />
-                </div>
-                <span className="px-3 py-1 bg-green-600/20 border border-green-600/50 rounded-full text-xs font-bold text-green-300">
-                  FREE
-                </span>
-              </div>
-              <h3 className="text-2xl font-bold mb-3">24/7 Christian Radio</h3>
-              <p className="text-gray-400 mb-6 leading-relaxed">
-                Solid Bible teaching, preaching, singing, and storytelling. Your audio companion for truth anytime, anywhere.
-              </p>
+              <span className="text-gray-600">•</span>
               <button
                 onClick={() => {
                   setShowHub(true);
                   setTimeout(() => openWindow('radio'), 100);
                   trackWindowOpen('radio');
                 }}
-                className="w-full py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-xl font-bold transition-all transform hover:scale-105 flex items-center justify-center gap-2 pointer-events-auto"
+                className="text-gray-300 hover:text-red-500 underline transition-colors"
               >
-                Start Listening
-                <ArrowRight size={20} className="pointer-events-none" />
+                📻 Listen to Radio
+              </button>
+              <span className="text-gray-600">•</span>
+              <button
+                onClick={enterHub}
+                className="text-gray-300 hover:text-red-500 underline transition-colors"
+              >
+                🎯 Access Full Hub
               </button>
             </div>
           </div>
-
-          {/* Main CTA */}
-          <div className="text-center">
-            <button
-              onClick={enterHub}
-              className="inline-flex items-center justify-center gap-2 px-8 md:px-10 py-4 md:py-5 bg-black border-2 border-red-600 hover:bg-red-600/10 rounded-xl text-lg font-bold transition-all transform hover:scale-105"
-            >
-              Access Full Hub (Bible, Radio, Chat & More)
-              <ArrowRight size={24} />
-            </button>
-          </div>
         </div>
       </section>
 
-      {/* Newsletter Section - Primary Conversion */}
-      <section className="py-16 md:py-24 px-6 bg-gradient-to-b from-red-950/30 to-black border-y border-red-900/30">
-        <div className="max-w-5xl mx-auto">
-          <div className="bg-gradient-to-br from-red-950/60 to-black border-2 border-red-600/50 rounded-2xl p-8 md:p-12">
-            <div className="text-center mb-10">
-              <div className="inline-block mb-4">
-                <span className="px-4 py-2 bg-red-600/20 border border-red-600/50 rounded-full text-sm font-bold text-red-300">
-                  <Mail className="inline w-4 h-4 mr-2" />
-                  FREE WEEKLY NEWSLETTER
-                </span>
+      {/* Scroll Incentive: "Keep Reading" Visual Anchor */}
+      <div className="py-6 text-center">
+        <div className="inline-flex flex-col items-center gap-2 opacity-60 hover:opacity-100 transition-opacity">
+          <div className="text-sm text-gray-500 font-semibold">KEEP SCROLLING</div>
+          <div className="w-6 h-10 border-2 border-gray-600 rounded-full flex items-start justify-center p-2">
+            <div className="w-1 h-2 bg-gray-600 rounded-full animate-bounce" />
+          </div>
+        </div>
+      </div>
+
+      {/* Social Proof Section - Build Trust */}
+      <section className="py-16 md:py-20 px-6 bg-gradient-to-b from-red-950/20 to-black">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4">
+              Trusted by 20,000+ Men Leading Their Families
+            </h2>
+            <p className="text-lg text-gray-400">
+              Real results from men who stopped making excuses and started leading.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Testimonial 1 */}
+            <div className="bg-gradient-to-br from-red-950/40 to-black border border-red-900/30 rounded-xl p-6">
+              <div className="mb-4">
+                <div className="flex gap-1 mb-3">
+                  {[...Array(5)].map((_, i) => (
+                    <span key={i} className="text-amber-500">⭐</span>
+                  ))}
+                </div>
+                <p className="text-gray-300 leading-relaxed mb-4">
+                  "This framework saved my marriage. I was passive and weak. Now I lead with confidence and Biblical authority. My wife respects me again."
+                </p>
               </div>
-              <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6">
-                Join 20,000+ Men and Women
-                <br />
-                <span className="text-red-500">Who Refuse Mediocrity</span>
-              </h2>
-              <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-4">
-                Get unfiltered Biblical truth delivered weekly. No fluff. No compromise. Real frameworks for leading your family and walking in truth.
-              </p>
-
-              {/* Social proof badge */}
-              {messaging?.socialProof && (
-                <p className="text-sm md:text-base text-gray-400 mt-4">
-                  {messaging.socialProof}
-                </p>
-              )}
-
-              {/* Guarantee */}
-              {messaging?.guarantee && psychographic?.resistanceLevel === 'high' && (
-                <p className="text-sm text-green-400 mt-2 font-semibold">
-                  ✓ {messaging.guarantee}
-                </p>
-              )}
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-red-600/20 rounded-full flex items-center justify-center border border-red-600/30">
+                  <span className="text-lg font-bold text-red-500">M</span>
+                </div>
+                <div>
+                  <div className="font-bold text-white">Michael R.</div>
+                  <div className="text-xs text-gray-500">Husband, Father of 3</div>
+                </div>
+              </div>
             </div>
-            <form onSubmit={handleEmailSubmit} className="max-w-2xl mx-auto">
-              {submitStatus === 'success' && (
-                <div className="mb-6 p-5 bg-green-900/30 border-2 border-green-600/60 rounded-xl text-green-200 text-center">
-                  <strong className="text-lg">🎉 Success!</strong>
-                  <p className="mt-2">Check your email for your welcome message. (Check spam if you don't see it)</p>
+
+            {/* Testimonial 2 */}
+            <div className="bg-gradient-to-br from-red-950/40 to-black border border-red-900/30 rounded-xl p-6">
+              <div className="mb-4">
+                <div className="flex gap-1 mb-3">
+                  {[...Array(5)].map((_, i) => (
+                    <span key={i} className="text-amber-500">⭐</span>
+                  ))}
                 </div>
-              )}
-              {submitStatus === 'error' && (
-                <div className="mb-6 p-5 bg-red-900/30 border-2 border-red-600/60 rounded-xl text-red-200 text-center">
-                  <strong className="text-lg">Error!</strong>
-                  <p className="mt-2">Something went wrong. Please try again.</p>
-                </div>
-              )}
-              <div className="flex flex-col sm:flex-row gap-4">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email address"
-                  className="flex-1 px-6 py-5 bg-black/40 border-2 border-red-900/40 rounded-xl text-white text-lg placeholder-gray-500 focus:outline-none focus:border-red-600 transition-colors"
-                  required
-                  disabled={isSubmitting}
-                />
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="px-8 py-5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 disabled:from-gray-600 disabled:to-gray-700 rounded-xl text-lg font-bold transition-all disabled:cursor-not-allowed transform hover:scale-105"
-                >
-                  {isSubmitting ? 'Subscribing...' : (messaging?.cta || 'Get Free Access')}
-                </button>
+                <p className="text-gray-300 leading-relaxed mb-4">
+                  "No fluff. No compromise. Pure Biblical truth that actually works. This is what Christian men desperately need."
+                </p>
               </div>
-              <p className="text-center text-sm text-gray-500 mt-4">
-                No spam. Unsubscribe anytime. We respect your inbox.
-              </p>
-            </form>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-red-600/20 rounded-full flex items-center justify-center border border-red-600/30">
+                  <span className="text-lg font-bold text-red-500">J</span>
+                </div>
+                <div>
+                  <div className="font-bold text-white">James P.</div>
+                  <div className="text-xs text-gray-500">Pastor, 15 Years</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Testimonial 3 */}
+            <div className="bg-gradient-to-br from-red-950/40 to-black border border-red-900/30 rounded-xl p-6">
+              <div className="mb-4">
+                <div className="flex gap-1 mb-3">
+                  {[...Array(5)].map((_, i) => (
+                    <span key={i} className="text-amber-500">⭐</span>
+                  ))}
+                </div>
+                <p className="text-gray-300 leading-relaxed mb-4">
+                  "Finally found content that doesn't sugarcoat Scripture. This is real, actionable Biblical masculinity. Game changer."
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-red-600/20 rounded-full flex items-center justify-center border border-red-600/30">
+                  <span className="text-lg font-bold text-red-500">D</span>
+                </div>
+                <div>
+                  <div className="font-bold text-white">David K.</div>
+                  <div className="text-xs text-gray-500">Business Owner</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
+
+      {/* Scroll Incentive: Section Divider */}
+      <div className="py-6 text-center">
+        <div className="max-w-3xl mx-auto">
+          <div className="h-px bg-gradient-to-r from-transparent via-red-600/50 to-transparent mb-4" />
+          <p className="text-sm text-gray-500 font-semibold">MORE TOOLS BELOW ↓</p>
+        </div>
+      </div>
 
       {/* Sam AI Chat Feature */}
       <section className="py-16 md:py-24 px-6">
