@@ -20,10 +20,10 @@ export default function ProductsHub() {
   return (
     <div className="h-full flex flex-col bg-gradient-to-br from-purple-950/20 via-black/60 to-blue-950/20 text-gray-100">
       {/* Header */}
-      <div className="p-6 border-b border-purple-900/30 bg-black/40">
-        <div className="flex items-center justify-between mb-4">
+      <div className="p-4 md:p-6 border-b border-purple-900/30 bg-black/40">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-4 gap-3">
           <div>
-            <h1 className="text-2xl font-bold text-purple-100 mb-1">Products Hub</h1>
+            <h1 className="text-xl md:text-2xl font-bold text-purple-100 mb-1">Products Hub</h1>
             <p className="text-sm text-gray-400">
               Biblical tools for transformation. No fluff. Just results.
             </p>
@@ -35,13 +35,13 @@ export default function ProductsHub() {
         </div>
 
         {/* Filters */}
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 md:gap-4">
+          <div className="flex items-center gap-2 flex-wrap overflow-x-auto pb-2">
             {categories.map((category) => (
               <button
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
-                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+                className={`px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-semibold transition-all whitespace-nowrap ${
                   selectedCategory === category.id
                     ? `bg-${category.color}-600/40 text-${category.color}-200 border border-${category.color}-600/50`
                     : 'bg-gray-800/40 text-gray-400 border border-gray-700/30 hover:bg-gray-800/60'
@@ -55,7 +55,7 @@ export default function ProductsHub() {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as any)}
-            className="px-4 py-2 bg-black/60 border border-purple-900/30 rounded-lg text-sm text-gray-300 focus:outline-none focus:border-purple-600/50"
+            className="w-full md:w-auto px-4 py-2 bg-black/60 border border-purple-900/30 rounded-lg text-sm text-gray-300 focus:outline-none focus:border-purple-600/50"
           >
             <option value="name">Sort by Name</option>
             <option value="price-low">Price: Low to High</option>
@@ -65,8 +65,8 @@ export default function ProductsHub() {
       </div>
 
       {/* Products Grid */}
-      <div className="flex-1 overflow-auto p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="flex-1 overflow-auto p-4 md:p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {filteredProducts.map((product, index) => {
             const categoryInfo = categories.find((c) => c.id === product.category);
             const isTopRated = product.features.some(f => f.includes('5/5'));
@@ -77,7 +77,7 @@ export default function ProductsHub() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className="relative flex flex-col p-6 rounded-xl border transition-all hover:scale-105 bg-gradient-to-br from-purple-950/30 to-black/40 border-purple-900/30 hover:border-purple-600/50"
+                className="relative flex flex-col p-4 md:p-6 rounded-xl border transition-all md:hover:scale-105 bg-gradient-to-br from-purple-950/30 to-black/40 border-purple-900/30 hover:border-purple-600/50"
               >
                 {/* Top Rated Badge */}
                 {isTopRated && (

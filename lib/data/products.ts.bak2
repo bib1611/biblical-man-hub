@@ -9,16 +9,14 @@ export const products: Product[] = [
       'A 7-Day Deprogramming for Christians Who Are Done with Safe Religion. Break free from comfortable Christianity.',
     price: 0,
     category: 'devotionals',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/onbcc',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/onboc',
     features: [
       '7-day transformation journey',
       'Challenge safe religion',
       'Radical faith activation',
       'Pay what you want',
       '161 sales',
-    ],
-    isFeatured: true,
-  },
+    ],  },
   {
     id: 'give-me-belief',
     name: 'Give Me Something to Believe In',
@@ -26,7 +24,7 @@ export const products: Product[] = [
       'A Guide for Christians Who Lost Faith in Church. Rediscover authentic faith beyond institutional religion.',
     price: 0,
     category: 'devotionals',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/lcvii',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/lfcaj',
     features: [
       'Rebuild genuine faith',
       'Beyond church walls',
@@ -34,6 +32,7 @@ export const products: Product[] = [
       'Pay what you want',
       '51 sales',
     ],
+    isFeatured: true,
   },
   {
     id: 'what-building',
@@ -42,7 +41,7 @@ export const products: Product[] = [
       'Challenge your priorities and legacy. Are you building something that matters for eternity?',
     price: 0,
     category: 'devotionals',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/fwavt',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/gwsgg',
     features: [
       'Legacy evaluation',
       'Eternal perspective',
@@ -65,9 +64,7 @@ export const products: Product[] = [
       'Practical application',
       'Pay what you want',
       '223 sales',
-    ],
-    isFeatured: true,
-  },
+    ],  },
 
   // MEN'S RESOURCES
   {
@@ -77,7 +74,7 @@ export const products: Product[] = [
       'Transformative guide for men ready to break free from mediocrity and step into their God-given purpose.',
     price: 0,
     category: 'men',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/uswchy',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/hzuizv',
     features: [
       'Purpose activation',
       'Break mediocrity',
@@ -85,6 +82,7 @@ export const products: Product[] = [
       'Pay what you want',
       '63 sales',
     ],
+    isFeatured: true,
   },
   {
     id: 'body-not-for-hand',
@@ -93,7 +91,7 @@ export const products: Product[] = [
       'If you\'re looking for therapy, go somewhere else. Raw truth about sexual purity and self-control.',
     price: 0,
     category: 'men',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/gbdtsl',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/gbslsl',
     features: [
       'Sexual purity truth',
       'No soft therapy',
@@ -101,7 +99,6 @@ export const products: Product[] = [
       'Pay what you want',
       '102 sales',
     ],
-    isFeatured: true,
   },
   {
     id: '5-deceptions',
@@ -110,7 +107,7 @@ export const products: Product[] = [
       'Expose the lies keeping you in bondage. Learn how to break free from spiritual weakness and walk in power.',
     price: 0,
     category: 'men',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/lloghh',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/bghh',
     features: [
       'Expose enemy tactics',
       'Break spiritual bondage',
@@ -118,7 +115,6 @@ export const products: Product[] = [
       'Pay what you want',
       '104 sales',
     ],
-    isFeatured: true,
   },
   {
     id: 'exposing-enemy',
@@ -127,16 +123,14 @@ export const products: Product[] = [
       'Unmask Satan\'s deadliest lies targeting Christian men. Spiritual warfare intelligence for the battlefield.',
     price: 0,
     category: 'men',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/naoba',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/eudbs',
     features: [
       'Spiritual warfare tactics',
       'Enemy\'s strategies revealed',
       'Battle-ready mindset',
       'Pay what you want',
       '169 sales',
-    ],
-    isFeatured: true,
-  },
+    ],  },
   {
     id: 'biblical-masculinity',
     name: 'Biblical Masculinity',
@@ -144,7 +138,7 @@ export const products: Product[] = [
       'The complete guide to understanding and living out God\'s design for manhood. No compromise, no excuses.',
     price: 0,
     category: 'men',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/wwxwbe',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/vwwvbe',
     features: [
       'God\'s design for men',
       'True masculinity restored',
@@ -152,6 +146,7 @@ export const products: Product[] = [
       'Pay what you want',
       '63 sales',
     ],
+    isFeatured: true,
   },
   {
     id: 'son-softened-while-sleep',
@@ -210,16 +205,14 @@ export const products: Product[] = [
       'Free guide exposing the lies about Biblical submission. Learn what Scripture actually teaches.',
     price: 0,
     category: 'marriage',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/ozuoy',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/bosuoy',
     features: [
       'Expose false teaching',
       'Biblical truth revealed',
       'Marriage transformation',
       'Pay what you want',
       '164 sales',
-    ],
-    isFeatured: true,
-  },
+    ],  },
   {
     id: 'kings-marriage-manual',
     name: 'The King\'s Marriage Manual',
@@ -235,6 +228,7 @@ export const products: Product[] = [
       'Pay what you want',
       '26 sales',
     ],
+    isFeatured: true,
   },
   {
     id: 'queens-test',
@@ -318,8 +312,7 @@ export const products: Product[] = [
       'All future updates',
       '$365 one-time',
       '45 sales - $8,956.70 revenue',
-    ],
-  },
+    ],  },
   {
     id: 'warrior-bible-conquest',
     name: 'The Warrior\'s Bible Conquest: 30/60/90-Day Scripture Immersion',
@@ -335,6 +328,7 @@ export const products: Product[] = [
       'Pay what you want',
       '94 sales',
     ],
+    isFeatured: true,
   },
   {
     id: 'kings-conquest',
@@ -402,8 +396,7 @@ export const products: Product[] = [
       'Counter-cultural faith',
       'Pay what you want',
       '106 sales',
-    ],
-  },
+    ],  },
   {
     id: 'darkest-proverbs',
     name: 'THE DARKEST PROVERBS',
@@ -419,6 +412,7 @@ export const products: Product[] = [
       'Pay what you want',
       '25 sales',
     ],
+    isFeatured: true,
   },
   {
     id: 'forgotten-disciples',

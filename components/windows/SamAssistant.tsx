@@ -2,23 +2,44 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Send, MessageCircle, Sparkles, Phone } from 'lucide-react';
+import { Send, MessageCircle, Sparkles, Phone, RotateCcw } from 'lucide-react';
 import { ChatMessage } from '@/types';
 
 export default function SamAssistant() {
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: '1',
-      sender: 'ai',
-      content:
-        "Hey there! I'm Sam, and I'm here to help you find the resources that'll make a real difference in your life.\n\nWhether you're looking to strengthen your marriage, grow spiritually, or become the leader you're meant to be - I'm here to point you in the right direction.\n\nWhat brings you here today? What's on your mind?",
-      timestamp: new Date().toISOString(),
-    },
-  ]);
+  const [messages, setMessages] = useState<ChatMessage[]>(() => {
+    // Load conversation history from localStorage
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('sam-conversation');
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (e) {
+          console.error('Failed to parse saved conversation:', e);
+        }
+      }
+    }
+    // Default welcome message
+    return [
+      {
+        id: '1',
+        sender: 'ai',
+        content:
+          "Hey there! I'm Sam, and I'm here to help you find the resources that'll make a real difference in your life.\n\nWhether you're looking to strengthen your marriage, grow spiritually, or become the leader you're meant to be - I'm here to point you in the right direction.\n\nWhat brings you here today? What's on your mind?",
+        timestamp: new Date().toISOString(),
+      },
+    ];
+  });
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showEscalation, setShowEscalation] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Save conversation to localStorage whenever messages change
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('sam-conversation', JSON.stringify(messages));
+    }
+  }, [messages]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -43,6 +64,10 @@ export default function SamAssistant() {
     setIsLoading(true);
 
     try {
+      // Simulate reading the message (1-2 seconds)
+      await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
+
+      // Fetch the AI response
       const response = await fetch('/api/sam', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -52,6 +77,25 @@ export default function SamAssistant() {
       });
 
       const data = await response.json();
+
+      // Calculate realistic typing delay based on response length
+      // Average typing speed: 40-60 words per minute for thoughtful responses
+      const wordCount = data.response.split(' ').length;
+      const baseTypingTime = (wordCount / 50) * 60 * 1000; // milliseconds
+      const randomVariation = baseTypingTime * (0.2 + Math.random() * 0.3); // 20-50% variation
+      const typingDelay = Math.min(baseTypingTime + randomVariation, 8000); // Cap at 8 seconds
+
+      // Simulate typing with occasional pauses
+      const pauseChance = Math.random();
+      if (pauseChance > 0.6 && typingDelay > 2000) {
+        // 40% chance to pause mid-typing if message is long enough
+        await new Promise(resolve => setTimeout(resolve, typingDelay * 0.4));
+        // Brief pause (thinking moment)
+        await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 1000));
+        await new Promise(resolve => setTimeout(resolve, typingDelay * 0.6));
+      } else {
+        await new Promise(resolve => setTimeout(resolve, typingDelay));
+      }
 
       const aiMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
@@ -63,6 +107,10 @@ export default function SamAssistant() {
       setMessages((prev) => [...prev, aiMessage]);
     } catch (error) {
       console.error('Failed to get AI response:', error);
+
+      // Natural delay even for fallback
+      await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 1000));
+
       const aiMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         sender: 'ai',
@@ -77,30 +125,35 @@ export default function SamAssistant() {
   };
 
   const escalateToAdam = async () => {
-    // Get conversation history
-    const conversationHistory = messages
-      .map(msg => `${msg.sender === 'user' ? 'Visitor' : 'Sam'}: ${msg.content}`)
-      .join('\n\n');
-
-    // In a real implementation, this would send to Telegram
-    // For now, we'll just show a confirmation
-    setShowEscalation(true);
+    // Open the contact window to message Adam directly
+    window.dispatchEvent(new CustomEvent('open-window', { detail: 'contact' }));
 
     // Add a message to the chat
     const escalationMessage: ChatMessage = {
       id: (Date.now() + 1).toString(),
       sender: 'ai',
       content:
-        "I've notified Adam about our conversation. He'll reach out to you personally to continue this discussion. In the meantime, is there anything else I can help you with?",
+        "I've opened the message window for you. Fill out the form and Adam will get back to you personally. Your conversation history will be saved so you can continue where we left off.",
       timestamp: new Date().toISOString(),
     };
 
     setMessages((prev) => [...prev, escalationMessage]);
+    setShowEscalation(true);
+  };
 
-    // Log to console (in production, this would call Telegram API)
-    console.log('=== ESCALATION TO TELEGRAM ===');
-    console.log(conversationHistory);
-    console.log('==============================');
+  const clearConversation = () => {
+    const welcomeMessage: ChatMessage = {
+      id: '1',
+      sender: 'ai',
+      content:
+        "Hey there! I'm Sam, and I'm here to help you find the resources that'll make a real difference in your life.\n\nWhether you're looking to strengthen your marriage, grow spiritually, or become the leader you're meant to be - I'm here to point you in the right direction.\n\nWhat brings you here today? What's on your mind?",
+      timestamp: new Date().toISOString(),
+    };
+    setMessages([welcomeMessage]);
+    setShowEscalation(false);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('sam-conversation');
+    }
   };
 
   const quickTopics = [
@@ -124,14 +177,24 @@ export default function SamAssistant() {
               <p className="text-xs text-gray-400">Your Personal Guide</p>
             </div>
           </div>
-          <button
-            onClick={escalateToAdam}
-            className="flex items-center gap-2 px-4 py-2 bg-purple-600/20 hover:bg-purple-600/40 border border-purple-600/50 rounded-lg text-sm font-semibold text-purple-300 transition-all hover:scale-105"
-            title="Connect with Adam directly"
-          >
-            <Phone size={16} />
-            <span className="hidden md:inline">Talk to Adam</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={clearConversation}
+              className="flex items-center gap-2 px-3 py-2 bg-gray-700/20 hover:bg-gray-700/40 border border-gray-600/50 rounded-lg text-sm font-semibold text-gray-400 hover:text-gray-300 transition-all"
+              title="Start new conversation"
+            >
+              <RotateCcw size={16} />
+              <span className="hidden md:inline">Reset</span>
+            </button>
+            <button
+              onClick={escalateToAdam}
+              className="flex items-center gap-2 px-4 py-2 bg-purple-600/20 hover:bg-purple-600/40 border border-purple-600/50 rounded-lg text-sm font-semibold text-purple-300 transition-all hover:scale-105"
+              title="Connect with Adam directly"
+            >
+              <Phone size={16} />
+              <span className="hidden md:inline">Talk to Adam</span>
+            </button>
+          </div>
         </div>
 
         {/* Quick Topics */}
@@ -209,7 +272,7 @@ export default function SamAssistant() {
         >
           <div className="flex items-center gap-2 text-purple-300 text-sm">
             <Phone size={16} />
-            <span className="font-semibold">Adam has been notified and will reach out soon!</span>
+            <span className="font-semibold">Contact form opened! Message Adam directly.</span>
           </div>
         </motion.div>
       )}

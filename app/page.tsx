@@ -11,9 +11,11 @@ import BibleStudy from '@/components/windows/BibleStudy';
 import SamAssistant from '@/components/windows/SamAssistant';
 import ProductsHub from '@/components/windows/ProductsHub';
 import RadioPlayer from '@/components/windows/RadioPlayer';
-import CounselingChat from '@/components/windows/CounselingChat';
+import SubstackArticles from '@/components/windows/SubstackArticles';
 import ContactForm from '@/components/windows/ContactForm';
 import ProtectedAdminDashboard from '@/components/windows/ProtectedAdminDashboard';
+import About from '@/components/windows/About';
+import StartHere from '@/components/windows/StartHere';
 import { AuthProvider } from '@/lib/contexts/AuthContext';
 import { products } from '@/lib/data/products';
 
@@ -23,6 +25,9 @@ export default function Home() {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  // Get featured products for homepage
+  const featuredProducts = products.filter(p => p.isFeatured);
 
   useEffect(() => {
     const handleOpenWindow = (e: CustomEvent) => {
@@ -84,7 +89,7 @@ export default function Home() {
         <div className="relative w-full h-full">
           <Dock />
 
-          <div className="absolute left-20 top-0 right-0 bottom-0">
+          <div className="absolute left-0 md:left-20 top-0 right-0 bottom-0 md:bottom-0 bottom-20">
             {windows['content-feed'].isOpen && (
               <Window id="content-feed">
                 <ContentFeed />
@@ -117,7 +122,19 @@ export default function Home() {
 
             {windows['counseling'].isOpen && (
               <Window id="counseling">
-                <CounselingChat />
+                <SubstackArticles />
+              </Window>
+            )}
+
+            {windows['about'].isOpen && (
+              <Window id="about">
+                <About />
+              </Window>
+            )}
+
+            {windows['start-here'].isOpen && (
+              <Window id="start-here">
+                <StartHere />
               </Window>
             )}
 
@@ -142,14 +159,14 @@ export default function Home() {
                     <span className="text-5xl font-bold text-white">†</span>
                   </div>
                 </div>
-                <h1 className="text-5xl font-bold text-red-100 mb-4 tracking-tight">
+                <h1 className="text-3xl md:text-5xl font-bold text-red-100 mb-4 tracking-tight">
                   The Biblical Man Hub
                 </h1>
-                <p className="text-xl text-gray-400 mb-8">
+                <p className="text-lg md:text-xl text-gray-400 mb-8">
                   Your command center for Biblical transformation.
                 </p>
-                <p className="text-sm text-gray-500">
-                  Click an icon on the left to get started
+                <p className="text-xs md:text-sm text-gray-500">
+                  Click an icon at the bottom to get started
                 </p>
               </div>
             </div>
@@ -164,16 +181,16 @@ export default function Home() {
     <div className="min-h-screen bg-black text-white">
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-black/80 backdrop-blur-md border-b border-red-900/20">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-red-600 to-red-900 rounded-lg flex items-center justify-center">
-              <span className="text-xl font-bold text-white">†</span>
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2 md:gap-3">
+            <div className="w-9 h-9 md:w-10 md:h-10 bg-gradient-to-br from-red-600 to-red-900 rounded-lg flex items-center justify-center">
+              <span className="text-lg md:text-xl font-bold text-white">†</span>
             </div>
-            <span className="text-xl font-bold">THE BIBLICAL MAN</span>
+            <span className="text-base md:text-xl font-bold">THE BIBLICAL MAN</span>
           </div>
           <button
             onClick={enterHub}
-            className="px-6 py-2 bg-red-600 hover:bg-red-700 rounded-lg font-semibold transition-colors"
+            className="px-4 md:px-6 py-2 md:py-2 min-h-[44px] bg-red-600 hover:bg-red-700 rounded-lg text-sm md:text-base font-semibold transition-colors"
           >
             Enter Hub
           </button>
@@ -181,19 +198,19 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-6">
+      <section className="pt-24 md:pt-32 pb-12 md:pb-20 px-6">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-6xl md:text-8xl font-bold mb-6 leading-tight">
+          <h1 className="text-4xl md:text-6xl lg:text-8xl font-bold mb-6 leading-tight">
             Stop Being Soft.
             <br />
             <span className="text-red-500">Start Leading.</span>
           </h1>
-          <p className="text-2xl text-gray-400 mb-8 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl lg:text-2xl text-gray-400 mb-8 max-w-2xl mx-auto">
             Biblical masculinity for men who refuse to compromise
           </p>
           <button
             onClick={enterHub}
-            className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-lg text-lg font-bold transition-all transform hover:scale-105"
+            className="inline-flex items-center justify-center gap-2 px-6 md:px-8 py-3 md:py-4 min-h-[48px] bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-lg text-base md:text-lg font-bold transition-all transform hover:scale-105 w-full sm:w-auto"
           >
             Access The Hub
             <ArrowRight size={20} />
@@ -202,13 +219,13 @@ export default function Home() {
       </section>
 
       {/* Newsletter Section */}
-      <section className="py-20 px-6 bg-gradient-to-b from-red-950/20 to-black">
+      <section className="py-12 md:py-20 px-6 bg-gradient-to-b from-red-950/20 to-black">
         <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+          <div className="text-center mb-8 md:mb-12">
+            <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-4">
               Join 20,000+ Men and Women Who Refuse Mediocrity
             </h2>
-            <p className="text-xl text-gray-400">
+            <p className="text-base md:text-lg lg:text-xl text-gray-400">
               Get unfiltered Biblical truth delivered weekly. No fluff. No compromise.
             </p>
           </div>
@@ -223,7 +240,7 @@ export default function Home() {
                 <strong>Error!</strong> Something went wrong. Please try again.
               </div>
             )}
-            <div className="flex gap-3">
+            <div className="flex flex-col md:flex-row gap-3">
               <input
                 type="email"
                 value={email}
@@ -236,7 +253,7 @@ export default function Home() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-8 py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 disabled:from-gray-600 disabled:to-gray-700 rounded-lg font-bold transition-all disabled:cursor-not-allowed"
+                className="px-8 py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 disabled:from-gray-600 disabled:to-gray-700 rounded-lg font-bold transition-all disabled:cursor-not-allowed w-full md:w-auto"
               >
                 {isSubmitting ? 'Subscribing...' : 'Subscribe'}
               </button>
@@ -246,15 +263,15 @@ export default function Home() {
       </section>
 
       {/* Features Grid */}
-      <section className="py-20 px-6">
+      <section className="py-12 md:py-20 px-6">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-16">
+          <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-center mb-10 md:mb-16">
             Everything You Need To Lead
           </h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="p-8 bg-gradient-to-br from-red-950/40 to-black border border-red-900/30 rounded-xl">
-              <BookOpen className="w-12 h-12 text-red-500 mb-4" />
-              <h3 className="text-2xl font-bold mb-3">KJV Bible Study</h3>
+          <div className="grid md:grid-cols-3 gap-6 md:gap-8">
+            <div className="p-6 md:p-8 bg-gradient-to-br from-red-950/40 to-black border border-red-900/30 rounded-xl">
+              <BookOpen className="w-10 h-10 md:w-12 md:h-12 text-red-500 mb-4" />
+              <h3 className="text-xl md:text-2xl font-bold mb-3">Bible Study</h3>
               <p className="text-gray-400 mb-4">
                 Complete King James Bible with notes, highlights, and Alexander Scourby audio.
               </p>
@@ -269,9 +286,9 @@ export default function Home() {
               </button>
             </div>
 
-            <div className="p-8 bg-gradient-to-br from-red-950/40 to-black border border-red-900/30 rounded-xl">
-              <MessageCircle className="w-12 h-12 text-red-500 mb-4" />
-              <h3 className="text-2xl font-bold mb-3">Chat with Sam</h3>
+            <div className="p-6 md:p-8 bg-gradient-to-br from-red-950/40 to-black border border-red-900/30 rounded-xl">
+              <MessageCircle className="w-10 h-10 md:w-12 md:h-12 text-red-500 mb-4" />
+              <h3 className="text-xl md:text-2xl font-bold mb-3">Chat with Sam</h3>
               <p className="text-gray-400 mb-4">
                 Your personal guide to finding the right resources for transformation in marriage, leadership, and faith.
               </p>
@@ -286,11 +303,11 @@ export default function Home() {
               </button>
             </div>
 
-            <div className="p-8 bg-gradient-to-br from-red-950/40 to-black border border-red-900/30 rounded-xl">
-              <Shield className="w-12 h-12 text-red-500 mb-4" />
-              <h3 className="text-2xl font-bold mb-3">Private Counseling</h3>
+            <div className="p-6 md:p-8 bg-gradient-to-br from-red-950/40 to-black border border-red-900/30 rounded-xl">
+              <BookOpen className="w-10 h-10 md:w-12 md:h-12 text-red-500 mb-4" />
+              <h3 className="text-xl md:text-2xl font-bold mb-3">Daily Biblical Truth</h3>
               <p className="text-gray-400 mb-4">
-                Direct access for the hard conversations. Marriage, parenting, spiritual warfare.
+                Access our most impactful Substack articles on biblical manhood, marriage headship, and uncomfortable truths.
               </p>
               <button
                 onClick={() => {
@@ -299,7 +316,7 @@ export default function Home() {
                 }}
                 className="text-red-500 hover:text-red-400 font-semibold inline-flex items-center gap-2"
               >
-                Learn More <ArrowRight size={16} />
+                Read Articles <ArrowRight size={16} />
               </button>
             </div>
           </div>
@@ -307,18 +324,18 @@ export default function Home() {
       </section>
 
       {/* Products Section */}
-      <section className="py-20 px-6 bg-gradient-to-b from-black to-red-950/20">
+      <section className="py-12 md:py-20 px-6 bg-gradient-to-b from-black to-red-950/20">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+          <div className="text-center mb-8 md:mb-12">
+            <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-4">
               Frameworks That Actually Work
             </h2>
-            <p className="text-xl text-gray-400">
+            <p className="text-base md:text-lg lg:text-xl text-gray-400">
               No theory. No fluff. Just tested systems for Biblical masculinity.
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {products.slice(0, 6).map((product) => (
+            {featuredProducts.map((product) => (
               <div
                 key={product.id}
                 className="p-6 bg-gradient-to-br from-red-950/40 to-black border border-red-900/30 rounded-xl hover:border-red-600/50 transition-all group"

@@ -8,7 +8,9 @@ export type AppId =
   | 'radio'
   | 'counseling'
   | 'contact'
-  | 'admin';
+  | 'admin'
+  | 'about'
+  | 'start-here';
 
 export interface WindowState {
   id: AppId;
@@ -55,6 +57,7 @@ export interface Product {
   gumroadUrl: string;
   coverImage?: string;
   features: string[];
+  isFeatured?: boolean;
 }
 
 export interface ChatMessage {

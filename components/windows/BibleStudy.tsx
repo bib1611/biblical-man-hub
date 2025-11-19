@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Search, Book, Bookmark, Highlighter, StickyNote, Volume2, HelpCircle, FileText, Library, Copy, Home } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Search, Book, Bookmark, Highlighter, StickyNote, Volume2, HelpCircle, FileText, Library, Copy, Home, Menu, X } from 'lucide-react';
 import { bibleBooks, scourbyAudioMap } from '@/lib/data/bible-books';
 import { BibleVerse } from '@/types';
 import BibleTutorial from './BibleTutorial';
@@ -29,6 +29,7 @@ export default function BibleStudy() {
   const [showAudioLibrary, setShowAudioLibrary] = useState(false);
   const [showCopyMenu, setShowCopyMenu] = useState<string | null>(null);
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const highlightColors = [
     { name: 'yellow', class: 'bg-yellow-500/20 border-yellow-700/30', button: 'bg-yellow-600/20 hover:bg-yellow-600/40 text-yellow-400' },
@@ -228,9 +229,36 @@ export default function BibleStudy() {
   }
 
   return (
-    <div className="h-full flex bg-black/60 text-gray-100">
+    <div className="h-full flex bg-black/60 text-gray-100 relative">
+      {/* Mobile Menu Button */}
+      <button
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        className="md:hidden fixed top-4 left-4 z-30 w-12 h-12 flex items-center justify-center bg-red-600/40 hover:bg-red-600/60 border border-red-700/50 rounded-lg text-red-100 transition-all"
+        aria-label="Toggle menu"
+      >
+        {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
+      </button>
+
+      {/* Mobile Overlay */}
+      <AnimatePresence>
+        {isSidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsSidebarOpen(false)}
+            className="md:hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-20"
+          />
+        )}
+      </AnimatePresence>
+
       {/* Left Sidebar - Navigation */}
-      <div className="w-64 border-r border-red-900/30 flex flex-col">
+      <motion.div
+        initial={false}
+        animate={{ x: isSidebarOpen ? 0 : '-100%' }}
+        transition={{ type: 'tween', duration: 0.3 }}
+        className="w-64 border-r border-red-900/30 flex flex-col md:translate-x-0 fixed md:relative inset-y-0 left-0 z-30 bg-black/95 md:bg-transparent"
+      >
         {/* Search */}
         <div className="p-4 border-b border-red-900/30">
           <div className="relative">
@@ -266,6 +294,7 @@ export default function BibleStudy() {
                 onClick={() => {
                   setSelectedBook(book.name);
                   setSelectedChapter(1);
+                  setIsSidebarOpen(false); // Close sidebar on mobile after selection
                 }}
                 className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
                   selectedBook === book.name
@@ -289,22 +318,22 @@ export default function BibleStudy() {
             Bookmark Chapter
           </button>
         </div>
-      </div>
+      </motion.div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col w-full md:w-auto">
         {/* Chapter Navigation */}
-        <div className="p-4 border-b border-red-900/30 flex items-center justify-between">
+        <div className="p-4 pl-16 md:pl-4 border-b border-red-900/30 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <h2 className="text-xl font-bold text-red-100">
+            <h2 className="text-xl md:text-xl text-base font-bold text-red-100">
               {searchMode ? `Search Results: "${searchQuery}"` : `${selectedBook} ${selectedChapter}`}
             </h2>
-            {!searchMode && <div className="flex items-center gap-1">
+            {!searchMode && <div className="flex items-center gap-1 overflow-x-auto scroll-smooth snap-x snap-mandatory md:snap-none scrollbar-hide">
               {chapters.slice(0, 20).map((ch) => (
                 <button
                   key={ch}
                   onClick={() => setSelectedChapter(ch)}
-                  className={`w-8 h-8 rounded text-xs transition-colors ${
+                  className={`w-10 h-10 md:w-8 md:h-8 rounded text-xs flex-shrink-0 snap-start transition-colors ${
                     selectedChapter === ch
                       ? 'bg-red-600/40 text-red-100 font-bold'
                       : 'bg-gray-800/40 text-gray-400 hover:bg-gray-800/60'
@@ -333,7 +362,7 @@ export default function BibleStudy() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setCurrentView('home')}
-              className="flex items-center gap-2 px-3 py-2 bg-red-600/20 hover:bg-red-600/40 rounded-lg text-sm text-red-300 transition-colors"
+              className="flex items-center gap-2 px-3 py-3 md:py-2 min-h-[48px] md:min-h-0 bg-red-600/20 hover:bg-red-600/40 rounded-lg text-sm text-red-300 transition-colors"
               title="Return to home"
             >
               <Home size={16} />
@@ -341,14 +370,14 @@ export default function BibleStudy() {
             </button>
             <button
               onClick={() => setShowTutorial(true)}
-              className="flex items-center gap-2 px-3 py-2 bg-gray-700/20 hover:bg-gray-700/40 rounded-lg text-sm text-gray-300 transition-colors"
+              className="flex items-center gap-2 px-3 py-3 md:py-2 min-h-[48px] md:min-h-0 bg-gray-700/20 hover:bg-gray-700/40 rounded-lg text-sm text-gray-300 transition-colors"
               title="Show tutorial"
             >
               <HelpCircle size={16} />
             </button>
             <button
               onClick={() => setShowNotepad(true)}
-              className="flex items-center gap-2 px-3 py-2 bg-blue-600/20 hover:bg-blue-600/40 rounded-lg text-sm text-blue-300 transition-colors"
+              className="flex items-center gap-2 px-3 py-3 md:py-2 min-h-[48px] md:min-h-0 bg-blue-600/20 hover:bg-blue-600/40 rounded-lg text-sm text-blue-300 transition-colors"
               title="Open notepad"
             >
               <FileText size={16} />
@@ -356,7 +385,7 @@ export default function BibleStudy() {
             </button>
             <button
               onClick={() => setShowAudioLibrary(true)}
-              className="flex items-center gap-2 px-3 py-2 bg-amber-600/20 hover:bg-amber-600/40 rounded-lg text-sm text-amber-300 transition-colors"
+              className="flex items-center gap-2 px-3 py-3 md:py-2 min-h-[48px] md:min-h-0 bg-amber-600/20 hover:bg-amber-600/40 rounded-lg text-sm text-amber-300 transition-colors"
               title="Audio library"
             >
               <Library size={16} />
@@ -365,7 +394,7 @@ export default function BibleStudy() {
             {audioVideoId && !searchMode && (
               <button
                 onClick={() => setShowAudio(!showAudio)}
-                className="flex items-center gap-2 px-3 py-2 bg-amber-600/20 hover:bg-amber-600/40 rounded-lg text-sm text-amber-200 transition-colors"
+                className="flex items-center gap-2 px-3 py-3 md:py-2 min-h-[48px] md:min-h-0 bg-amber-600/20 hover:bg-amber-600/40 rounded-lg text-sm text-amber-200 transition-colors"
               >
                 <Volume2 size={16} />
                 <span className="hidden xl:inline">{showAudio ? 'Hide' : 'Play'} Audio</span>
@@ -376,23 +405,23 @@ export default function BibleStudy() {
 
         {/* Audio Player */}
         {showAudio && audioVideoId && (
-          <div className="p-4 bg-black/40 border-b border-red-900/30">
+          <div className="p-3 md:p-4 bg-black/40 border-b border-red-900/30">
             <iframe
               width="100%"
-              height="200"
+              height="150"
               src={`https://www.youtube.com/embed/${audioVideoId}?start=${(selectedChapter - 1) * 180}`}
               title="Alexander Scourby KJV Audio"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
-              className="rounded-lg"
+              className="rounded-lg md:h-[200px]"
             />
           </div>
         )}
 
         {/* Verses */}
-        <div className="flex-1 overflow-auto p-6">
-          <div className="max-w-3xl mx-auto space-y-4">
+        <div className="flex-1 overflow-auto p-4 md:p-6">
+          <div className="max-w-3xl mx-auto space-y-3 md:space-y-4">
             {isSearching && (
               <div className="text-center py-12">
                 <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
@@ -422,21 +451,21 @@ export default function BibleStudy() {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: verse.verse * 0.02 }}
-                  className={`group p-4 rounded-lg transition-all ${
+                  className={`group p-3 md:p-4 rounded-lg transition-all ${
                     highlightStyle
                       ? `${highlightStyle} border`
                       : 'hover:bg-red-950/10'
                   }`}
                 >
-                  <div className="flex gap-4">
-                    <span className="text-red-400 font-bold text-sm flex-shrink-0">
+                  <div className="flex gap-3 md:gap-4">
+                    <span className="text-red-400 font-bold text-xs md:text-sm flex-shrink-0 pt-0.5">
                       {searchMode ? `${verse.book} ${verse.chapter}:${verse.verse}` : verse.verse}
                     </span>
                     <div className="flex-1">
-                      <p className="text-gray-200 leading-relaxed">{verse.text}</p>
+                      <p className="text-gray-200 text-sm md:text-base leading-relaxed md:leading-relaxed">{verse.text}</p>
 
                       {/* Verse Actions */}
-                      <div className="mt-2 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="mt-2 flex items-center gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                         <div className="relative">
                           <button
                             onClick={() => setShowHighlightMenu(showHighlightMenu === verseKey ? null : verseKey)}

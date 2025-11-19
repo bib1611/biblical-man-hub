@@ -10,6 +10,9 @@ import {
   MessageCircle,
   Mail,
   BarChart3,
+  Info,
+  Play,
+  FileText,
 } from 'lucide-react';
 import { AppId } from '@/types';
 import { useAppStore } from '@/lib/store';
@@ -22,6 +25,12 @@ interface DockItem {
 }
 
 const dockItems: DockItem[] = [
+  {
+    id: 'start-here',
+    label: 'Start Here',
+    icon: <Play size={24} />,
+    color: 'text-green-400',
+  },
   {
     id: 'content-feed',
     label: 'Content Feed',
@@ -48,15 +57,21 @@ const dockItems: DockItem[] = [
   },
   {
     id: 'radio',
-    label: 'FFBR Radio',
+    label: "The King's Radio",
     icon: <Radio size={24} />,
     color: 'text-red-400',
   },
   {
     id: 'counseling',
-    label: 'Private Counseling',
-    icon: <MessageCircle size={24} />,
+    label: 'Recent Articles',
+    icon: <FileText size={24} />,
     color: 'text-cyan-400',
+  },
+  {
+    id: 'about',
+    label: 'About',
+    icon: <Info size={24} />,
+    color: 'text-yellow-400',
   },
   {
     id: 'contact',
@@ -76,19 +91,21 @@ export default function Dock() {
   const { openWindow, windows } = useAppStore();
 
   return (
-    <div className="fixed left-0 top-0 h-screen w-20 bg-gradient-to-b from-black via-red-950/20 to-black border-r border-red-900/30 backdrop-blur-md z-50 flex flex-col items-center py-6 gap-4">
-      {/* Logo */}
-      <motion.div
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ delay: 0.1, type: 'spring' }}
-        className="mb-4 w-14 h-14 bg-gradient-to-br from-red-600 to-red-900 rounded-lg flex items-center justify-center shadow-lg shadow-red-900/50"
-      >
-        <span className="text-2xl font-bold text-white">†</span>
-      </motion.div>
+    <>
+      {/* Desktop Dock - Left Sidebar */}
+      <div className="hidden md:flex fixed left-0 top-0 h-screen w-20 bg-gradient-to-b from-black via-red-950/20 to-black border-r border-red-900/30 backdrop-blur-md z-50 flex-col items-center py-6 gap-4">
+        {/* Logo */}
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 0.1, type: 'spring' }}
+          className="mb-4 w-14 h-14 bg-gradient-to-br from-red-600 to-red-900 rounded-lg flex items-center justify-center shadow-lg shadow-red-900/50"
+        >
+          <span className="text-2xl font-bold text-white">†</span>
+        </motion.div>
 
-      {/* Divider */}
-      <div className="w-12 h-px bg-gradient-to-r from-transparent via-red-800 to-transparent" />
+        {/* Divider */}
+        <div className="w-12 h-px bg-gradient-to-r from-transparent via-red-800 to-transparent" />
 
       {/* Dock Items */}
       {dockItems.map((item, index) => {
@@ -137,6 +154,40 @@ export default function Dock() {
           </motion.button>
         );
       })}
-    </div>
+      </div>
+
+      {/* Mobile Bottom Navigation */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black via-red-950/20 to-black border-t border-red-900/30 backdrop-blur-md z-50 flex items-center justify-around px-2 pb-safe">
+        {dockItems.map((item) => {
+          const isActive = windows[item.id].isOpen;
+
+          return (
+            <button
+              key={item.id}
+              onClick={() => openWindow(item.id)}
+              className={`
+                relative w-12 h-12 rounded-xl flex items-center justify-center
+                transition-all duration-300
+                ${
+                  isActive
+                    ? 'bg-red-900/40 border-2 border-red-600/50'
+                    : 'bg-gray-900/40 border border-gray-700/30'
+                }
+              `}
+              aria-label={item.label}
+            >
+              <div className={`${item.color} ${isActive ? 'scale-110' : ''} transition-transform`}>
+                {item.icon}
+              </div>
+
+              {/* Active indicator */}
+              {isActive && (
+                <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-8 h-1 bg-red-500 rounded-b-full" />
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </>
   );
 }

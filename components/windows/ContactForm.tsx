@@ -50,18 +50,18 @@ export default function ContactForm() {
   };
 
   return (
-    <div className="h-full flex flex-col items-center justify-center bg-gradient-to-br from-orange-950/20 via-black/60 to-red-950/20 text-gray-100 p-8 overflow-auto">
+    <div className="h-full flex flex-col items-center justify-center bg-gradient-to-br from-orange-950/20 via-black/60 to-red-950/20 text-gray-100 p-4 md:p-8 overflow-auto">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-2xl"
       >
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-600 to-red-600 rounded-full mb-4 shadow-lg shadow-orange-900/50">
-            <Mail size={32} className="text-white" />
+        <div className="text-center mb-6 md:mb-8">
+          <div className="inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-orange-600 to-red-600 rounded-full mb-3 md:mb-4 shadow-lg shadow-orange-900/50">
+            <Mail size={28} className="text-white md:w-8 md:h-8" />
           </div>
-          <h1 className="text-3xl font-bold text-orange-100 mb-2">Message Adam</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-orange-100 mb-2">Message Adam</h1>
           <p className="text-sm text-gray-400">
             Have a question? Want to share your story? Send a message below.
           </p>

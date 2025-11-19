@@ -91,7 +91,7 @@ export default function Window({ id, children }: WindowProps) {
 
   const windowStyle = windowState.isMaximized
     ? isMobile
-      ? { top: 0, left: 0, right: 0, bottom: 0, width: '100%', height: '100%' } // Full screen on mobile
+      ? { top: 0, left: 0, right: 0, bottom: 80, width: '100%', height: 'calc(100% - 80px)' } // Full screen on mobile, leave space for bottom nav
       : { top: 0, left: 80, right: 0, bottom: 0, width: 'calc(100% - 80px)', height: '100%' } // Leave space for dock on desktop
     : {
         top: windowState.position.y,
@@ -145,10 +145,10 @@ export default function Window({ id, children }: WindowProps) {
           )}
           <button
             onClick={() => closeWindow(id)}
-            className="w-8 h-8 rounded-full bg-red-600/20 hover:bg-red-600/60 border border-red-700/50 flex items-center justify-center transition-all hover:scale-110"
+            className="w-12 h-12 md:w-8 md:h-8 rounded-full bg-red-600/20 hover:bg-red-600/60 border border-red-700/50 flex items-center justify-center transition-all hover:scale-110"
             title="Close"
           >
-            <X size={14} className="text-red-400" />
+            <X size={isMobile ? 18 : 14} className="text-red-400" />
           </button>
         </div>
       </div>
