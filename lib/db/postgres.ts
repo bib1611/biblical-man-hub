@@ -1,4 +1,3 @@
-import 'server-only';
 import { sql } from '@vercel/postgres';
 import { Visitor, AnalyticsEvent, Lead, ConversationLog } from '@/types';
 

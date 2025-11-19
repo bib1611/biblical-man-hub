@@ -165,15 +165,17 @@ let dbInstance: any = null;
  */
 export function getDB(): any {
   if (!dbInstance) {
-    // Check if Postgres is configured
-    if (process.env.POSTGRES_URL) {
-      console.log('📊 Using Vercel Postgres for analytics storage');
+    // Check if Postgres is configured (check multiple possible env vars)
+    const hasPostgres = process.env.POSTGRES_URL || process.env.POSTGRES_PRISMA_URL || process.env.DATABASE_URL;
+
+    if (hasPostgres) {
+      console.log('📊 Using Postgres for analytics storage');
       // Dynamically import postgres adapter
       const { getDB: getPostgresDB } = require('./db/postgres');
       dbInstance = getPostgresDB();
     } else {
       console.warn('⚠️  Using in-memory storage - data will be lost on restart');
-      console.warn('⚠️  Set POSTGRES_URL to enable persistent storage');
+      console.warn('⚠️  Set DATABASE_URL to enable persistent storage');
       dbInstance = new InMemoryDB();
     }
   }
