@@ -88,7 +88,7 @@ export default function ScourbyAudioLibrary({ onClose }: AudioLibraryProps) {
   const [testament, setTestament] = useState<'all' | 'OT' | 'NT'>('all');
 
   const filteredBooks = bibleBooks.filter(book => {
-    const matchesSearch = book.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = ((book.name) || '').toLowerCase().includes((searchQuery || '').toLowerCase());
     const matchesTestament =
       testament === 'all' ||
       (testament === 'OT' && book.testament === 'OT') ||

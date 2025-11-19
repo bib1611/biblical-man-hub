@@ -229,7 +229,7 @@ export function generatePersonalizationConfig(profile: VisitorProfile): Personal
   }
 
   // TRAFFIC SOURCE PERSONALIZATION
-  if (profile.trafficSource?.toLowerCase().includes('facebook')) {
+  if ((profile.trafficSource || '').toLowerCase().includes('facebook')) {
     config = {
       ...config,
       heroMessage: 'From Facebook? You\'re in the Right Place.',
@@ -237,7 +237,7 @@ export function generatePersonalizationConfig(profile: VisitorProfile): Personal
     };
   }
 
-  if (profile.trafficSource?.toLowerCase().includes('google')) {
+  if ((profile.trafficSource || '').toLowerCase().includes('google')) {
     config = {
       ...config,
       heroMessage: 'Searching for Biblical Truth? You Found It.',
@@ -245,7 +245,7 @@ export function generatePersonalizationConfig(profile: VisitorProfile): Personal
     };
   }
 
-  if (profile.trafficSource?.toLowerCase().includes('substack')) {
+  if ((profile.trafficSource || '').toLowerCase().includes('substack')) {
     config = {
       ...config,
       heroMessage: 'Welcome, Newsletter Reader!',

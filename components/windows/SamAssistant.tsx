@@ -325,7 +325,7 @@ export default function SamAssistant() {
           {quickTopics.map((topic) => (
             <button
               key={topic.label}
-              onClick={() => setInput(`I need help with ${topic.label.toLowerCase()}`)}
+              onClick={() => setInput(`I need help with ${(topic.label || '').toLowerCase()}`)}
               className="flex-shrink-0 px-3 py-1.5 bg-gradient-to-r from-blue-600/20 to-purple-600/20 hover:from-blue-600/40 hover:to-purple-600/40 border border-blue-700/30 rounded-lg text-xs font-semibold text-blue-200 transition-all"
             >
               {topic.icon} {topic.label}

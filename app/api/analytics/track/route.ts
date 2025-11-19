@@ -236,7 +236,7 @@ function parseTrafficSource(referrer: string, utmSource?: string) {
 
 // Categorize channel for analytics grouping
 function categorizeChannel(source: string): string {
-  const lowerSource = source.toLowerCase();
+  const lowerSource = (source || '').toLowerCase();
 
   if (lowerSource.includes('google') || lowerSource.includes('bing') || lowerSource.includes('search')) {
     return 'Organic Search';
