@@ -42,7 +42,7 @@ export const products: Product[] = [
       'Challenge your priorities and legacy. Are you building something that matters for eternity?',
     price: 0,
     category: 'devotionals',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/fwavt',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/xuhif',
     features: [
       'Legacy evaluation',
       'Eternal perspective',
@@ -395,7 +395,7 @@ export const products: Product[] = [
       'The "Problematic" Heroes Churches Won\'t Preach About. Discover the rebels God used to change history.',
     price: 0,
     category: 'devotionals',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/simxb',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/sinxb',
     features: [
       'Hidden Bible heroes',
       'Radical obedience',
