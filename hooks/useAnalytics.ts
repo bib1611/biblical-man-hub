@@ -72,7 +72,7 @@ export function useAnalytics() {
   const [visitorId] = useState(getVisitorId);
   const [sessionId] = useState(getSessionId);
   const startTime = useRef(Date.now());
-  const heartbeatInterval = useRef<NodeJS.Timeout>();
+  const heartbeatInterval = useRef<NodeJS.Timeout | undefined>(undefined);
 
   // Track page view on mount
   useEffect(() => {
