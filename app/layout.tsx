@@ -32,7 +32,7 @@ export default function RootLayout({
         {/* Google Analytics 4 - Enhanced Tracking */}
         <script
           async
-          src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"
+          src="https://www.googletagmanager.com/gtag/js?id=G-FK1SM7ZE9E"
         />
         <script
           dangerouslySetInnerHTML={{
@@ -42,7 +42,7 @@ export default function RootLayout({
               gtag('js', new Date());
 
               // Default config (basic tracking only)
-              gtag('config', 'G-XXXXXXXXXX', {
+              gtag('config', 'G-FK1SM7ZE9E', {
                 'anonymize_ip': true,
                 'allow_ad_personalization_signals': false,
                 'allow_google_signals': false
@@ -53,7 +53,7 @@ export default function RootLayout({
                 const hasConsent = localStorage.getItem('enhanced_tracking_enabled') === 'true';
                 if (hasConsent) {
                   // Re-configure with enhanced tracking
-                  gtag('config', 'G-XXXXXXXXXX', {
+                  gtag('config', 'G-FK1SM7ZE9E', {
                     'anonymize_ip': false,
                     'allow_ad_personalization_signals': true,
                     'allow_google_signals': true,
