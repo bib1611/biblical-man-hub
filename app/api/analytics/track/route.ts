@@ -110,6 +110,152 @@ async function getGeoData(ip: string) {
   }
 }
 
+// Parse referrer URL to extract meaningful traffic source
+function parseTrafficSource(referrer: string, utmSource?: string) {
+  // UTM parameters take priority (most accurate attribution)
+  if (utmSource) {
+    return {
+      source: utmSource,
+      medium: 'utm', // Will be overridden by actual utmMedium if exists
+      channel: categorizeChannel(utmSource),
+    };
+  }
+
+  // Direct traffic (no referrer)
+  if (!referrer || referrer === 'direct') {
+    return {
+      source: 'direct',
+      medium: 'none',
+      channel: 'Direct',
+    };
+  }
+
+  try {
+    const url = new URL(referrer);
+    const hostname = url.hostname.replace('www.', '');
+
+    // Social media platforms (Facebook/Meta level tracking)
+    const socialPlatforms: Record<string, string> = {
+      'facebook.com': 'Facebook',
+      'fb.com': 'Facebook',
+      'm.facebook.com': 'Facebook (Mobile)',
+      'l.facebook.com': 'Facebook (Link)',
+      'lm.facebook.com': 'Facebook (Messenger)',
+      'instagram.com': 'Instagram',
+      'twitter.com': 'Twitter/X',
+      'x.com': 'Twitter/X',
+      't.co': 'Twitter/X (Short Link)',
+      'linkedin.com': 'LinkedIn',
+      'youtube.com': 'YouTube',
+      'reddit.com': 'Reddit',
+      'pinterest.com': 'Pinterest',
+      'tiktok.com': 'TikTok',
+      'snapchat.com': 'Snapchat',
+      'telegram.org': 'Telegram',
+      'whatsapp.com': 'WhatsApp',
+    };
+
+    // Search engines
+    const searchEngines: Record<string, string> = {
+      'google.com': 'Google',
+      'bing.com': 'Bing',
+      'yahoo.com': 'Yahoo',
+      'duckduckgo.com': 'DuckDuckGo',
+      'baidu.com': 'Baidu',
+      'yandex.com': 'Yandex',
+    };
+
+    // Email platforms
+    const emailPlatforms = ['mail.google.com', 'outlook.com', 'mail.yahoo.com'];
+
+    // Christian/Religious platforms
+    const christianPlatforms: Record<string, string> = {
+      'substack.com': 'Substack',
+      'thebiblicalman.substack.com': 'Biblical Man Newsletter',
+      'christianpost.com': 'Christian Post',
+      'desiringgod.org': 'Desiring God',
+      'thegospelcoalition.org': 'Gospel Coalition',
+    };
+
+    // Check social platforms
+    for (const [domain, name] of Object.entries(socialPlatforms)) {
+      if (hostname.includes(domain)) {
+        return {
+          source: name,
+          medium: 'social',
+          channel: 'Social',
+        };
+      }
+    }
+
+    // Check search engines
+    for (const [domain, name] of Object.entries(searchEngines)) {
+      if (hostname.includes(domain)) {
+        return {
+          source: name,
+          medium: 'organic',
+          channel: 'Organic Search',
+        };
+      }
+    }
+
+    // Check email
+    if (emailPlatforms.some(domain => hostname.includes(domain))) {
+      return {
+        source: 'Email',
+        medium: 'email',
+        channel: 'Email',
+      };
+    }
+
+    // Check Christian platforms
+    for (const [domain, name] of Object.entries(christianPlatforms)) {
+      if (hostname.includes(domain)) {
+        return {
+          source: name,
+          medium: 'referral',
+          channel: 'Referral',
+        };
+      }
+    }
+
+    // Generic referral
+    return {
+      source: hostname,
+      medium: 'referral',
+      channel: 'Referral',
+    };
+  } catch {
+    return {
+      source: 'unknown',
+      medium: 'unknown',
+      channel: 'Unknown',
+    };
+  }
+}
+
+// Categorize channel for analytics grouping
+function categorizeChannel(source: string): string {
+  const lowerSource = source.toLowerCase();
+
+  if (lowerSource.includes('google') || lowerSource.includes('bing') || lowerSource.includes('search')) {
+    return 'Organic Search';
+  }
+  if (lowerSource.includes('facebook') || lowerSource.includes('instagram') || lowerSource.includes('twitter') || lowerSource.includes('linkedin')) {
+    return 'Social';
+  }
+  if (lowerSource.includes('email') || lowerSource.includes('newsletter')) {
+    return 'Email';
+  }
+  if (lowerSource.includes('ad') || lowerSource.includes('cpc') || lowerSource.includes('ppc')) {
+    return 'Paid Ads';
+  }
+  if (lowerSource === 'direct') {
+    return 'Direct';
+  }
+  return 'Referral';
+}
+
 // Calculate lead score based on visitor behavior
 function calculateLeadScore(visitor: Visitor): number {
   let score = 0;
@@ -152,6 +298,9 @@ export async function POST(request: NextRequest) {
       // New visitor - get geo data
       const geoData = await getGeoData(ip);
 
+      // Parse traffic source with precision
+      const trafficSource = parseTrafficSource(data.referrer, data.utmSource);
+
       visitor = {
         id: visitorId,
         sessionId,
@@ -182,8 +331,11 @@ export async function POST(request: NextRequest) {
         screenResolution: data.screenResolution,
         language: data.language || navigator?.language,
 
-        // Traffic source
+        // Traffic source (enhanced with parsing)
         referrer: data.referrer,
+        trafficSource: trafficSource.source,
+        trafficMedium: data.utmMedium || trafficSource.medium,
+        trafficChannel: trafficSource.channel,
         utmSource: data.utmSource,
         utmMedium: data.utmMedium,
         utmCampaign: data.utmCampaign,

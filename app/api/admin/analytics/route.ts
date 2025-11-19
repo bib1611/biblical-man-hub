@@ -23,8 +23,35 @@ export async function GET(request: NextRequest) {
       .sort((a, b) => b.clicks - a.clicks)
       .slice(0, 10);
 
-    // Get traffic sources
-    const trafficSourcesMap = db.getTrafficSources();
+    // ENHANCED: Traffic sources by channel, medium, and source (Facebook/Meta level)
+    const trafficChannels = new Map<string, number>();
+    const trafficMediums = new Map<string, number>();
+    const trafficSourcesMap = new Map<string, number>();
+    const campaignPerformance = new Map<string, { visitors: number; conversions: number; revenue: number }>();
+
+    allVisitors.forEach((v) => {
+      // Channel grouping (highest level)
+      const channel = v.trafficChannel || 'Unknown';
+      trafficChannels.set(channel, (trafficChannels.get(channel) || 0) + 1);
+
+      // Medium
+      const medium = v.trafficMedium || 'none';
+      trafficMediums.set(medium, (trafficMediums.get(medium) || 0) + 1);
+
+      // Source (most granular)
+      const source = v.trafficSource || v.utmSource || v.referrer || 'direct';
+      trafficSourcesMap.set(source, (trafficSourcesMap.get(source) || 0) + 1);
+
+      // Campaign performance (if UTM campaign exists)
+      if (v.utmCampaign) {
+        const existing = campaignPerformance.get(v.utmCampaign) || { visitors: 0, conversions: 0, revenue: 0 };
+        existing.visitors++;
+        if (v.email) existing.conversions++;
+        if (v.purchasedCredits) existing.revenue += 37;
+        campaignPerformance.set(v.utmCampaign, existing);
+      }
+    });
+
     const trafficSources = Array.from(trafficSourcesMap.entries())
       .map(([source, visitors]) => ({ source, visitors }))
       .sort((a, b) => b.visitors - a.visitors);
@@ -107,8 +134,12 @@ export async function GET(request: NextRequest) {
         enabledCounselorMode: v.enabledCounselorMode,
         purchasedCredits: v.purchasedCredits,
         lastSeen: v.lastSeen,
+        // Enhanced traffic source data
+        trafficSource: v.trafficSource || 'Direct',
+        trafficChannel: v.trafficChannel || 'Direct',
         utmSource: v.utmSource,
         utmCampaign: v.utmCampaign,
+        landingPage: v.landingPage || '/',
       }));
 
     const snapshot: AnalyticsSnapshot & {
@@ -124,6 +155,10 @@ export async function GET(request: NextRequest) {
       emailCaptures: number;
       leadScoreDistribution: { high: number; medium: number; low: number };
       recentActiveVisitors: any[];
+      // Traffic intelligence (Facebook/Meta level)
+      trafficChannels: Array<{ channel: string; visitors: number }>;
+      trafficMediums: Array<{ medium: string; visitors: number }>;
+      campaignPerformance: Array<{ campaign: string; visitors: number; conversions: number; revenue: number; roi: number }>;
     } = {
       visitorsToday: db.getVisitorsToday(),
       visitorsOnline: db.getActiveVisitors(5).length,
@@ -161,6 +196,23 @@ export async function GET(request: NextRequest) {
         low: lowQualityLeads,
       },
       recentActiveVisitors,
+
+      // TRAFFIC INTELLIGENCE (Zuckerberg level)
+      trafficChannels: Array.from(trafficChannels.entries())
+        .map(([channel, visitors]) => ({ channel, visitors }))
+        .sort((a, b) => b.visitors - a.visitors),
+      trafficMediums: Array.from(trafficMediums.entries())
+        .map(([medium, visitors]) => ({ medium, visitors }))
+        .sort((a, b) => b.visitors - a.visitors),
+      campaignPerformance: Array.from(campaignPerformance.entries())
+        .map(([campaign, data]) => ({
+          campaign,
+          visitors: data.visitors,
+          conversions: data.conversions,
+          revenue: data.revenue,
+          roi: data.revenue > 0 ? ((data.revenue / data.visitors) * 100) : 0,
+        }))
+        .sort((a, b) => b.revenue - a.revenue),
     };
 
     return NextResponse.json(snapshot);

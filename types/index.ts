@@ -120,8 +120,11 @@ export interface Visitor {
   screenResolution?: string;
   language?: string;
 
-  // Traffic Source Intelligence
+  // Traffic Source Intelligence (Facebook/Meta level precision)
   referrer?: string;
+  trafficSource?: string; // Parsed source name (e.g., "Facebook", "Google", "Direct")
+  trafficMedium?: string; // Parsed medium (e.g., "social", "organic", "referral")
+  trafficChannel?: string; // High-level channel grouping (e.g., "Social", "Organic Search", "Direct")
   utmSource?: string;
   utmMedium?: string;
   utmCampaign?: string;
