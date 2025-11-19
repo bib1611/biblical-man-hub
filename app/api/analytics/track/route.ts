@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDB } from '@/lib/db';
 import { v4 as uuidv4 } from 'uuid';
 import { Visitor } from '@/types';
+import { createClient } from '@supabase/supabase-js';
 
 // Extract IP address from request headers
 function getClientIP(request: NextRequest): string {
@@ -287,6 +288,13 @@ export async function POST(request: NextRequest) {
     const { visitorId, sessionId, type, data, timestamp } = body;
 
     const db = getDB();
+
+    // 🔥 DUAL-WRITE: Store in both local DB AND Supabase
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+
     const ip = getClientIP(request);
     const userAgent = request.headers.get('user-agent') || 'Unknown';
     const { browser, browserVersion, os, osVersion, device, isMobile } = parseUserAgent(userAgent);
@@ -436,6 +444,40 @@ export async function POST(request: NextRequest) {
       data,
       timestamp,
     });
+
+    // 🔥 DUAL-WRITE: Also store in Supabase for Enhanced Tracking dashboard
+    try {
+      // Upsert visitor profile to Supabase
+      await supabase.from('visitor_profiles').upsert({
+        id: visitor.id,
+        session_id: visitor.sessionId,
+        created_at: visitor.firstSeen,
+        updated_at: visitor.lastSeen,
+        is_returning: visitor.pageViews > 1,
+        has_email: !!visitor.email,
+        email: visitor.email,
+        lead_score: visitor.leadScore,
+        psychographic_data: null, // Will be populated by personalization system
+        traffic_source: visitor.trafficSource,
+        referrer: visitor.referrer,
+        device_type: visitor.device,
+        browser: visitor.browser,
+        country: visitor.country,
+      }, { onConflict: 'id' });
+
+      // Insert event to Supabase
+      await supabase.from('behavioral_events').insert({
+        id: uuidv4(),
+        visitor_id: visitor.id,
+        session_id: sessionId,
+        event_type: type,
+        event_data: data,
+        created_at: timestamp,
+      });
+    } catch (supabaseError) {
+      console.error('Supabase dual-write error:', supabaseError);
+      // Don't fail the request if Supabase write fails
+    }
 
     return NextResponse.json({
       success: true,
