@@ -80,11 +80,11 @@ export async function GET(request: NextRequest) {
 
       // Exit intent metrics
       const exitIntentShown = visitorEvents.some(
-        (e) => e.type === 'custom' && e.data.eventName === 'exit_intent_shown'
+        (e: any) => e.type === 'custom' && e.data.eventName === 'exit_intent_shown'
       );
 
       const exitIntentConverted = visitorEvents.some(
-        (e) => e.type === 'custom' && e.data.eventName === 'exit_intent_converted'
+        (e: any) => e.type === 'custom' && e.data.eventName === 'exit_intent_converted'
       );
 
       // Calculate overall engagement score
