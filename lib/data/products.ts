@@ -327,7 +327,7 @@ export const products: Product[] = [
       'Transform through total Scripture immersion. 30, 60, or 90 days of intensive Biblical warfare training.',
     price: 0,
     category: 'courses',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/okwgi',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/wudve',
     features: [
       'Scripture immersion',
       'Spiritual warfare training',
@@ -343,7 +343,7 @@ export const products: Product[] = [
       'First Strike Edition. Learn what it really costs to follow Christ as a king in His kingdom.',
     price: 0,
     category: 'courses',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/kflpa',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/kifips',
     features: [
       'Costly discipleship',
       'Kingdom training',
@@ -361,7 +361,7 @@ export const products: Product[] = [
       'Raise warriors, not weaklings. Biblical strategies for raising children who will change the world.',
     price: 0,
     category: 'parenting',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/rluudk',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/hqudo',
     features: [
       'Raise warrior children',
       'Biblical parenting',
@@ -377,7 +377,7 @@ export const products: Product[] = [
       'Build a family dynasty that lasts generations. Biblical strategies for creating a family throne.',
     price: 0,
     category: 'parenting',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/orjwl',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/vgrjwi',
     features: [
       'Generational legacy',
       'Family dynasty',
@@ -411,7 +411,7 @@ export const products: Product[] = [
       'The proverbs they skip in Sunday School. Dark wisdom for dangerous times.',
     price: 0,
     category: 'devotionals',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/ohtaqs',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/phtags',
     features: [
       'Hidden wisdom',
       'Dark proverbs',
