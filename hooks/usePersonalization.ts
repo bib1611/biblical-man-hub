@@ -42,6 +42,9 @@ export function usePersonalization() {
   const { visitorId, sessionId } = useAnalytics();
   const [profile, setProfile] = useState<VisitorProfile | null>(null);
   const [config, setConfig] = useState<PersonalizationConfig | null>(null);
+  const [psychographic, setPsychographic] = useState<any>(null);
+  const [messaging, setMessaging] = useState<any>(null);
+  const [timing, setTiming] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -55,6 +58,9 @@ export function usePersonalization() {
           const data = await response.json();
           setProfile(data.profile);
           setConfig(data.config);
+          setPsychographic(data.psychographic);
+          setMessaging(data.messaging);
+          setTiming(data.timing);
         }
       } catch (error) {
         console.error('Failed to load personalization:', error);
@@ -69,6 +75,9 @@ export function usePersonalization() {
   return {
     profile,
     config,
+    psychographic,
+    messaging,
+    timing,
     isLoading,
     visitorId,
     sessionId,

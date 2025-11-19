@@ -33,8 +33,8 @@ export default function Home() {
   // Initialize analytics tracking
   const { trackWindowOpen, trackEmailCapture } = useAnalytics();
 
-  // Initialize personalization
-  const { config, profile } = usePersonalization();
+  // Initialize personalization with psychographic data
+  const { config, profile, messaging, timing, psychographic } = usePersonalization();
 
   // Get featured products for homepage
   const featuredProducts = products.filter(p => p.isFeatured);
@@ -224,18 +224,41 @@ export default function Home() {
       <section className="pt-24 md:pt-32 pb-12 md:pb-20 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
+            {/* Time-based message banner (if applicable) */}
+            {timing?.timeBasedMessage && (
+              <div className="inline-block mb-4 px-6 py-3 bg-blue-600/20 border border-blue-600/50 rounded-full">
+                <p className="text-sm md:text-base text-blue-300 font-semibold">
+                  {timing.timeBasedMessage}
+                </p>
+              </div>
+            )}
+
+            {/* Psychographic headline */}
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-              {config?.heroMessage || 'Stop Being Soft.'}
+              {messaging?.headline || config?.heroMessage || 'Stop Being Soft.'}
               <br />
               <span className="text-red-500">
                 {profile?.isReturning ? 'Ready to Take the Next Step?' : 'Start Leading.'}
               </span>
             </h1>
+
+            {/* Psychographic subheadline */}
             <p className="text-lg md:text-xl lg:text-2xl text-gray-400 mb-8 max-w-2xl mx-auto">
-              {profile?.isReturning
-                ? `Welcome back! Let's pick up where you left off.`
-                : 'Biblical masculinity for men who refuse to compromise'}
+              {messaging?.subheadline ||
+                (profile?.isReturning
+                  ? `Welcome back! Let's pick up where you left off.`
+                  : 'Biblical masculinity for men who refuse to compromise')
+              }
             </p>
+
+            {/* Urgency message (if applicable) */}
+            {timing?.shouldShowUrgency && messaging?.urgency && (
+              <div className="inline-block mb-4 px-6 py-3 bg-amber-600/20 border border-amber-600/50 rounded-full">
+                <p className="text-sm md:text-base text-amber-300 font-bold">
+                  ⚡ {messaging.urgency}
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Interactive Hook: Bible + Radio */}
@@ -324,9 +347,23 @@ export default function Home() {
                 <br />
                 <span className="text-red-500">Who Refuse Mediocrity</span>
               </h2>
-              <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto">
+              <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-4">
                 Get unfiltered Biblical truth delivered weekly. No fluff. No compromise. Real frameworks for leading your family and walking in truth.
               </p>
+
+              {/* Social proof badge */}
+              {messaging?.socialProof && (
+                <p className="text-sm md:text-base text-gray-400 mt-4">
+                  {messaging.socialProof}
+                </p>
+              )}
+
+              {/* Guarantee */}
+              {messaging?.guarantee && psychographic?.resistanceLevel === 'high' && (
+                <p className="text-sm text-green-400 mt-2 font-semibold">
+                  ✓ {messaging.guarantee}
+                </p>
+              )}
             </div>
             <form onSubmit={handleEmailSubmit} className="max-w-2xl mx-auto">
               {submitStatus === 'success' && (
@@ -356,7 +393,7 @@ export default function Home() {
                   disabled={isSubmitting}
                   className="px-8 py-5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 disabled:from-gray-600 disabled:to-gray-700 rounded-xl text-lg font-bold transition-all disabled:cursor-not-allowed transform hover:scale-105"
                 >
-                  {isSubmitting ? 'Subscribing...' : 'Get Free Access'}
+                  {isSubmitting ? 'Subscribing...' : (messaging?.cta || 'Get Free Access')}
                 </button>
               </div>
               <p className="text-center text-sm text-gray-500 mt-4">
