@@ -482,7 +482,7 @@ export default function Home() {
                 <span className="text-red-500">From Sam, Your AI Guide</span>
               </h2>
               <p className="text-lg text-gray-400 mb-8 leading-relaxed">
-                {profile?.leadScore > 70
+                {(profile?.leadScore ?? 0) > 70
                   ? "You're serious about this. Sam has advanced frameworks for high-level leadership challenges. Ask the hard questions."
                   : psychographic?.personalityType === 'analytical'
                   ? 'Sam provides Scripture-backed answers with full context and references. Get precise guidance for your specific situation.'
