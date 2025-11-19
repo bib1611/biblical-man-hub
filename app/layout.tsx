@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { BehavioralTracker } from "@/components/BehavioralTracker";
 import ExitIntentPopup from "@/components/ExitIntentPopup";
+import CookieConsent from "@/components/CookieConsent";
 import { SilentErrorBoundary } from "@/components/ErrorBoundary";
 
 const geistSans = Geist({
@@ -28,6 +29,60 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* Google Analytics 4 - Enhanced Tracking */}
+        <script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+
+              // Default config (basic tracking only)
+              gtag('config', 'G-XXXXXXXXXX', {
+                'anonymize_ip': true,
+                'allow_ad_personalization_signals': false,
+                'allow_google_signals': false
+              });
+
+              // Enhanced tracking function (called after consent)
+              window.enableEnhancedTracking = function() {
+                const hasConsent = localStorage.getItem('enhanced_tracking_enabled') === 'true';
+                if (hasConsent) {
+                  // Re-configure with enhanced tracking
+                  gtag('config', 'G-XXXXXXXXXX', {
+                    'anonymize_ip': false,
+                    'allow_ad_personalization_signals': true,
+                    'allow_google_signals': true,
+                    'send_page_view': true,
+                    'custom_map': {
+                      'dimension1': 'visitor_id',
+                      'dimension2': 'psychographic_type',
+                      'dimension3': 'lead_score',
+                      'dimension4': 'traffic_source',
+                      'dimension5': 'device_type'
+                    }
+                  });
+
+                  // Track enhanced consent
+                  gtag('event', 'enhanced_tracking_enabled', {
+                    event_category: 'consent',
+                    event_label: 'full_tracking_active'
+                  });
+                }
+              };
+
+              // Auto-enable if already consented
+              if (typeof localStorage !== 'undefined' && localStorage.getItem('enhanced_tracking_enabled') === 'true') {
+                window.enableEnhancedTracking();
+              }
+            `,
+          }}
+        />
+
         {/* Microsoft Clarity Analytics */}
         <script
           type="text/javascript"
@@ -52,6 +107,7 @@ export default function RootLayout({
         <SilentErrorBoundary>
           <ExitIntentPopup />
         </SilentErrorBoundary>
+        <CookieConsent />
       </body>
     </html>
   );
