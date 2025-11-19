@@ -30,9 +30,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <BehavioralTracker />
+        <SilentErrorBoundary>
+          <BehavioralTracker />
+        </SilentErrorBoundary>
         {children}
-        <ExitIntentPopup />
+        <SilentErrorBoundary>
+          <ExitIntentPopup />
+        </SilentErrorBoundary>
       </body>
     </html>
   );

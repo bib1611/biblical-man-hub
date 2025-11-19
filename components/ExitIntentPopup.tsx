@@ -12,6 +12,29 @@ export default function ExitIntentPopup() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
+  // 🔥 FORM PERSISTENCE: Save email to localStorage on change
+  useEffect(() => {
+    if (email && email.includes('@')) {
+      try {
+        localStorage.setItem('exit_intent_email_draft', email);
+      } catch (e) {
+        // Silent fail if localStorage unavailable
+      }
+    }
+  }, [email]);
+
+  // 🔥 FORM PERSISTENCE: Restore email from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('exit_intent_email_draft');
+      if (saved && saved.includes('@')) {
+        setEmail(saved);
+      }
+    } catch (e) {
+      // Silent fail if localStorage unavailable
+    }
+  }, []);
+
   const { config, profile } = usePersonalization();
   const { trackEmailCapture, trackEvent } = useAnalytics();
 
@@ -68,34 +91,66 @@ export default function ExitIntentPopup() {
     setIsSubmitting(true);
     setSubmitStatus('idle');
 
-    try {
-      const response = await fetch('/api/newsletter/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
+    // 🔥 RETRY LOGIC: Try up to 3 times with exponential backoff
+    let attempts = 0;
+    const maxAttempts = 3;
 
-      if (response.ok) {
-        setSubmitStatus('success');
-        trackEmailCapture(email);
-        trackEvent('custom', {
-          eventName: 'exit_intent_converted',
-          leadScore: profile?.leadScore || 0,
-          offer: config?.exitIntentOffer || 'default',
+    while (attempts < maxAttempts) {
+      try {
+        const response = await fetch('/api/newsletter/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
         });
 
-        setTimeout(() => {
-          handleClose();
-        }, 3000);
-      } else {
-        throw new Error('Subscription failed');
+        if (response.ok) {
+          setSubmitStatus('success');
+          trackEmailCapture(email);
+          trackEvent('custom', {
+            eventName: 'exit_intent_converted',
+            leadScore: profile?.leadScore || 0,
+            offer: config?.exitIntentOffer || 'default',
+            attempts: attempts + 1,
+          });
+
+          // Clear localStorage on success
+          try {
+            localStorage.removeItem('exit_intent_email_draft');
+          } catch (e) {
+            // Silent fail
+          }
+
+          setTimeout(() => {
+            handleClose();
+          }, 3000);
+          setIsSubmitting(false);
+          return; // Success - exit retry loop
+        } else {
+          throw new Error('Subscription failed');
+        }
+      } catch (error) {
+        attempts++;
+        console.error(`Submission attempt ${attempts} failed:`, error);
+
+        if (attempts >= maxAttempts) {
+          // All retries failed
+          setSubmitStatus('error');
+          // 🔥 BACKUP: Store email locally so we can retry later
+          try {
+            localStorage.setItem('exit_intent_failed_email', email);
+            localStorage.setItem('exit_intent_failed_timestamp', Date.now().toString());
+          } catch (e) {
+            // Silent fail
+          }
+          setTimeout(() => setSubmitStatus('idle'), 5000);
+        } else {
+          // Wait before retry (exponential backoff: 1s, 2s, 4s)
+          await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempts) * 1000));
+        }
       }
-    } catch (error) {
-      setSubmitStatus('error');
-      setTimeout(() => setSubmitStatus('idle'), 5000);
-    } finally {
-      setIsSubmitting(false);
     }
+
+    setIsSubmitting(false);
   };
 
   if (!isVisible || !config) return null;

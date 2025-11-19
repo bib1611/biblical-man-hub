@@ -264,8 +264,8 @@ export default function Home() {
           {/* Interactive Hook: Bible + Radio */}
           <div className="grid md:grid-cols-2 gap-6 mb-12">
             {/* Bible Study Hook */}
-            <div className="bg-gradient-to-br from-red-950/40 to-black border-2 border-red-900/50 rounded-2xl p-8 hover:border-red-600/70 transition-all group">
-              <div className="flex items-start justify-between mb-4">
+            <div className="bg-gradient-to-br from-red-950/40 to-black border-2 border-red-900/50 rounded-2xl p-8 transition-all">
+              <div className="flex items-start justify-between mb-4 pointer-events-none">
                 <div className="w-14 h-14 bg-red-600/20 rounded-xl flex items-center justify-center border border-red-600/30">
                   <BookOpen className="w-7 h-7 text-red-500" />
                 </div>
@@ -283,16 +283,16 @@ export default function Home() {
                   setTimeout(() => openWindow('bible-study'), 100);
                   trackWindowOpen('bible-study');
                 }}
-                className="w-full py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-xl font-bold transition-all transform group-hover:scale-105 flex items-center justify-center gap-2"
+                className="w-full py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-xl font-bold transition-all transform hover:scale-105 flex items-center justify-center gap-2 pointer-events-auto"
               >
                 Open Bible Study
-                <ArrowRight size={20} />
+                <ArrowRight size={20} className="pointer-events-none" />
               </button>
             </div>
 
             {/* Radio Hook */}
-            <div className="bg-gradient-to-br from-red-950/40 to-black border-2 border-red-900/50 rounded-2xl p-8 hover:border-red-600/70 transition-all group">
-              <div className="flex items-start justify-between mb-4">
+            <div className="bg-gradient-to-br from-red-950/40 to-black border-2 border-red-900/50 rounded-2xl p-8 transition-all">
+              <div className="flex items-start justify-between mb-4 pointer-events-none">
                 <div className="w-14 h-14 bg-red-600/20 rounded-xl flex items-center justify-center border border-red-600/30">
                   <MessageCircle className="w-7 h-7 text-red-500" />
                 </div>
@@ -310,10 +310,10 @@ export default function Home() {
                   setTimeout(() => openWindow('radio'), 100);
                   trackWindowOpen('radio');
                 }}
-                className="w-full py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-xl font-bold transition-all transform group-hover:scale-105 flex items-center justify-center gap-2"
+                className="w-full py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-xl font-bold transition-all transform hover:scale-105 flex items-center justify-center gap-2 pointer-events-auto"
               >
                 Start Listening
-                <ArrowRight size={20} />
+                <ArrowRight size={20} className="pointer-events-none" />
               </button>
             </div>
           </div>

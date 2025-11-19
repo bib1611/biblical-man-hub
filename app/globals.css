@@ -61,3 +61,37 @@ a[role="button"]:active,
 [role="button"]:active {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
+
+/* 🔥 DEAD CLICK PREVENTION: Make SVG/icons/badges unclickable by default */
+svg, svg *,
+[class*="lucide"],
+span[class*="badge"],
+span[class*="label"],
+span[class*="tag"],
+div[class*="icon-wrapper"],
+.pointer-events-none,
+.pointer-events-none * {
+  pointer-events: none !important;
+  cursor: default !important;
+}
+
+/* Re-enable pointer events for SVGs inside actual interactive elements */
+button svg,
+button svg *,
+a svg,
+a svg *,
+[role="button"] svg,
+[role="button"] svg *,
+[onclick] svg,
+[onclick] svg * {
+  pointer-events: none !important; /* Keep disabled so clicks go through to parent */
+}
+
+/* Ensure buttons and links always have pointer cursor */
+button:not(:disabled),
+a,
+[role="button"],
+[onclick] {
+  cursor: pointer !important;
+  pointer-events: auto !important;
+}
