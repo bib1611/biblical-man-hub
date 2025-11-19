@@ -160,7 +160,7 @@ export const products: Product[] = [
       'Wake up to the assault on your sons. Protect them from the cultural emasculation happening right now.',
     price: 0,
     category: 'parenting',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/ltxehm',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/ykkou',
     features: [
       'Raise warrior sons',
       'Cultural warfare awareness',
@@ -176,7 +176,7 @@ export const products: Product[] = [
       'Don\'t lose your son to rebellion and theft. Learn the warning signs and prevention strategies from Absalom\'s story.',
     price: 0,
     category: 'parenting',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/rohvdp',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/bhygdy',
     features: [
       'Prevent rebellion',
       'Biblical parenting wisdom',
@@ -243,7 +243,7 @@ export const products: Product[] = [
       'Three women. Three tests. Three eternal outcomes. Which queen will your wife become?',
     price: 0,
     category: 'marriage',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/gqvojp',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/qnoyag',
     features: [
       'Biblical womanhood',
       'Wife\'s spiritual journey',
@@ -261,7 +261,7 @@ export const products: Product[] = [
       'No sugar coating. No safe Christianity. 60 hard truths modern Christian women need to hear.',
     price: 0,
     category: 'women',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/t4fbocf',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/kfhoot',
     features: [
       'Radical truth',
       'Biblical womanhood',
@@ -327,7 +327,7 @@ export const products: Product[] = [
       'Transform through total Scripture immersion. 30, 60, or 90 days of intensive Biblical warfare training.',
     price: 0,
     category: 'courses',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/hsvqai',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/okwgi',
     features: [
       'Scripture immersion',
       'Spiritual warfare training',
@@ -343,7 +343,7 @@ export const products: Product[] = [
       'First Strike Edition. Learn what it really costs to follow Christ as a king in His kingdom.',
     price: 0,
     category: 'courses',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/kfms',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/kflpa',
     features: [
       'Costly discipleship',
       'Kingdom training',
@@ -361,7 +361,7 @@ export const products: Product[] = [
       'Raise warriors, not weaklings. Biblical strategies for raising children who will change the world.',
     price: 0,
     category: 'parenting',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/dvwbo',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/rluudk',
     features: [
       'Raise warrior children',
       'Biblical parenting',
@@ -377,7 +377,7 @@ export const products: Product[] = [
       'Build a family dynasty that lasts generations. Biblical strategies for creating a family throne.',
     price: 0,
     category: 'parenting',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/tzyiral',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/orjwl',
     features: [
       'Generational legacy',
       'Family dynasty',
@@ -395,7 +395,7 @@ export const products: Product[] = [
       'The "Problematic" Heroes Churches Won\'t Preach About. Discover the rebels God used to change history.',
     price: 0,
     category: 'devotionals',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/zhnbt',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/simxb',
     features: [
       'Hidden Bible heroes',
       'Radical obedience',
@@ -411,7 +411,7 @@ export const products: Product[] = [
       'The proverbs they skip in Sunday School. Dark wisdom for dangerous times.',
     price: 0,
     category: 'devotionals',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/udtaqs',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/ohtaqs',
     features: [
       'Hidden wisdom',
       'Dark proverbs',
