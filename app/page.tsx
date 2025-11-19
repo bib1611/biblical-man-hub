@@ -661,7 +661,30 @@ export default function Home() {
       {/* Products Section */}
       <section className="py-12 md:py-20 px-6 bg-gradient-to-b from-black to-red-950/20">
         <div className="max-w-7xl mx-auto">
+          {/* Trust Signals - Social Proof */}
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-2 px-6 py-3 bg-green-600/10 border border-green-600/30 rounded-full mb-4">
+              <span className="text-green-400 text-2xl">✓</span>
+              <span className="text-green-300 font-bold">Trusted by 20,000+ Men</span>
+            </div>
+            <div className="flex items-center justify-center gap-6 text-sm text-gray-400 mb-2">
+              <span>⭐⭐⭐⭐⭐ 4.9/5 Average Rating</span>
+              <span>•</span>
+              <span>100% Money-Back Guarantee</span>
+              <span>•</span>
+              <span>Instant Access</span>
+            </div>
+          </div>
+
           <div className="text-center mb-8 md:mb-12">
+            {/* Urgency Banner */}
+            <div className="inline-block mb-6 px-6 py-3 bg-amber-600/20 border-2 border-amber-600/50 rounded-lg animate-pulse">
+              <p className="text-amber-300 font-bold flex items-center gap-2">
+                <span className="text-xl">⚡</span>
+                Limited Time: Get FREE bonuses with any purchase this week
+              </p>
+            </div>
+
             <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-4">
               {psychographic?.personalityType === 'analytical'
                 ? 'Data-Driven Frameworks That Work'
