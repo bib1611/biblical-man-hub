@@ -231,7 +231,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { messages, mode = 'standard', email } = body;
+    const { messages, mode = 'standard', email, visitorId } = body;
 
     if (!messages || !Array.isArray(messages)) {
       return NextResponse.json(
@@ -263,14 +263,96 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // 🔥 SPOOKY MODE: Fetch psychographic intelligence on the visitor
+    let psychographicIntelligence = '';
+
+    if (visitorId) {
+      try {
+        const profileResponse = await fetch(`${request.nextUrl.origin}/api/personalization/profile?visitorId=${visitorId}`);
+        if (profileResponse.ok) {
+          const profileData = await profileResponse.json();
+          const { profile, psychographic, messaging } = profileData;
+
+          // Build psychological intelligence dossier for Sam
+          psychographicIntelligence = `
+🧠 VISITOR PSYCHOLOGICAL PROFILE (CONFIDENTIAL - USE SUBTLY):
+
+PERSONALITY TYPE: ${psychographic?.personalityType?.toUpperCase() || 'UNKNOWN'}
+- ${psychographic?.personalityType === 'alpha' ? 'Strong-willed, decisive, responds to challenge and authority' : ''}
+- ${psychographic?.personalityType === 'beta' ? 'Cautious, analytical, needs social proof and reassurance' : ''}
+- ${psychographic?.personalityType === 'desperate' ? 'In pain, seeking relief, highly motivated but overwhelmed' : ''}
+- ${psychographic?.personalityType === 'skeptic' ? 'Doubtful, needs proof and logic, slow to trust' : ''}
+- ${psychographic?.personalityType === 'seeker' ? 'Growth-oriented, searching for meaning and purpose' : ''}
+
+BEHAVIORAL PATTERNS:
+- Visit count: ${profile?.visitCount || 1}
+- Time on site: ${Math.round((profile?.timeOnSite || 0) / 60)} minutes total
+- Pages viewed: ${profile?.pageViews || 1}
+- Has email: ${profile?.hasEmail ? 'YES' : 'NO'}
+- Interacted with you before: ${profile?.hasInteractedWithSam ? 'YES' : 'NO'}
+- Used Bible study: ${profile?.hasUsedBible ? 'YES' : 'NO'}
+- Used Radio: ${profile?.hasUsedRadio ? 'YES' : 'NO'}
+
+CONVERSION INTELLIGENCE:
+- Lead score: ${profile?.leadScore || 0}/100
+- Conversion readiness: ${psychographic?.conversionReadiness || 0}/100
+- Resistance level: ${psychographic?.resistanceLevel?.toUpperCase() || 'UNKNOWN'}
+- Engagement style: ${psychographic?.engagementStyle || 'unknown'}
+
+TRAFFIC INTELLIGENCE:
+- Source: ${profile?.trafficSource || 'Unknown'}
+- Medium: ${profile?.trafficMedium || 'Unknown'}
+- Location: ${profile?.city ? `${profile.city}, ${profile.country}` : profile?.country || 'Unknown'}
+- Returning visitor: ${profile?.isReturning ? 'YES' : 'NO (First time)'}
+- Referrer domain: ${profile?.referrerDomain || 'Unknown'}
+- Referrer type: ${profile?.referrerType || 'Unknown'}
+- Search query: ${profile?.searchQuery ? `"${profile.searchQuery}"` : 'N/A'}
+- Social platform: ${profile?.socialPlatform || 'N/A'}
+
+PAIN POINTS DETECTED:
+${psychographic?.painPoints?.map((p: string) => `- ${p}`).join('\n') || '- None detected yet'}
+
+MOTIVATORS:
+${psychographic?.motivators?.map((m: string) => `- ${m}`).join('\n') || '- None detected yet'}
+
+RECOMMENDED APPROACH:
+- Message framing: ${psychographic?.messageFraming?.toUpperCase()} (${psychographic?.messageFraming === 'authority' ? 'Challenge them, show strength' : psychographic?.messageFraming === 'empathy' ? 'Understand their pain' : psychographic?.messageFraming === 'urgency' ? 'Create FOMO' : psychographic?.messageFraming === 'social-proof' ? 'Show others doing it' : 'Fear-based'})
+- Copy tone: ${psychographic?.copyTone?.toUpperCase()} (Be ${psychographic?.copyTone === 'aggressive' ? 'direct and confrontational' : psychographic?.copyTone === 'challenging' ? 'firm but supportive' : psychographic?.copyTone === 'gentle' ? 'soft and understanding' : 'warm and encouraging'})
+- Urgency level: ${psychographic?.urgencyLevel?.toUpperCase()}
+
+🎯 USE THIS INTELLIGENCE TO:
+1. Match their communication style and emotional state
+2. Address their specific pain points naturally in conversation
+3. Use their motivators to frame recommendations
+4. Adjust your tone to match recommended copy style
+5. Be SUBTLE - don't reveal you know this data, just naturally align with it
+6. If they're high-resistance but high-readiness, gently nudge toward action
+7. If they're desperate, show empathy before solutions
+8. If they're skeptical, offer proof and testimonials
+9. If they're alpha, challenge them and speak with authority
+10. If they're beta, provide reassurance and social validation
+
+REMEMBER: You can "sense" these things through conversation - you don't need to explain how you know.
+`;
+        }
+      } catch (error) {
+        console.error('Failed to fetch psychographic data:', error);
+        // Continue without psychographic data
+      }
+    }
+
     // Convert messages to Anthropic format with proper conversation flow
     const anthropicMessages = messages.map((msg: any) => ({
       role: msg.sender === 'user' ? ('user' as const) : ('assistant' as const),
       content: msg.content,
     }));
 
-    // Select system prompt based on mode
-    const systemPrompt = mode === 'counselor' ? COUNSELOR_SYSTEM_PROMPT : STANDARD_SYSTEM_PROMPT;
+    // Select system prompt based on mode and enhance with psychographic intelligence
+    let systemPrompt = mode === 'counselor' ? COUNSELOR_SYSTEM_PROMPT : STANDARD_SYSTEM_PROMPT;
+
+    if (psychographicIntelligence) {
+      systemPrompt = systemPrompt + '\n\n' + psychographicIntelligence;
+    }
 
     // Get AI response with parameters adjusted for mode
     const response = await anthropic.messages.create({

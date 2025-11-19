@@ -7,7 +7,7 @@ import { ChatMessage } from '@/types';
 import { useAnalytics } from '@/hooks/useAnalytics';
 
 export default function SamAssistant() {
-  const { trackEmailCapture, trackCounselorMode, trackSamChat } = useAnalytics();
+  const { trackEmailCapture, trackCounselorMode, trackSamChat, visitorId } = useAnalytics();
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
     // Load conversation history from localStorage
     if (typeof window !== 'undefined') {
@@ -127,7 +127,7 @@ export default function SamAssistant() {
       // Simulate reading the message (1-2 seconds)
       await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
 
-      // Fetch the AI response
+      // Fetch the AI response with SPOOKY psychographic intelligence
       const response = await fetch('/api/sam', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -135,6 +135,7 @@ export default function SamAssistant() {
           messages: [...messages, userMessage],
           mode: counselorMode ? 'counselor' : 'standard',
           email: userEmail || undefined,
+          visitorId: visitorId || undefined, // 🔥 Pass visitor ID for psychographic profiling
         }),
       });
 

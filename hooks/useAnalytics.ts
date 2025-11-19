@@ -68,15 +68,168 @@ function getDeviceFingerprint(): string {
   return '';
 }
 
+// 🔥 DEEP REFERRER INTELLIGENCE - Know where they came from before arriving
+function getDeepReferrerIntel() {
+  if (typeof window === 'undefined') return {};
+
+  const referrer = document.referrer;
+  const currentUrl = window.location.href;
+
+  // If no referrer, they came directly (typed URL, bookmark, or direct link)
+  if (!referrer) {
+    return {
+      referrerUrl: 'direct',
+      referrerDomain: 'direct',
+      referrerType: 'direct',
+      referrerCategory: 'Direct Traffic',
+      searchQuery: null,
+      socialPlatform: null,
+      intelSummary: 'User came directly (bookmark, typed URL, or direct link)',
+    };
+  }
+
+  try {
+    const referrerURL = new URL(referrer);
+    const referrerDomain = referrerURL.hostname.replace('www.', '');
+    const currentDomain = window.location.hostname.replace('www.', '');
+
+    // Internal traffic (same domain)
+    if (referrerDomain === currentDomain) {
+      return {
+        referrerUrl: referrer,
+        referrerDomain,
+        referrerType: 'internal',
+        referrerCategory: 'Internal Navigation',
+        searchQuery: null,
+        socialPlatform: null,
+        intelSummary: 'User navigating within site',
+      };
+    }
+
+    // SEARCH ENGINE DETECTION
+    const searchEngines: Record<string, string> = {
+      'google.com': 'Google',
+      'bing.com': 'Bing',
+      'yahoo.com': 'Yahoo',
+      'duckduckgo.com': 'DuckDuckGo',
+      'baidu.com': 'Baidu',
+      'yandex.com': 'Yandex',
+      'ask.com': 'Ask',
+      'aol.com': 'AOL',
+      'ecosia.org': 'Ecosia',
+      'startpage.com': 'Startpage',
+    };
+
+    const searchEngine = Object.keys(searchEngines).find(domain => referrerDomain.includes(domain));
+
+    if (searchEngine) {
+      // Extract search query if possible
+      const searchParams = referrerURL.searchParams;
+      const query = searchParams.get('q') || searchParams.get('query') || searchParams.get('p') || null;
+
+      return {
+        referrerUrl: referrer,
+        referrerDomain,
+        referrerType: 'search',
+        referrerCategory: `Search - ${searchEngines[searchEngine]}`,
+        searchQuery: query,
+        socialPlatform: null,
+        intelSummary: query
+          ? `Searched "${query}" on ${searchEngines[searchEngine]}`
+          : `Found via ${searchEngines[searchEngine]} search`,
+      };
+    }
+
+    // SOCIAL MEDIA DETECTION
+    const socialPlatforms: Record<string, string> = {
+      'facebook.com': 'Facebook',
+      'fb.com': 'Facebook',
+      'instagram.com': 'Instagram',
+      'twitter.com': 'Twitter/X',
+      'x.com': 'Twitter/X',
+      't.co': 'Twitter/X',
+      'linkedin.com': 'LinkedIn',
+      'lnkd.in': 'LinkedIn',
+      'pinterest.com': 'Pinterest',
+      'reddit.com': 'Reddit',
+      'tiktok.com': 'TikTok',
+      'youtube.com': 'YouTube',
+      'youtu.be': 'YouTube',
+      'snapchat.com': 'Snapchat',
+      'whatsapp.com': 'WhatsApp',
+      'telegram.org': 'Telegram',
+      't.me': 'Telegram',
+      'discord.com': 'Discord',
+      'tumblr.com': 'Tumblr',
+      'quora.com': 'Quora',
+      'medium.com': 'Medium',
+      'substack.com': 'Substack',
+    };
+
+    const socialPlatform = Object.keys(socialPlatforms).find(domain => referrerDomain.includes(domain));
+
+    if (socialPlatform) {
+      return {
+        referrerUrl: referrer,
+        referrerDomain,
+        referrerType: 'social',
+        referrerCategory: `Social - ${socialPlatforms[socialPlatform]}`,
+        searchQuery: null,
+        socialPlatform: socialPlatforms[socialPlatform],
+        intelSummary: `Came from ${socialPlatforms[socialPlatform]} (social media referral)`,
+      };
+    }
+
+    // EMAIL / NEWSLETTER DETECTION
+    const emailPlatforms = ['mail.google.com', 'outlook.com', 'mail.yahoo.com', 'substack.com'];
+    const isEmail = emailPlatforms.some(domain => referrerDomain.includes(domain));
+
+    if (isEmail) {
+      return {
+        referrerUrl: referrer,
+        referrerDomain,
+        referrerType: 'email',
+        referrerCategory: 'Email/Newsletter',
+        searchQuery: null,
+        socialPlatform: null,
+        intelSummary: `Clicked link from email or newsletter (${referrerDomain})`,
+      };
+    }
+
+    // EXTERNAL WEBSITE (Referral traffic)
+    return {
+      referrerUrl: referrer,
+      referrerDomain,
+      referrerType: 'referral',
+      referrerCategory: `Referral - ${referrerDomain}`,
+      searchQuery: null,
+      socialPlatform: null,
+      intelSummary: `Referred from external website: ${referrerDomain}`,
+    };
+  } catch (error) {
+    // If URL parsing fails, return what we have
+    return {
+      referrerUrl: referrer,
+      referrerDomain: 'unknown',
+      referrerType: 'unknown',
+      referrerCategory: 'Unknown',
+      searchQuery: null,
+      socialPlatform: null,
+      intelSummary: `Unknown referrer: ${referrer}`,
+    };
+  }
+}
+
 export function useAnalytics() {
   const [visitorId] = useState(getVisitorId);
   const [sessionId] = useState(getSessionId);
   const startTime = useRef(Date.now());
   const heartbeatInterval = useRef<NodeJS.Timeout | undefined>(undefined);
 
-  // Track page view on mount
+  // Track page view on mount with DEEP REFERRER INTELLIGENCE
   useEffect(() => {
     const utmParams = getUTMParams();
+    const referrerIntel = getDeepReferrerIntel();
 
     trackEvent('page_view', {
       page: window.location.pathname,
@@ -86,6 +239,8 @@ export function useAnalytics() {
       cookiesEnabled: navigator.cookieEnabled,
       fingerprint: getDeviceFingerprint(),
       ...utmParams,
+      // 🔥 DEEP REFERRER INTELLIGENCE
+      ...referrerIntel,
     });
 
     // Heartbeat to track time on site
