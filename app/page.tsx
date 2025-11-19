@@ -40,19 +40,20 @@ export default function Home() {
   const featuredProducts = products.filter(p => p.isFeatured);
 
   useEffect(() => {
-    const handleOpenWindow = (e: CustomEvent) => {
+    const handleCustomOpenWindow = (e: CustomEvent) => {
       const windowId = e.detail as AppId;
       if (useAppStore.getState().windows[windowId]) {
         useAppStore.getState().openWindow(windowId);
+        trackWindowOpen(windowId);
       }
     };
 
-    window.addEventListener('open-window' as any, handleOpenWindow as EventListener);
+    window.addEventListener('open-window' as any, handleCustomOpenWindow as EventListener);
 
     return () => {
-      window.removeEventListener('open-window' as any, handleOpenWindow as EventListener);
+      window.removeEventListener('open-window' as any, handleCustomOpenWindow as EventListener);
     };
-  }, []);
+  }, [trackWindowOpen]);
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
