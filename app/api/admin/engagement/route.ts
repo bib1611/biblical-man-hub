@@ -161,7 +161,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Sort by engagement score descending
-    engagementProfiles.sort((a, b) => b.engagementScore - a.engagementScore);
+    engagementProfiles.sort((a: any, b: any) => b.engagementScore - a.engagementScore);
 
     // Calculate aggregate metrics
     const totalVisitors = engagementProfiles.length;
@@ -169,40 +169,40 @@ export async function GET(request: NextRequest) {
     const avgEngagementScore =
       totalVisitors > 0
         ? Math.round(
-            engagementProfiles.reduce((sum, p) => sum + p.engagementScore, 0) /
+            engagementProfiles.reduce((sum: number, p: any) => sum + p.engagementScore, 0) /
               totalVisitors
           )
         : 0;
 
     const bibleUsers = engagementProfiles.filter(
-      (p) => p.bible.versesRead > 0
+      (p: any) => p.bible.versesRead > 0
     ).length;
 
     const radioUsers = engagementProfiles.filter(
-      (p) => p.radio.sessionsCount > 0
+      (p: any) => p.radio.sessionsCount > 0
     ).length;
 
-    const samUsers = engagementProfiles.filter((p) => p.sam.hasInteracted).length;
+    const samUsers = engagementProfiles.filter((p: any) => p.sam.hasInteracted).length;
 
     const highEngagement = engagementProfiles.filter(
-      (p) => p.engagementScore >= 70
+      (p: any) => p.engagementScore >= 70
     ).length;
 
     const mediumEngagement = engagementProfiles.filter(
-      (p) => p.engagementScore >= 40 && p.engagementScore < 70
+      (p: any) => p.engagementScore >= 40 && p.engagementScore < 70
     ).length;
 
     const lowEngagement = engagementProfiles.filter(
-      (p) => p.engagementScore < 40
+      (p: any) => p.engagementScore < 40
     ).length;
 
     const totalBibleTime = engagementProfiles.reduce(
-      (sum, p) => sum + p.bible.readingTime + p.bible.audioTime,
+      (sum: number, p: any) => sum + p.bible.readingTime + p.bible.audioTime,
       0
     );
 
     const totalRadioTime = engagementProfiles.reduce(
-      (sum, p) => sum + p.radio.totalListeningTime,
+      (sum: number, p: any) => sum + p.radio.totalListeningTime,
       0
     );
 
@@ -214,11 +214,11 @@ export async function GET(request: NextRequest) {
 
     // Conversion funnel
     const exitIntentShownCount = engagementProfiles.filter(
-      (p) => p.conversion.exitIntentShown
+      (p: any) => p.conversion.exitIntentShown
     ).length;
 
     const exitIntentConvertedCount = engagementProfiles.filter(
-      (p) => p.conversion.exitIntentConverted
+      (p: any) => p.conversion.exitIntentConverted
     ).length;
 
     const exitIntentConversionRate =
