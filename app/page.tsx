@@ -416,12 +416,18 @@ export default function Home() {
                 </span>
               </div>
               <h2 className="text-3xl md:text-5xl font-bold mb-6">
-                Get Instant Biblical Guidance
+                {psychographic?.painPoints?.[0]
+                  ? `Get Help With ${psychographic.painPoints[0]}`
+                  : 'Get Instant Biblical Guidance'}
                 <br />
                 <span className="text-red-500">From Sam, Your AI Guide</span>
               </h2>
               <p className="text-lg text-gray-400 mb-8 leading-relaxed">
-                Struggling with marriage? Need leadership advice? Want to find the right resource? Sam is trained on Biblical truth and can help you navigate your specific situation with wisdom from Scripture and trusted teachers.
+                {profile?.leadScore > 70
+                  ? "You're serious about this. Sam has advanced frameworks for high-level leadership challenges. Ask the hard questions."
+                  : psychographic?.personalityType === 'analytical'
+                  ? 'Sam provides Scripture-backed answers with full context and references. Get precise guidance for your specific situation.'
+                  : 'Struggling with marriage? Need leadership advice? Want to find the right resource? Sam is trained on Biblical truth and can help you navigate your specific situation with wisdom from Scripture and trusted teachers.'}
               </p>
               <div className="space-y-4 mb-8">
                 <div className="flex items-start gap-3">
@@ -490,10 +496,18 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-8 md:mb-12">
             <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-4">
-              Frameworks That Actually Work
+              {psychographic?.personalityType === 'analytical'
+                ? 'Data-Driven Frameworks That Work'
+                : psychographic?.personalityType === 'skeptic'
+                ? 'Proven Systems (Not Theory)'
+                : 'Frameworks That Actually Work'}
             </h2>
             <p className="text-base md:text-lg lg:text-xl text-gray-400">
-              No theory. No fluff. Just tested systems for Biblical masculinity.
+              {psychographic?.buyingStyle === 'researcher'
+                ? 'Evidence-based systems with real results. Full breakdowns included.'
+                : psychographic?.buyingStyle === 'impulsive'
+                ? 'Get instant access. Start transforming today.'
+                : 'No theory. No fluff. Just tested systems for Biblical masculinity.'}
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -570,20 +584,28 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* CTA Section - Personalized by resistance level */}
       <section className="py-20 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl md:text-6xl font-bold mb-6">
-            Ready to Stop Making Excuses?
+            {psychographic?.resistanceLevel === 'low'
+              ? "You're Ready. Let's Do This."
+              : psychographic?.resistanceLevel === 'medium'
+              ? 'Ready to Take the Next Step?'
+              : 'Ready to Stop Making Excuses?'}
           </h2>
           <p className="text-xl text-gray-400 mb-8">
-            Every day you wait is another day your family suffers from weak leadership.
+            {psychographic?.resistanceLevel === 'low'
+              ? "You've seen enough. Time to access the full framework and start leading."
+              : psychographic?.resistanceLevel === 'medium'
+              ? 'Join thousands of men who made the decision to lead their families biblically.'
+              : 'Every day you wait is another day your family suffers from weak leadership.'}
           </p>
           <button
             onClick={enterHub}
             className="inline-flex items-center gap-2 px-10 py-5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-lg text-xl font-bold transition-all transform hover:scale-105"
           >
-            Enter The Hub
+            {config?.primaryCTA || 'Enter The Hub'}
             <ArrowRight size={24} />
           </button>
         </div>
