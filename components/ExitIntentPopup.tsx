@@ -26,7 +26,8 @@ export default function ExitIntentPopup() {
         exitIntentTriggered = true;
         setIsVisible(true);
         setHasShown(true);
-        trackEvent('exit_intent_shown', {
+        trackEvent('custom', {
+          eventName: 'exit_intent_shown',
           leadScore: profile?.leadScore || 0,
           hasEmail: profile?.hasEmail || false,
         });
@@ -38,7 +39,8 @@ export default function ExitIntentPopup() {
       if (!hasShown && profile && profile.leadScore >= 40 && !profile.hasEmail) {
         setIsVisible(true);
         setHasShown(true);
-        trackEvent('exit_intent_shown_timer', {
+        trackEvent('custom', {
+          eventName: 'exit_intent_shown_timer',
           leadScore: profile.leadScore,
           timeOnSite: profile.timeOnSite,
         });
@@ -55,7 +57,10 @@ export default function ExitIntentPopup() {
 
   const handleClose = () => {
     setIsVisible(false);
-    trackEvent('exit_intent_closed', { leadScore: profile?.leadScore || 0 });
+    trackEvent('custom', {
+      eventName: 'exit_intent_closed',
+      leadScore: profile?.leadScore || 0,
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -73,7 +78,8 @@ export default function ExitIntentPopup() {
       if (response.ok) {
         setSubmitStatus('success');
         trackEmailCapture(email);
-        trackEvent('exit_intent_converted', {
+        trackEvent('custom', {
+          eventName: 'exit_intent_converted',
           leadScore: profile?.leadScore || 0,
           offer: config?.exitIntentOffer || 'default',
         });
