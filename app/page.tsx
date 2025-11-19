@@ -389,15 +389,57 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Scroll Incentive: "Keep Reading" Visual Anchor */}
-      <div className="py-6 text-center">
-        <div className="inline-flex flex-col items-center gap-2 opacity-60">
-          <div className="text-sm text-gray-500 font-semibold">KEEP SCROLLING</div>
-          <div className="w-6 h-10 border-2 border-gray-600 rounded-full flex items-start justify-center p-2">
-            <div className="w-1 h-2 bg-gray-600 rounded-full animate-bounce" />
+      {/* QUICK PRODUCTS PREVIEW - Early Product Exposure */}
+      <section className="py-16 px-6 bg-gradient-to-b from-black to-red-950/10">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">
+              Proven Resources for Biblical Manhood
+            </h2>
+            <p className="text-lg text-gray-400 mb-6">
+              Frameworks that work. No theory. No fluff.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6 mb-8">
+            {featuredProducts.slice(0, 3).map((product) => (
+              <div
+                key={product.id}
+                onClick={() => {
+                  setShowHub(true);
+                  setTimeout(() => openWindow('products'), 100);
+                  trackWindowOpen('products');
+                }}
+                className="p-5 bg-gradient-to-br from-red-950/40 to-black border border-red-900/30 rounded-xl cursor-pointer hover:border-red-600/50 hover:scale-[1.02] transition-all group"
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <span className={`px-3 py-1.5 rounded-full text-xs font-bold ${
+                    product.price === 0
+                      ? 'bg-green-600/20 border border-green-600/50 text-green-300'
+                      : 'bg-purple-600/20 border border-purple-600/50 text-purple-300'
+                  }`}>
+                    {product.price === 0 ? 'FREE' : `$${product.price}`}
+                  </span>
+                </div>
+                <h3 className="text-lg font-bold mb-2 group-hover:text-red-400 transition-colors">{product.name}</h3>
+                <p className="text-sm text-gray-400 line-clamp-2">{product.description}</p>
+              </div>
+            ))}
+          </div>
+          <div className="text-center">
+            <button
+              onClick={() => {
+                setShowHub(true);
+                setTimeout(() => openWindow('products'), 100);
+                trackWindowOpen('products');
+              }}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 rounded-lg font-bold transition-all"
+            >
+              View All {products.length} Resources
+              <ArrowRight size={18} />
+            </button>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Social Proof Section - Build Trust */}
       <section className="py-16 md:py-20 px-6 bg-gradient-to-b from-red-950/20 to-black">
