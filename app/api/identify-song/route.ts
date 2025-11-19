@@ -4,12 +4,12 @@ import { NextResponse } from 'next/server';
 async function parseIcecastMetadata(streamUrl: string): Promise<{ title?: string; artist?: string } | null> {
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
 
     const response = await fetch(streamUrl, {
       headers: {
         'Icy-MetaData': '1',
-        'User-Agent': 'Mozilla/5.0',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
       },
       signal: controller.signal,
     });
@@ -18,7 +18,6 @@ async function parseIcecastMetadata(streamUrl: string): Promise<{ title?: string
 
     const metadataInterval = response.headers.get('icy-metaint');
     if (!metadataInterval) {
-      console.log('No metadata interval in stream headers');
       return null;
     }
 
@@ -28,27 +27,31 @@ async function parseIcecastMetadata(streamUrl: string): Promise<{ title?: string
 
     // Read audio data + metadata
     let audioBuffer = new Uint8Array(0);
-    let totalRead = 0;
+    let bytesRead = 0;
 
     // Read until we get past the first metadata block
-    while (totalRead < interval + 1000) {
+    while (bytesRead < interval + 4096) {
       const { value, done } = await reader.read();
       if (done || !value) break;
 
+      // Append to buffer
       const newBuffer = new Uint8Array(audioBuffer.length + value.length);
       newBuffer.set(audioBuffer);
       newBuffer.set(value, audioBuffer.length);
       audioBuffer = newBuffer;
-      totalRead += value.length;
+      bytesRead += value.length;
 
       // If we have enough data, look for metadata
-      if (totalRead >= interval) {
-        // Metadata starts at position = interval
+      if (bytesRead >= interval + 1) {
         const metadataLengthByte = audioBuffer[interval];
         const metadataLength = metadataLengthByte * 16;
 
         if (metadataLength > 0 && audioBuffer.length >= interval + 1 + metadataLength) {
-          const metadataBytes = audioBuffer.slice(interval + 1, interval + 1 + metadataLength);
+          const metadataStart = interval + 1;
+          const metadataEnd = metadataStart + metadataLength;
+          const metadataBytes = audioBuffer.slice(metadataStart, metadataEnd);
+
+          // Decode metadata
           const metadata = new TextDecoder('latin1').decode(metadataBytes);
 
           // Parse StreamTitle='Artist - Title';
@@ -57,7 +60,7 @@ async function parseIcecastMetadata(streamUrl: string): Promise<{ title?: string
             const fullTitle = titleMatch[1].trim();
             const parts = fullTitle.split(' - ');
 
-            reader.cancel();
+            await reader.cancel();
 
             if (parts.length >= 2) {
               return {
@@ -72,14 +75,18 @@ async function parseIcecastMetadata(streamUrl: string): Promise<{ title?: string
             }
           }
         }
+
         break;
       }
     }
 
-    reader.cancel();
+    await reader.cancel();
     return null;
   } catch (error) {
-    console.error('Icecast metadata parsing error:', error);
+    console.error('💥 Icecast metadata parsing error:', error);
+    if (error instanceof Error) {
+      console.error('Error details:', error.message, error.stack);
+    }
     return null;
   }
 }

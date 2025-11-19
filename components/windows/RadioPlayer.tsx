@@ -32,11 +32,8 @@ export default function RadioPlayer() {
   // Song identification with fallback strategy
   useEffect(() => {
     const identifySong = async () => {
-      console.log('🎵 Attempting to identify current song...');
-
       try {
         // Try our backend API which handles Icecast metadata parsing
-        console.log('Calling /api/identify-song...');
         const response = await fetch('/api/identify-song', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -44,25 +41,20 @@ export default function RadioPlayer() {
         });
 
         const data = await response.json();
-        console.log('API Response:', data);
 
         if (response.ok && data.success && data.title) {
-          console.log('✅ Successfully identified:', data.title, 'by', data.artist);
           setNowPlaying({
             title: data.title,
             artist: data.artist || 'The King\'s Radio',
             artwork: data.artwork,
           });
           return; // Successfully identified
-        } else {
-          console.log('❌ API returned unsuccessful response:', data);
         }
       } catch (error) {
-        console.error('Backend identification failed:', error);
+        console.error('Song identification failed:', error);
       }
 
       // If backend fails, keep showing default
-      console.log('Using default display: Biblical Teaching');
       setNowPlaying({
         title: 'Biblical Teaching',
         artist: 'The King\'s Radio',
