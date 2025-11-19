@@ -259,6 +259,27 @@ export default function Home() {
                 </p>
               </div>
             )}
+
+            {/* PROMINENT SHOP PRODUCTS CTA - Above the Fold */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+              <button
+                onClick={() => {
+                  setShowHub(true);
+                  setTimeout(() => openWindow('products'), 100);
+                  trackWindowOpen('products');
+                }}
+                className="group px-8 py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-xl font-bold text-lg transition-all shadow-xl hover:shadow-2xl hover:scale-105 flex items-center gap-3"
+              >
+                <span>Shop Biblical Manhood Resources</span>
+                <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+              </button>
+              <button
+                onClick={enterHub}
+                className="px-8 py-4 bg-gray-800/60 hover:bg-gray-800/80 border-2 border-gray-700 hover:border-gray-600 rounded-xl font-bold text-lg transition-all"
+              >
+                Access Free Hub
+              </button>
+            </div>
           </div>
 
           {/* PRIMARY CTA: Newsletter Signup */}
@@ -618,7 +639,12 @@ export default function Home() {
             {featuredProducts.map((product) => (
               <div
                 key={product.id}
-                className="p-6 bg-gradient-to-br from-red-950/40 to-black border border-red-900/30 rounded-xl"
+                onClick={() => {
+                  setShowHub(true);
+                  setTimeout(() => openWindow('products'), 100);
+                  trackWindowOpen('products');
+                }}
+                className="p-6 bg-gradient-to-br from-red-950/40 to-black border border-red-900/30 rounded-xl cursor-pointer hover:border-red-600/50 hover:scale-[1.02] transition-all"
               >
                 <div className="flex items-center justify-between mb-3">
                   {product.price === 0 ? (
