@@ -114,7 +114,7 @@ export default function AdminDashboard() {
           <StatCard
             icon={<Mail />}
             title="Email Capture"
-            value={`${analytics?.emailCaptureRate.toFixed(1) || 0}%`}
+            value={`${(analytics?.emailCaptureRate || 0).toFixed(1)}%`}
             subtitle={`${analytics?.leadsToday || 0} leads today`}
             color="blue"
           />
@@ -141,22 +141,28 @@ export default function AdminDashboard() {
             Top Products (Clicks)
           </h2>
           <div className="space-y-2">
-            {analytics?.topProducts.slice(0, 5).map((product, i) => (
-              <div
-                key={product.id}
-                className="flex items-center justify-between p-3 bg-black/40 rounded-lg border border-gray-800/50"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-sm font-bold text-gray-500 w-6">#{i + 1}</span>
-                  <span className="text-sm text-gray-200">{product.name}</span>
+            {analytics?.topProducts && analytics.topProducts.length > 0 ? (
+              analytics.topProducts.slice(0, 5).map((product, i) => (
+                <div
+                  key={product.id}
+                  className="flex items-center justify-between p-3 bg-black/40 rounded-lg border border-gray-800/50"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-bold text-gray-500 w-6">#{i + 1}</span>
+                    <span className="text-sm text-gray-200">{product.name}</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="text-sm text-green-400 font-semibold">
+                      {product.clicks} clicks
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <span className="text-sm text-green-400 font-semibold">
-                    {product.clicks} clicks
-                  </span>
-                </div>
+              ))
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                <p>No product data yet</p>
               </div>
-            ))}
+            )}
           </div>
         </div>
 
@@ -167,15 +173,21 @@ export default function AdminDashboard() {
             Traffic Sources
           </h2>
           <div className="grid grid-cols-2 gap-3">
-            {analytics?.trafficSources.slice(0, 6).map((source) => (
-              <div
-                key={source.source}
-                className="p-3 bg-black/40 rounded-lg border border-gray-800/50"
-              >
-                <div className="text-xs text-gray-500 uppercase mb-1">{source.source}</div>
-                <div className="text-lg font-bold text-gray-200">{source.visitors}</div>
+            {analytics?.trafficSources && analytics.trafficSources.length > 0 ? (
+              analytics.trafficSources.slice(0, 6).map((source) => (
+                <div
+                  key={source.source}
+                  className="p-3 bg-black/40 rounded-lg border border-gray-800/50"
+                >
+                  <div className="text-xs text-gray-500 uppercase mb-1">{source.source}</div>
+                  <div className="text-lg font-bold text-gray-200">{source.visitors}</div>
+                </div>
+              ))
+            ) : (
+              <div className="col-span-2 text-center py-8 text-gray-500">
+                <p>No traffic data yet</p>
               </div>
-            ))}
+            )}
           </div>
         </div>
 

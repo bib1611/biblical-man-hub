@@ -1,16 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDB } from '@/lib/db';
 import { products } from '@/lib/data/products';
-import { AnalyticsSnapshot } from '@/types';
+import { AnalyticsSnapshot, Visitor, AnalyticsEvent } from '@/types';
+import { verifyAdminAuth } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
+    // SECURITY: Verify admin authentication
+    const isAuthenticated = await verifyAdminAuth(request);
+    if (!isAuthenticated) {
+      return NextResponse.json(
+        { error: 'Unauthorized - Admin access required' },
+        { status: 401 }
+      );
+    }
+
     const db = getDB();
-    const allVisitors = db.getAllVisitors();
+    const allVisitors: Visitor[] = await db.getAllVisitors();
 
     // Get product clicks
-    const productClicks = db.getProductClicks();
-    const topProducts = Array.from(productClicks.entries())
+    const productClicks = await db.getProductClicks();
+    const topProducts = (Array.from(productClicks.entries()) as [string, number][])
       .map(([id, clicks]) => {
         const product = products.find((p) => p.id === id);
         return {
@@ -57,7 +67,7 @@ export async function GET(request: NextRequest) {
       .sort((a, b) => b.visitors - a.visitors);
 
     // Get page views
-    const pageViewEvents = db.getEventsByType('page_view');
+    const pageViewEvents: AnalyticsEvent[] = await db.getEventsByType('page_view');
     const pageViewsMap = new Map<string, number>();
     pageViewEvents.forEach((event) => {
       const path = event.data.path || '/';
@@ -121,7 +131,7 @@ export async function GET(request: NextRequest) {
         email: v.email || 'Anonymous',
         country: v.country || 'Unknown',
         city: v.city || 'Unknown',
-        ip: v.ip,
+        // PRIVACY: IP removed from response - only stored server-side
         browser: v.browser || 'Unknown',
         os: v.os || 'Unknown',
         device: v.device || 'Unknown',
@@ -142,6 +152,131 @@ export async function GET(request: NextRequest) {
         landingPage: v.landingPage || '/',
       }));
 
+    // 🔥 GARY VEE LEVEL: CONVERSION FUNNEL TRACKING
+    const funnelMetrics = {
+      step1_visited: allVisitors.length,
+      step2_engaged: allVisitors.filter(v => v.pageViews > 1 || v.windowsOpened.length > 0).length,
+      step3_deepEngagement: allVisitors.filter(v => v.totalTimeOnSite > 60 || v.windowsOpened.length >= 2).length,
+      step4_samInteraction: allVisitors.filter(v => v.interactedWithSam).length,
+      step5_emailCapture: emailCaptures,
+      step6_counselorMode: counselorActivations,
+      step7_purchase: creditPurchases,
+    };
+
+    const conversionFunnel = [
+      { step: 'Landed', count: funnelMetrics.step1_visited, rate: 100 },
+      { step: 'Engaged (2+ pages/windows)', count: funnelMetrics.step2_engaged, rate: (funnelMetrics.step2_engaged / funnelMetrics.step1_visited) * 100 },
+      { step: 'Deep Engagement (60s+ or 2+ windows)', count: funnelMetrics.step3_deepEngagement, rate: (funnelMetrics.step3_deepEngagement / funnelMetrics.step1_visited) * 100 },
+      { step: 'Talked to Sam', count: funnelMetrics.step4_samInteraction, rate: (funnelMetrics.step4_samInteraction / funnelMetrics.step1_visited) * 100 },
+      { step: 'Gave Email', count: funnelMetrics.step5_emailCapture, rate: (funnelMetrics.step5_emailCapture / funnelMetrics.step1_visited) * 100 },
+      { step: 'Enabled Counselor Mode', count: funnelMetrics.step6_counselorMode, rate: (funnelMetrics.step6_counselorMode / funnelMetrics.step1_visited) * 100 },
+      { step: 'PURCHASED', count: funnelMetrics.step7_purchase, rate: (funnelMetrics.step7_purchase / funnelMetrics.step1_visited) * 100 },
+    ];
+
+    // 🔥 GARY VEE LEVEL: CONTENT PERFORMANCE (which windows drive conversions)
+    const windowEngagement = new Map<string, { opens: number; emailsCapture: number; purchases: number; avgTimeAfter: number }>();
+    allVisitors.forEach(v => {
+      v.windowsOpened.forEach(windowId => {
+        const existing = windowEngagement.get(windowId) || { opens: 0, emailsCapture: 0, purchases: 0, avgTimeAfter: 0 };
+        existing.opens++;
+        if (v.email) existing.emailsCapture++;
+        if (v.purchasedCredits) existing.purchases++;
+        windowEngagement.set(windowId, existing);
+      });
+    });
+
+    const contentPerformance = Array.from(windowEngagement.entries())
+      .map(([windowId, data]) => ({
+        window: windowId,
+        opens: data.opens,
+        emailConversionRate: data.opens > 0 ? (data.emailsCapture / data.opens) * 100 : 0,
+        purchaseConversionRate: data.opens > 0 ? (data.purchases / data.opens) * 100 : 0,
+        totalRevenue: data.purchases * 37,
+        revenuePerOpen: data.opens > 0 ? (data.purchases * 37) / data.opens : 0,
+      }))
+      .sort((a, b) => b.revenuePerOpen - a.revenuePerOpen);
+
+    // 🔥 GARY VEE LEVEL: HOT LEADS (people who are active RIGHT NOW with high scores)
+    const now = Date.now();
+    const hotLeads = allVisitors
+      .filter(v => {
+        const lastSeenTime = new Date(v.lastSeen).getTime();
+        const minutesAgo = (now - lastSeenTime) / (1000 * 60);
+        return minutesAgo <= 30 && v.leadScore >= 50; // Active in last 30 min + score 50+
+      })
+      .map(v => ({
+        email: v.email || 'Anonymous',
+        leadScore: v.leadScore,
+        minutesAgo: Math.round((now - new Date(v.lastSeen).getTime()) / (1000 * 60)),
+        trafficSource: v.trafficSource || 'Direct',
+        pageViews: v.pageViews,
+        timeOnSite: Math.round(v.totalTimeOnSite / 60), // minutes
+        interactedWithSam: v.interactedWithSam,
+        status: v.status,
+      }))
+      .sort((a, b) => b.leadScore - a.leadScore);
+
+    // 🔥 GARY VEE LEVEL: REVENUE ATTRIBUTION (which sources actually make $$$)
+    const sourceRevenue = new Map<string, { visitors: number; emails: number; purchases: number; revenue: number }>();
+    allVisitors.forEach(v => {
+      const source = v.trafficSource || v.utmSource || 'Direct';
+      const existing = sourceRevenue.get(source) || { visitors: 0, emails: 0, purchases: 0, revenue: 0 };
+      existing.visitors++;
+      if (v.email) existing.emails++;
+      if (v.purchasedCredits) {
+        existing.purchases++;
+        existing.revenue += 37;
+      }
+      sourceRevenue.set(source, existing);
+    });
+
+    const revenueBySource = Array.from(sourceRevenue.entries())
+      .map(([source, data]) => ({
+        source,
+        visitors: data.visitors,
+        emailCaptureRate: data.visitors > 0 ? (data.emails / data.visitors) * 100 : 0,
+        purchaseRate: data.visitors > 0 ? (data.purchases / data.visitors) * 100 : 0,
+        revenue: data.revenue,
+        revenuePerVisitor: data.visitors > 0 ? data.revenue / data.visitors : 0,
+        ltv: data.revenue > 0 ? data.revenue / data.purchases : 0, // Lifetime value per customer
+      }))
+      .filter(s => s.visitors > 0)
+      .sort((a, b) => b.revenue - a.revenue);
+
+    // 🔥 GARY VEE LEVEL: ENGAGEMENT SCORING (hot/warm/cold breakdown)
+    const leadTemperature = {
+      hot: allVisitors.filter(v => {
+        const minutesAgo = (now - new Date(v.lastSeen).getTime()) / (1000 * 60);
+        return minutesAgo <= 30 && v.leadScore >= 60;
+      }).length,
+      warm: allVisitors.filter(v => {
+        const hoursAgo = (now - new Date(v.lastSeen).getTime()) / (1000 * 60 * 60);
+        return hoursAgo <= 24 && v.leadScore >= 40 && v.leadScore < 60;
+      }).length,
+      cold: allVisitors.filter(v => {
+        const hoursAgo = (now - new Date(v.lastSeen).getTime()) / (1000 * 60 * 60);
+        return hoursAgo > 24 || v.leadScore < 40;
+      }).length,
+    };
+
+    // 🔥 GARY VEE LEVEL: TIME DECAY ANALYSIS (leads getting cold)
+    const leadsGoingCold = allVisitors
+      .filter(v => {
+        const hoursAgo = (now - new Date(v.lastSeen).getTime()) / (1000 * 60 * 60);
+        return v.leadScore >= 50 && hoursAgo >= 4 && hoursAgo <= 48 && !v.email; // High score but no email yet
+      })
+      .map(v => ({
+        id: v.id,
+        leadScore: v.leadScore,
+        hoursAgo: Math.round((now - new Date(v.lastSeen).getTime()) / (1000 * 60 * 60)),
+        trafficSource: v.trafficSource || 'Direct',
+        pagesVisited: v.pagesVisited,
+        windowsOpened: v.windowsOpened,
+        lastPage: v.pagesVisited[v.pagesVisited.length - 1] || '/',
+      }))
+      .sort((a, b) => b.leadScore - a.leadScore)
+      .slice(0, 10);
+
     const snapshot: AnalyticsSnapshot & {
       // Extended analytics
       topCountries: Array<{ country: string; count: number }>;
@@ -159,16 +294,23 @@ export async function GET(request: NextRequest) {
       trafficChannels: Array<{ channel: string; visitors: number }>;
       trafficMediums: Array<{ medium: string; visitors: number }>;
       campaignPerformance: Array<{ campaign: string; visitors: number; conversions: number; revenue: number; roi: number }>;
+      // 🔥 GARY VEE LEVEL ANALYTICS
+      conversionFunnel: Array<{ step: string; count: number; rate: number }>;
+      contentPerformance: Array<{ window: string; opens: number; emailConversionRate: number; purchaseConversionRate: number; totalRevenue: number; revenuePerOpen: number }>;
+      hotLeads: Array<{ email: string; leadScore: number; minutesAgo: number; trafficSource: string; pageViews: number; timeOnSite: number; interactedWithSam: boolean; status: string }>;
+      revenueBySource: Array<{ source: string; visitors: number; emailCaptureRate: number; purchaseRate: number; revenue: number; revenuePerVisitor: number; ltv: number }>;
+      leadTemperature: { hot: number; warm: number; cold: number };
+      leadsGoingCold: Array<{ id: string; leadScore: number; hoursAgo: number; trafficSource: string; pagesVisited: string[]; windowsOpened: string[]; lastPage: string }>;
     } = {
-      visitorsToday: db.getVisitorsToday(),
-      visitorsOnline: db.getActiveVisitors(5).length,
-      emailCaptureRate: db.getEmailCaptureRate(),
+      visitorsToday: await db.getVisitorsToday(),
+      visitorsOnline: (await db.getActiveVisitors(5)).length,
+      emailCaptureRate: await db.getEmailCaptureRate(),
       topProducts,
       topPages,
-      conversationQuality: db.getConversationQuality(),
-      leadsToday: db.getLeadsToday(),
+      conversationQuality: await db.getConversationQuality(),
+      leadsToday: await db.getLeadsToday(),
       conversionRate: allVisitors.length > 0 ? (emailCaptures / allVisitors.length) * 100 : 0,
-      averageTimeOnSite: db.getAverageTimeOnSite(),
+      averageTimeOnSite: await db.getAverageTimeOnSite(),
       trafficSources,
 
       // ENHANCED DATA
@@ -213,6 +355,14 @@ export async function GET(request: NextRequest) {
           roi: data.revenue > 0 ? ((data.revenue / data.visitors) * 100) : 0,
         }))
         .sort((a, b) => b.revenue - a.revenue),
+
+      // 🔥 GARY VEE LEVEL ANALYTICS
+      conversionFunnel,
+      contentPerformance,
+      hotLeads,
+      revenueBySource,
+      leadTemperature,
+      leadsGoingCold,
     };
 
     return NextResponse.json(snapshot);

@@ -157,11 +157,25 @@ class InMemoryDB {
 }
 
 // Singleton instance
-let dbInstance: InMemoryDB | null = null;
+let dbInstance: any = null;
 
-export function getDB(): InMemoryDB {
+/**
+ * Get database instance
+ * Uses Postgres if POSTGRES_URL is set, otherwise falls back to in-memory
+ */
+export function getDB(): any {
   if (!dbInstance) {
-    dbInstance = new InMemoryDB();
+    // Check if Postgres is configured
+    if (process.env.POSTGRES_URL) {
+      console.log('📊 Using Vercel Postgres for analytics storage');
+      // Dynamically import postgres adapter
+      const { getDB: getPostgresDB } = require('./db/postgres');
+      dbInstance = getPostgresDB();
+    } else {
+      console.warn('⚠️  Using in-memory storage - data will be lost on restart');
+      console.warn('⚠️  Set POSTGRES_URL to enable persistent storage');
+      dbInstance = new InMemoryDB();
+    }
   }
   return dbInstance;
 }

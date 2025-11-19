@@ -30,16 +30,17 @@ export async function POST(request: NextRequest) {
     const db = getDB();
 
     // Check if lead already exists
-    let lead = db.getLeadByEmail(email);
+    let lead = await db.getLeadByEmail(email);
 
     if (lead) {
       // Update existing lead
       lead.lastContact = new Date().toISOString();
-      lead.score = Math.max(lead.score, calculateLeadScore(db.getVisitor(visitorId), source));
-      db.updateLead(lead.id, lead);
+      const visitor = await db.getVisitor(visitorId);
+      lead.score = Math.max(lead.score, calculateLeadScore(visitor, source));
+      await db.updateLead(lead.id, lead);
     } else {
       // Create new lead
-      const visitor = db.getVisitor(visitorId);
+      const visitor = await db.getVisitor(visitorId);
       lead = {
         id: uuidv4(),
         email,
@@ -52,15 +53,15 @@ export async function POST(request: NextRequest) {
         tags: [],
         notes: '',
       };
-      db.createLead(lead);
+      await db.createLead(lead);
     }
 
     // Update visitor with email
-    const visitor = db.getVisitor(visitorId);
+    const visitor = await db.getVisitor(visitorId);
     if (visitor) {
       visitor.email = email;
       visitor.name = name;
-      db.createOrUpdateVisitor(visitor);
+      await db.createOrUpdateVisitor(visitor);
     }
 
     // Send notification if high-value lead

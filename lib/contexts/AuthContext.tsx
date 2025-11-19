@@ -4,8 +4,8 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  login: (password: string) => boolean;
-  logout: () => void;
+  login: (password: string) => Promise<boolean>;
+  logout: () => Promise<void>;
   loading: boolean;
 }
 
@@ -16,29 +16,55 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is already authenticated
-    const authToken = localStorage.getItem('admin_auth');
-    if (authToken === 'authenticated') {
-      setIsAuthenticated(true);
-    }
-    setLoading(false);
+    // Check authentication status on mount (cookies are checked server-side)
+    checkAuthStatus();
   }, []);
 
-  const login = (password: string): boolean => {
-    // Check against environment variable or hardcoded secure password
-    const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'BiblicalMan2025!';
-
-    if (password === adminPassword) {
-      setIsAuthenticated(true);
-      localStorage.setItem('admin_auth', 'authenticated');
-      return true;
+  const checkAuthStatus = async () => {
+    setLoading(true);
+    try {
+      // Try to fetch analytics (protected endpoint) to verify auth status
+      const response = await fetch('/api/admin/analytics');
+      setIsAuthenticated(response.ok);
+    } catch {
+      setIsAuthenticated(false);
+    } finally {
+      setLoading(false);
     }
-    return false;
   };
 
-  const logout = () => {
-    setIsAuthenticated(false);
-    localStorage.removeItem('admin_auth');
+  const login = async (password: string): Promise<boolean> => {
+    try {
+      // SECURITY: Login now happens server-side with HTTP-only cookies
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+        credentials: 'include', // Important for cookies
+      });
+
+      if (response.ok) {
+        setIsAuthenticated(true);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Login error:', error);
+      return false;
+    }
+  };
+
+  const logout = async (): Promise<void> => {
+    try {
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+      setIsAuthenticated(false);
+    } catch (error) {
+      console.error('Logout error:', error);
+      setIsAuthenticated(false); // Logout locally even if API fails
+    }
   };
 
   return (

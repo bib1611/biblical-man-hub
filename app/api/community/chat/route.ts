@@ -3,6 +3,7 @@ import { AI_PERSONAS, ChatRoomThread, CommunityMessage, AIPersona } from '@/type
 import { fetchRecentSubstackArticles, SubstackArticle } from '@/lib/substack-fetcher';
 import { v4 as uuidv4 } from 'uuid';
 import Anthropic from '@anthropic-ai/sdk';
+import { getClientIP, checkRateLimit } from '@/lib/auth';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
@@ -215,6 +216,15 @@ async function generateNewMessage(thread: ChatRoomThread, article: SubstackArtic
 // GET - Fetch active chat threads
 export async function GET(request: NextRequest) {
   try {
+    // SECURITY: Rate limiting - 30 requests per 5 minutes per IP
+    const ip = getClientIP(request);
+    if (!checkRateLimit(`community:${ip}`, 30, 5 * 60 * 1000)) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Please slow down.' },
+        { status: 429 }
+      );
+    }
+
     // Fetch recent Substack articles
     const articles = await getSubstackArticles();
 

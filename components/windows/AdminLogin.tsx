@@ -11,11 +11,12 @@ export default function AdminLogin() {
   const [error, setError] = useState('');
   const { login } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    if (login(password)) {
+    const success = await login(password);
+    if (success) {
       // Successfully logged in
       setPassword('');
     } else {

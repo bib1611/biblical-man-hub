@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
+import { getClientIP, checkRateLimit } from '@/lib/auth';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -220,6 +221,15 @@ Remember: You're Sam. You've been where they are. You know what works. You genui
 
 export async function POST(request: NextRequest) {
   try {
+    // SECURITY: Rate limiting - 20 AI requests per hour per IP
+    const ip = getClientIP(request);
+    if (!checkRateLimit(`sam:${ip}`, 20, 60 * 60 * 1000)) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Please try again later.' },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
     const { messages, mode = 'standard', email } = body;
 
