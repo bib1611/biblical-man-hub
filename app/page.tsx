@@ -16,6 +16,7 @@ import ContactForm from '@/components/windows/ContactForm';
 import ProtectedAdminDashboard from '@/components/windows/ProtectedAdminDashboard';
 import About from '@/components/windows/About';
 import StartHere from '@/components/windows/StartHere';
+import CommunityChat from '@/components/windows/CommunityChat';
 import { AuthProvider } from '@/lib/contexts/AuthContext';
 import { products } from '@/lib/data/products';
 
@@ -141,6 +142,12 @@ export default function Home() {
             {windows['contact'].isOpen && (
               <Window id="contact">
                 <ContactForm />
+              </Window>
+            )}
+
+            {windows['community'].isOpen && (
+              <Window id="community">
+                <CommunityChat />
               </Window>
             )}
 

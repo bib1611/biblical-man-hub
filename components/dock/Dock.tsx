@@ -13,6 +13,7 @@ import {
   Info,
   Play,
   FileText,
+  Users,
 } from 'lucide-react';
 import { AppId } from '@/types';
 import { useAppStore } from '@/lib/store';
@@ -66,6 +67,12 @@ const dockItems: DockItem[] = [
     label: 'Recent Articles',
     icon: <FileText size={24} />,
     color: 'text-cyan-400',
+  },
+  {
+    id: 'community',
+    label: 'Community',
+    icon: <Users size={24} />,
+    color: 'text-emerald-400',
   },
   {
     id: 'about',

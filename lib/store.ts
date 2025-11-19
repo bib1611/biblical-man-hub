@@ -104,6 +104,16 @@ const defaultWindows: Record<AppId, WindowState> = {
     size: { width: 500, height: 500 },
     zIndex: 1,
   },
+  community: {
+    id: 'community',
+    title: 'Biblical Man Community',
+    isOpen: false,
+    isMinimized: false,
+    isMaximized: false,
+    position: { x: 150, y: 80 },
+    size: { width: 1100, height: 750 },
+    zIndex: 1,
+  },
   admin: {
     id: 'admin',
     title: 'Admin Dashboard',

@@ -10,7 +10,8 @@ export type AppId =
   | 'contact'
   | 'admin'
   | 'about'
-  | 'start-here';
+  | 'start-here'
+  | 'community';
 
 export interface WindowState {
   id: AppId;
