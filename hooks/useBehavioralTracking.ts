@@ -262,7 +262,7 @@ export function useBehavioralTracking() {
         trackEvent('custom', {
           eventName: 'form_field_focus',
           fieldName,
-          fieldType: (target as HTMLInputElement).type || ((target.tagName) || '').toLowerCase(),
+          fieldType: (target as HTMLInputElement).type || String((target.tagName) || '').toLowerCase(),
           page: window.location.pathname,
         });
       }
@@ -282,7 +282,7 @@ export function useBehavioralTracking() {
           trackEvent('custom', {
             eventName: 'form_field_blur',
             fieldName,
-            fieldType: (target as HTMLInputElement).type || ((target.tagName) || '').toLowerCase(),
+            fieldType: (target as HTMLInputElement).type || String((target.tagName) || '').toLowerCase(),
             timeSpent,
             wasAbandoned,
             hadValue: currentValue.length > 0,
@@ -398,7 +398,7 @@ function getElementSelector(element: HTMLElement): string {
   if (element.id) return `#${element.id}`;
   if (element.className && typeof element.className === 'string') {
     const classes = element.className.split(' ').filter(c => c).join('.');
-    return `${((element.tagName) || '').toLowerCase()}.${classes}`;
+    return `${String((element.tagName) || '').toLowerCase()}.${classes}`;
   }
-  return ((element.tagName) || '').toLowerCase();
+  return String((element.tagName) || '').toLowerCase();
 }

@@ -55,8 +55,8 @@ export default function ContentFeed() {
 
   const filteredItems = items.filter((item) => {
     const matchesSearch =
-      String(item.title || '').toLowerCase().includes(String(searchQuery || '').toLowerCase()) ||
-      String(item.preview || '').toLowerCase().includes(String(searchQuery || '').toLowerCase());
+      (item.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (item.preview || '').toLowerCase().includes(searchQuery.toLowerCase());
     const matchesFilter = activeFilter === 'All' || item.platform === activeFilter;
     return matchesSearch && matchesFilter;
   });
