@@ -199,4 +199,8 @@ export interface AnalyticsSnapshot {
   conversionRate: number;
   averageTimeOnSite: number;
   trafficSources: { source: string; visitors: number }[];
+  // Enhanced analytics fields
+  emailCaptures?: number;
+  recentActiveVisitors?: any[];
+  hotLeads?: any[];
 }

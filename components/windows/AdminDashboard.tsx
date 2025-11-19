@@ -265,6 +265,170 @@ export default function AdminDashboard() {
           </div>
         </div>
 
+        {/* 🔥 EMAIL CAPTURES - ACTUAL EMAILS CAPTURED */}
+        <div className="bg-gray-900/40 border border-gray-800 rounded-xl p-6 mb-6">
+          <h2 className="text-lg font-bold text-gray-100 mb-4 flex items-center gap-2">
+            <Mail size={20} className="text-green-500" />
+            Email Captures ({analytics?.emailCaptures || 0}) - Last 20
+          </h2>
+          <div className="space-y-2 max-h-96 overflow-auto">
+            {analytics?.recentActiveVisitors && analytics.recentActiveVisitors.filter((v: any) => v.email && v.email !== 'Anonymous').length > 0 ? (
+              analytics.recentActiveVisitors
+                .filter((v: any) => v.email && v.email !== 'Anonymous')
+                .slice(0, 20)
+                .map((visitor: any) => (
+                  <div
+                    key={visitor.id}
+                    className="p-3 bg-black/40 rounded-lg border border-gray-800/50 hover:border-gray-700 transition-all"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-semibold text-green-400">{visitor.email}</span>
+                          <span className="text-xs px-2 py-1 rounded bg-blue-900/40 text-blue-300">
+                            Score: {visitor.leadScore}/100
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3 text-xs text-gray-500">
+                          <span>{visitor.city || visitor.country || 'Unknown location'}</span>
+                          <span>•</span>
+                          <span>{visitor.trafficSource}</span>
+                          <span>•</span>
+                          <span>{visitor.pageViews} pages</span>
+                          <span>•</span>
+                          <span>{formatTime(visitor.timeOnSite)}</span>
+                        </div>
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {new Date(visitor.lastSeen).toLocaleString()}
+                      </div>
+                    </div>
+                  </div>
+                ))
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                <AlertCircle size={48} className="mx-auto mb-3 opacity-50" />
+                <p>No emails captured yet</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 🔥 HOT LEADS - ACTIVE RIGHT NOW */}
+        {analytics?.hotLeads && analytics.hotLeads.length > 0 && (
+          <div className="bg-gradient-to-br from-red-950/40 to-black border-2 border-red-600/50 rounded-xl p-6 mb-6">
+            <h2 className="text-lg font-bold text-red-300 mb-4 flex items-center gap-2">
+              <Activity size={20} className="text-red-500 animate-pulse" />
+              🔥 HOT LEADS - Active in Last 30 Minutes ({analytics.hotLeads.length})
+            </h2>
+            <div className="space-y-2">
+              {analytics.hotLeads.map((lead: any, i: number) => (
+                <div
+                  key={i}
+                  className="p-3 bg-black/60 rounded-lg border border-red-800/50 hover:border-red-600/70 transition-all"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-semibold text-red-300">
+                          {lead.email}
+                        </span>
+                        <span className="text-xs px-2 py-1 rounded bg-red-900/60 text-red-200 font-bold">
+                          🔥 {lead.leadScore}/100
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {lead.minutesAgo} min ago
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3 text-xs text-gray-400">
+                        <span>{lead.trafficSource}</span>
+                        <span>•</span>
+                        <span>{lead.pageViews} pages</span>
+                        <span>•</span>
+                        <span>{lead.timeOnSite} min on site</span>
+                        {lead.interactedWithSam && (
+                          <>
+                            <span>•</span>
+                            <span className="text-purple-400">💬 Chatted with Sam</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 🔥 RECENT ACTIVE VISITORS - WHO'S ONLINE */}
+        <div className="bg-gray-900/40 border border-gray-800 rounded-xl p-6 mb-6">
+          <h2 className="text-lg font-bold text-gray-100 mb-4 flex items-center gap-2">
+            <Users size={20} className="text-blue-500" />
+            Recent Active Visitors ({analytics?.recentActiveVisitors?.length || 0})
+          </h2>
+          <div className="space-y-2 max-h-96 overflow-auto">
+            {analytics?.recentActiveVisitors && analytics.recentActiveVisitors.length > 0 ? (
+              analytics.recentActiveVisitors.map((visitor: any) => (
+                <div
+                  key={visitor.id}
+                  className="p-3 bg-black/40 rounded-lg border border-gray-800/50 hover:border-gray-700 transition-all"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-semibold text-gray-300">
+                          {visitor.email || `Anonymous (${visitor.id.slice(-8)})`}
+                        </span>
+                        <span className="text-xs px-2 py-1 rounded bg-purple-900/40 text-purple-300">
+                          {visitor.leadScore}/100
+                        </span>
+                        {visitor.isMobile && (
+                          <span className="text-xs px-2 py-1 rounded bg-blue-900/40 text-blue-300">
+                            📱 Mobile
+                          </span>
+                        )}
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-xs text-gray-500 mt-2">
+                        <div>📍 {visitor.city}, {visitor.country}</div>
+                        <div>🌐 {visitor.browser} / {visitor.os}</div>
+                        <div>🔗 {visitor.trafficSource}</div>
+                        <div>📄 {visitor.pageViews} pages • {formatTime(visitor.timeOnSite)}</div>
+                      </div>
+                      {(visitor.interactedWithSam || visitor.enabledCounselorMode || visitor.purchasedCredits) && (
+                        <div className="flex items-center gap-2 mt-2 pt-2 border-t border-gray-800">
+                          {visitor.interactedWithSam && (
+                            <span className="text-xs px-2 py-1 rounded bg-purple-900/40 text-purple-300">
+                              💬 Sam
+                            </span>
+                          )}
+                          {visitor.enabledCounselorMode && (
+                            <span className="text-xs px-2 py-1 rounded bg-blue-900/40 text-blue-300">
+                              🧠 Counselor
+                            </span>
+                          )}
+                          {visitor.purchasedCredits && (
+                            <span className="text-xs px-2 py-1 rounded bg-green-900/40 text-green-300">
+                              💰 PURCHASED
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {new Date(visitor.lastSeen).toLocaleString()}
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                <p>No active visitors</p>
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* Leads Management */}
         <div className="bg-gray-900/40 border border-gray-800 rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
