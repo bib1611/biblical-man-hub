@@ -160,7 +160,7 @@ export const products: Product[] = [
       'Wake up to the assault on your sons. Protect them from the cultural emasculation happening right now.',
     price: 0,
     category: 'parenting',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/ykkou',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/ykbou',
     features: [
       'Raise warrior sons',
       'Cultural warfare awareness',
@@ -176,7 +176,7 @@ export const products: Product[] = [
       'Don\'t lose your son to rebellion and theft. Learn the warning signs and prevention strategies from Absalom\'s story.',
     price: 0,
     category: 'parenting',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/bhygdy',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/phydyb',
     features: [
       'Prevent rebellion',
       'Biblical parenting wisdom',
@@ -192,7 +192,7 @@ export const products: Product[] = [
       'Stop feeding false desires. Discover the real hunger destroying Christian men and the one thing that truly satisfies.',
     price: 0,
     category: 'men',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/dsx1zv',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/bsxfzy',
     features: [
       'Identify false desires',
       'Find true satisfaction',
@@ -227,7 +227,7 @@ export const products: Product[] = [
       'Lead your marriage like a king. Biblical strategies for headship, love, and legacy in marriage.',
     price: 0,
     category: 'marriage',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/rlluie',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/jkfak',
     features: [
       'Biblical headship',
       'Marriage leadership',
@@ -243,7 +243,7 @@ export const products: Product[] = [
       'Three women. Three tests. Three eternal outcomes. Which queen will your wife become?',
     price: 0,
     category: 'marriage',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/qnoyag',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/qpoyqg',
     features: [
       'Biblical womanhood',
       'Wife\'s spiritual journey',
@@ -277,7 +277,7 @@ export const products: Product[] = [
       'A Counter-Revolutionary Guide Modern Feminists Don\'t Want You to Read. Reclaim God\'s design for women.',
     price: 0,
     category: 'women',
-    gumroadUrl: 'https://biblicalman.gumroad.com/l/rfvdxy',
+    gumroadUrl: 'https://biblicalman.gumroad.com/l/pfwky',
     features: [
       'Biblical femininity',
       'Homemaking mastery',
