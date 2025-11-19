@@ -12,6 +12,28 @@ export default function ExitIntentPopup() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
+  // 🔥 CRITICAL: Check if popup has already been shown THIS SESSION
+  useEffect(() => {
+    try {
+      const shown = localStorage.getItem('exit_intent_shown_session');
+      const shownTimestamp = localStorage.getItem('exit_intent_shown_timestamp');
+
+      // Check if shown in the last 24 hours
+      if (shown === 'true' && shownTimestamp) {
+        const hoursSinceShown = (Date.now() - parseInt(shownTimestamp)) / (1000 * 60 * 60);
+        if (hoursSinceShown < 24) {
+          setHasShown(true);
+        } else {
+          // Reset after 24 hours
+          localStorage.removeItem('exit_intent_shown_session');
+          localStorage.removeItem('exit_intent_shown_timestamp');
+        }
+      }
+    } catch (e) {
+      // Silent fail if localStorage unavailable
+    }
+  }, []);
+
   // 🔥 FORM PERSISTENCE: Save email to localStorage on change
   useEffect(() => {
     if (email && email.includes('@')) {
@@ -49,6 +71,15 @@ export default function ExitIntentPopup() {
         exitIntentTriggered = true;
         setIsVisible(true);
         setHasShown(true);
+
+        // 🔥 PERSIST: Mark as shown in localStorage for 24 hours
+        try {
+          localStorage.setItem('exit_intent_shown_session', 'true');
+          localStorage.setItem('exit_intent_shown_timestamp', Date.now().toString());
+        } catch (e) {
+          // Silent fail
+        }
+
         trackEvent('custom', {
           eventName: 'exit_intent_shown',
           leadScore: profile?.leadScore || 0,
@@ -57,18 +88,27 @@ export default function ExitIntentPopup() {
       }
     };
 
-    // AGGRESSIVE MODE: Show after 3 seconds - TAG AND BAG IMMEDIATELY
+    // STRATEGIC MODE: Show after 10 seconds if they haven't seen it and don't have email
     const timer = setTimeout(() => {
       if (!hasShown && !profile?.hasEmail) {
         setIsVisible(true);
         setHasShown(true);
+
+        // 🔥 PERSIST: Mark as shown in localStorage for 24 hours
+        try {
+          localStorage.setItem('exit_intent_shown_session', 'true');
+          localStorage.setItem('exit_intent_shown_timestamp', Date.now().toString());
+        } catch (e) {
+          // Silent fail
+        }
+
         trackEvent('custom', {
           eventName: 'exit_intent_shown_timer',
           leadScore: profile?.leadScore || 0,
           timeOnSite: profile?.timeOnSite || 0,
         });
       }
-    }, 3000); // AGGRESSIVE: 3 seconds to tag and bag
+    }, 10000); // STRATEGIC: 10 seconds for natural engagement
 
     document.addEventListener('mouseleave', handleMouseLeave);
 
