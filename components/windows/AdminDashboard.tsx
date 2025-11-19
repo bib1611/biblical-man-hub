@@ -930,6 +930,17 @@ export default function AdminDashboard() {
             </div>
           </div>
 
+          {/* Loading or No Data State */}
+          {!enhancedAnalytics ? (
+            <div className="bg-gray-900/40 border border-gray-800 rounded-xl p-12 text-center">
+              <div className="mb-4">
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-700 border-t-green-600"></div>
+              </div>
+              <p className="text-gray-400 text-lg mb-2">Loading Enhanced Analytics...</p>
+              <p className="text-gray-600 text-sm">Fetching data from Supabase</p>
+            </div>
+          ) : (
+          <>
           {/* Enhanced Metrics Grid */}
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
             <StatCard
@@ -1128,6 +1139,8 @@ export default function AdminDashboard() {
               <ExternalLink className="text-purple-400" size={20} />
             </a>
           </div>
+          </>
+          )}
         </>
         )}
       </div>
