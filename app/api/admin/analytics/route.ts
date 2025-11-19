@@ -277,7 +277,26 @@ export async function GET(request: NextRequest) {
       .sort((a, b) => b.leadScore - a.leadScore)
       .slice(0, 10);
 
+    // Calculate bounce rate (visitors with 1 page view and <30s on site)
+    const bouncedVisitors = allVisitors.filter(v => v.pageViews <= 1 && v.totalTimeOnSite < 30).length;
+    const bounceRate = allVisitors.length > 0 ? (bouncedVisitors / allVisitors.length) * 100 : 0;
+
+    // Calculate pages visited intel
+    const pagesVisitedBreakdown = new Map<string, number>();
+    allVisitors.forEach(v => {
+      v.pagesVisited.forEach(page => {
+        pagesVisitedBreakdown.set(page, (pagesVisitedBreakdown.get(page) || 0) + 1);
+      });
+    });
+
+    const topPagesVisited = Array.from(pagesVisitedBreakdown.entries())
+      .map(([page, visits]) => ({ page, visits }))
+      .sort((a, b) => b.visits - a.visits)
+      .slice(0, 10);
+
     const snapshot: AnalyticsSnapshot & {
+      bounceRate: number;
+      topPagesVisited: Array<{ page: string; visits: number }>;
       // Extended analytics
       topCountries: Array<{ country: string; count: number }>;
       topCities: Array<{ city: string; count: number }>;
@@ -363,6 +382,10 @@ export async function GET(request: NextRequest) {
       revenueBySource,
       leadTemperature,
       leadsGoingCold,
+
+      // BOUNCE RATE & PAGE INTEL
+      bounceRate,
+      topPagesVisited,
     };
 
     return NextResponse.json(snapshot);
