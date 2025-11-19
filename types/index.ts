@@ -94,15 +94,57 @@ export interface Visitor {
   name?: string;
   firstSeen: string;
   lastSeen: string;
+
+  // Geographic Intelligence
+  ip: string;
   country?: string;
+  countryCode?: string;
+  region?: string;
   city?: string;
+  zip?: string;
+  latitude?: number;
+  longitude?: number;
+  timezone?: string;
+  isp?: string;
+  org?: string;
+
+  // Device & Browser Intelligence
+  userAgent: string;
+  browser?: string;
+  browserVersion?: string;
+  os?: string;
+  osVersion?: string;
+  device?: string;
+  isMobile: boolean;
+  screenResolution?: string;
+  language?: string;
+
+  // Traffic Source Intelligence
   referrer?: string;
   utmSource?: string;
   utmMedium?: string;
   utmCampaign?: string;
+  utmContent?: string;
+  utmTerm?: string;
+  landingPage?: string;
+
+  // Behavioral Intelligence
   pageViews: number;
   totalTimeOnSite: number;
+  pagesVisited: string[];
+  windowsOpened: string[];
+  interactedWithSam: boolean;
+  enabledCounselorMode: boolean;
+  purchasedCredits: boolean;
+
+  // Status & Engagement
   isActive: boolean;
+  status: 'active' | 'bounced' | 'converted' | 'abandoned';
+  leadScore: number; // 0-100
+
+  // Cookies & Tracking
+  cookiesEnabled: boolean;
+  fingerprint?: string; // Browser fingerprint
 }
 
 export interface AnalyticsEvent {

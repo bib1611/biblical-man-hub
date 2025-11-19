@@ -4,8 +4,10 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, MessageCircle, Sparkles, Phone, RotateCcw, Shield, Coins, ExternalLink, BookOpen } from 'lucide-react';
 import { ChatMessage } from '@/types';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 export default function SamAssistant() {
+  const { trackEmailCapture, trackCounselorMode, trackSamChat } = useAnalytics();
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
     // Load conversation history from localStorage
     if (typeof window !== 'undefined') {
@@ -37,6 +39,7 @@ export default function SamAssistant() {
   const [credits, setCredits] = useState<number | null>(null);
   const [showEmailPrompt, setShowEmailPrompt] = useState(false);
   const [showCreditPurchase, setShowCreditPurchase] = useState(false);
+  const [tempEmail, setTempEmail] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Save conversation to localStorage whenever messages change
@@ -77,11 +80,18 @@ export default function SamAssistant() {
     }
   };
 
-  const handleEmailSubmit = (email: string) => {
+  const handleEmailSubmit = async (email: string) => {
     setUserEmail(email);
     localStorage.setItem('sam-user-email', email);
-    fetchCredits(email);
+    await fetchCredits(email);
     setShowEmailPrompt(false);
+
+    // Track email capture
+    trackEmailCapture(email);
+
+    // Auto-enable counselor mode after email submission
+    setCounselorMode(true);
+    trackCounselorMode();
   };
 
   const toggleCounselorMode = () => {
@@ -431,27 +441,34 @@ export default function SamAssistant() {
               <input
                 type="email"
                 placeholder="your@email.com"
+                value={tempEmail}
+                onChange={(e) => setTempEmail(e.target.value)}
                 className="w-full px-4 py-3 bg-black/60 border border-blue-900/50 rounded-lg text-white mb-4"
                 onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
-                    const email = (e.target as HTMLInputElement).value;
-                    if (email) handleEmailSubmit(email);
+                  if (e.key === 'Enter' && tempEmail) {
+                    handleEmailSubmit(tempEmail);
+                    setTempEmail('');
                   }
                 }}
               />
               <div className="flex gap-3">
                 <button
-                  onClick={() => setShowEmailPrompt(false)}
+                  onClick={() => {
+                    setShowEmailPrompt(false);
+                    setTempEmail('');
+                  }}
                   className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white transition-all"
                 >
                   Cancel
                 </button>
                 <button
-                  onClick={(e) => {
-                    const input = e.currentTarget.previousElementSibling?.previousElementSibling as HTMLInputElement;
-                    if (input?.value) handleEmailSubmit(input.value);
+                  onClick={() => {
+                    if (tempEmail) {
+                      handleEmailSubmit(tempEmail);
+                      setTempEmail('');
+                    }
                   }}
-                  className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-white transition-all"
+                  className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-white font-semibold transition-all"
                 >
                   Continue
                 </button>
