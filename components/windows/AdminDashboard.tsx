@@ -909,7 +909,7 @@ export default function AdminDashboard() {
         )}
 
         {/* ENHANCED TRACKING TAB (GA4 + Clarity + Cookie Consent) */}
-        {activeTab === 'enhanced' && enhancedAnalytics && (
+        {activeTab === 'enhanced' && (
         <>
           {/* Time Range Selector */}
           <div className="flex justify-end mb-6">
