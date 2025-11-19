@@ -9,6 +9,7 @@ import BibleTutorial from './BibleTutorial';
 import BibleNotepad from './BibleNotepad';
 import ScourbyAudioLibrary from './ScourbyAudioLibrary';
 import BibleHome from './BibleHome';
+import { useBibleEngagement } from '@/hooks/useBibleEngagement';
 
 export default function BibleStudy() {
   const [currentView, setCurrentView] = useState<'home' | 'read'>('home');
@@ -31,6 +32,9 @@ export default function BibleStudy() {
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
+
+  // Initialize Bible engagement tracking
+  const bibleTracking = useBibleEngagement(selectedBook, selectedChapter);
 
   const highlightColors = [
     { name: 'yellow', class: 'bg-yellow-500/20 border-yellow-700/30', button: 'bg-yellow-600/20 hover:bg-yellow-600/40 text-yellow-400' },
@@ -122,6 +126,12 @@ export default function BibleStudy() {
       delete newHighlights[verseKey];
     } else {
       newHighlights[verseKey] = color;
+
+      // Track highlight event
+      const verseNum = parseInt(verseKey.split('-')[2]);
+      if (!isNaN(verseNum)) {
+        bibleTracking.trackHighlight(verseNum, color);
+      }
     }
     setHighlights(newHighlights);
     localStorage.setItem('bible-highlights', JSON.stringify(newHighlights));
@@ -150,10 +160,17 @@ export default function BibleStudy() {
     try {
       const response = await fetch(`/api/bible/search?q=${encodeURIComponent(searchQuery)}`);
       const data = await response.json();
-      setSearchResults(data.verses || []);
+      const results = data.verses || [];
+      setSearchResults(results);
+
+      // Track search event
+      bibleTracking.trackSearch(searchQuery, results.length);
     } catch (error) {
       console.error('Search failed:', error);
       setSearchResults([]);
+
+      // Track search with 0 results
+      bibleTracking.trackSearch(searchQuery, 0);
     } finally {
       setIsSearching(false);
     }

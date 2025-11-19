@@ -68,6 +68,129 @@ function getDeviceFingerprint(): string {
   return '';
 }
 
+// Get DEEP device & browser intelligence - "Sherlock Holmes" level detail
+function getDeepDeviceIntel() {
+  if (typeof window === 'undefined') return {};
+
+  const ua = navigator.userAgent;
+
+  // Browser detection
+  let browser = 'Unknown';
+  let browserVersion = '';
+
+  if (ua.includes('Chrome') && !ua.includes('Edg')) {
+    browser = 'Chrome';
+    browserVersion = ua.match(/Chrome\/(\d+\.\d+)/)?.[1] || '';
+  } else if (ua.includes('Safari') && !ua.includes('Chrome')) {
+    browser = 'Safari';
+    browserVersion = ua.match(/Version\/(\d+\.\d+)/)?.[1] || '';
+  } else if (ua.includes('Firefox')) {
+    browser = 'Firefox';
+    browserVersion = ua.match(/Firefox\/(\d+\.\d+)/)?.[1] || '';
+  } else if (ua.includes('Edg')) {
+    browser = 'Edge';
+    browserVersion = ua.match(/Edg\/(\d+\.\d+)/)?.[1] || '';
+  } else if (ua.includes('Opera') || ua.includes('OPR')) {
+    browser = 'Opera';
+    browserVersion = ua.match(/(?:Opera|OPR)\/(\d+\.\d+)/)?.[1] || '';
+  }
+
+  // OS detection
+  let os = 'Unknown';
+  let osVersion = '';
+
+  if (ua.includes('Windows NT 10.0')) {
+    os = 'Windows';
+    osVersion = '10/11';
+  } else if (ua.includes('Windows NT 6.3')) {
+    os = 'Windows';
+    osVersion = '8.1';
+  } else if (ua.includes('Windows NT 6.2')) {
+    os = 'Windows';
+    osVersion = '8';
+  } else if (ua.includes('Windows NT 6.1')) {
+    os = 'Windows';
+    osVersion = '7';
+  } else if (ua.includes('Mac OS X')) {
+    os = 'macOS';
+    osVersion = ua.match(/Mac OS X (\d+[._]\d+)/)?.[1]?.replace('_', '.') || '';
+  } else if (ua.includes('Linux')) {
+    os = 'Linux';
+  } else if (ua.includes('Android')) {
+    os = 'Android';
+    osVersion = ua.match(/Android (\d+\.\d+)/)?.[1] || '';
+  } else if (ua.includes('iPhone') || ua.includes('iPad')) {
+    os = ua.includes('iPad') ? 'iPad' : 'iPhone';
+    osVersion = ua.match(/OS (\d+_\d+)/)?.[1]?.replace('_', '.') || '';
+  }
+
+  // Device type detection
+  let deviceType = 'Desktop';
+  if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
+    deviceType = 'Tablet';
+  } else if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
+    deviceType = 'Mobile';
+  }
+
+  // Screen details
+  const screenWidth = window.screen.width;
+  const screenHeight = window.screen.height;
+  const screenRes = `${screenWidth}x${screenHeight}`;
+  const colorDepth = window.screen.colorDepth;
+  const pixelRatio = window.devicePixelRatio || 1;
+
+  // Viewport details
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+
+  // Connection type (if available)
+  const connection = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
+  const connectionType = connection?.effectiveType || 'unknown';
+  const connectionSpeed = connection?.downlink ? `${connection.downlink} Mbps` : 'unknown';
+
+  // Hardware concurrency (CPU cores)
+  const cpuCores = navigator.hardwareConcurrency || 'unknown';
+
+  // Memory (if available)
+  const memory = (navigator as any).deviceMemory ? `${(navigator as any).deviceMemory} GB` : 'unknown';
+
+  // Touch support
+  const touchSupport = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+  // Time zone
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  // Platform
+  const platform = navigator.platform;
+
+  return {
+    browser,
+    browserVersion,
+    browserFull: `${browser} ${browserVersion}`,
+    os,
+    osVersion,
+    osFull: `${os} ${osVersion}`.trim(),
+    deviceType,
+    screenResolution: screenRes,
+    screenWidth,
+    screenHeight,
+    colorDepth: `${colorDepth}-bit`,
+    pixelRatio,
+    viewportSize: `${viewportWidth}x${viewportHeight}`,
+    viewportWidth,
+    viewportHeight,
+    connectionType,
+    connectionSpeed,
+    cpuCores,
+    memory,
+    touchSupport,
+    timezone,
+    platform,
+    userAgent: ua,
+    deviceSummary: `${deviceType} • ${os} ${osVersion} • ${browser} ${browserVersion} • ${screenRes}`,
+  };
+}
+
 // 🔥 DEEP REFERRER INTELLIGENCE - Know where they came from before arriving
 function getDeepReferrerIntel() {
   if (typeof window === 'undefined') return {};
@@ -226,10 +349,11 @@ export function useAnalytics() {
   const startTime = useRef(Date.now());
   const heartbeatInterval = useRef<NodeJS.Timeout | undefined>(undefined);
 
-  // Track page view on mount with DEEP REFERRER INTELLIGENCE
+  // Track page view on mount with DEEP REFERRER & DEVICE INTELLIGENCE
   useEffect(() => {
     const utmParams = getUTMParams();
     const referrerIntel = getDeepReferrerIntel();
+    const deviceIntel = getDeepDeviceIntel();
 
     trackEvent('page_view', {
       page: window.location.pathname,
@@ -241,6 +365,8 @@ export function useAnalytics() {
       ...utmParams,
       // 🔥 DEEP REFERRER INTELLIGENCE
       ...referrerIntel,
+      // 🔥 DEEP DEVICE INTELLIGENCE
+      ...deviceIntel,
     });
 
     // Heartbeat to track time on site

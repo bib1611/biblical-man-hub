@@ -105,6 +105,8 @@ export default function SamAssistant() {
         setShowCreditPurchase(true);
         return;
       }
+      // Track counselor mode enabled
+      trackCounselorMode();
     }
     setCounselorMode(!counselorMode);
   };
@@ -181,6 +183,9 @@ export default function SamAssistant() {
       };
 
       setMessages((prev) => [...prev, aiMessage]);
+
+      // Track Sam chat interaction with full details
+      trackSamChat(messages.length + 2, counselorMode ? 'counselor' : 'standard');
     } catch (error) {
       console.error('Failed to get AI response:', error);
 

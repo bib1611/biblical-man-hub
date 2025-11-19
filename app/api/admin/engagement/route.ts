@@ -10,8 +10,8 @@ import { getDB } from '@/lib/db';
 export async function GET(request: NextRequest) {
   try {
     const db = getDB();
-    const visitors = db.getAllVisitors();
-    const events = db.getEvents();
+    const visitors = await db.getAllVisitors();
+    const events = await db.getEvents();
 
     // Aggregate engagement metrics by visitor
     const engagementProfiles = visitors.map((visitor: any) => {
@@ -74,9 +74,23 @@ export async function GET(request: NextRequest) {
       const avgRadioSession =
         radioSessions > 0 ? Math.floor(radioListeningTime / radioSessions) : 0;
 
-      // Sam engagement metrics
-      const samMessages = visitor.interactedWithSam ? 1 : 0; // Simplified for now
-      const counselorMode = visitor.counselorModeEnabled || false;
+      // Sam engagement metrics - get actual conversation details
+      const samEvents = visitorEvents.filter((e: any) => e.type === 'sam_chat');
+      const counselorModeEvents = visitorEvents.filter((e: any) => e.type === 'counselor_mode_enabled');
+
+      const samMessageCount = samEvents.reduce((sum: number, e: any) => {
+        return Math.max(sum, e.data.messageCount || 0);
+      }, 0);
+
+      const counselorModeUsed = counselorModeEvents.length > 0 || visitor.counselorModeEnabled;
+
+      const counselorMessageCount = samEvents
+        .filter((e: any) => e.data.mode === 'counselor')
+        .reduce((sum: number, e: any) => Math.max(sum, e.data.messageCount || 0), 0);
+
+      const standardMessageCount = samEvents
+        .filter((e: any) => e.data.mode === 'standard')
+        .reduce((sum: number, e: any) => Math.max(sum, e.data.messageCount || 0), 0);
 
       // Exit intent metrics
       const exitIntentShown = visitorEvents.some(
@@ -101,7 +115,7 @@ export async function GET(request: NextRequest) {
 
       // Sam engagement (20 points max)
       if (visitor.interactedWithSam) engagementScore += 10;
-      if (counselorMode) engagementScore += 10;
+      if (counselorModeUsed) engagementScore += 10;
 
       // Conversion signals (20 points max)
       if (visitor.email) engagementScore += 10;
@@ -109,11 +123,39 @@ export async function GET(request: NextRequest) {
 
       engagementScore = Math.min(Math.round(engagementScore), 100);
 
+      // Extract device & referrer intel from first page_view event
+      const firstPageView = visitorEvents.find((e: any) => e.type === 'page_view');
+      const deviceIntel = firstPageView?.data || {};
+
       return {
         visitorId: visitor.id,
         email: visitor.email,
         leadScore: visitor.leadScore,
         status: visitor.status,
+
+        // Device intelligence
+        browser: deviceIntel.browser,
+        browserVersion: deviceIntel.browserVersion,
+        browserFull: deviceIntel.browserFull,
+        os: deviceIntel.os,
+        osVersion: deviceIntel.osVersion,
+        osFull: deviceIntel.osFull,
+        deviceType: deviceIntel.deviceType,
+        deviceSummary: deviceIntel.deviceSummary,
+        screenResolution: deviceIntel.screenResolution,
+        timezone: deviceIntel.timezone,
+        connectionType: deviceIntel.connectionType,
+        cpuCores: deviceIntel.cpuCores,
+        memory: deviceIntel.memory,
+        touchSupport: deviceIntel.touchSupport,
+
+        // Referrer intelligence
+        referrerType: deviceIntel.referrerType,
+        referrerCategory: deviceIntel.referrerCategory,
+        referrerDomain: deviceIntel.referrerDomain,
+        socialPlatform: deviceIntel.socialPlatform,
+        searchQuery: deviceIntel.searchQuery,
+        intelSummary: deviceIntel.intelSummary,
 
         // Bible metrics
         bible: {
@@ -137,8 +179,12 @@ export async function GET(request: NextRequest) {
 
         // Sam metrics
         sam: {
-          hasInteracted: visitor.interactedWithSam || false,
-          counselorMode,
+          hasInteracted: samMessageCount > 0 || visitor.interactedWithSam || false,
+          totalMessages: samMessageCount,
+          counselorMode: counselorModeUsed,
+          counselorMessages: counselorMessageCount,
+          standardMessages: standardMessageCount,
+          conversationDepth: samMessageCount > 0 ? 'deep' : samMessageCount > 10 ? 'engaged' : 'surface',
         },
 
         // Conversion metrics

@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Pause, Volume2, VolumeX, Radio as RadioIcon, Music, Mic } from 'lucide-react';
+import { useRadioEngagement } from '@/hooks/useRadioEngagement';
 
 interface NowPlayingData {
   title?: string;
@@ -20,12 +21,17 @@ export default function RadioPlayer() {
   });
   const audioRef = useRef<HTMLAudioElement>(null);
 
+  // Initialize Radio engagement tracking
+  const radioTracking = useRadioEngagement();
+
   // The King's Radio stream URL (via RadioBoss FM - 128kbps MP3)
   const streamUrl = 'https://c13.radioboss.fm:8639/stream';
 
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = isMuted ? 0 : volume;
+      // Track volume changes
+      radioTracking.trackVolumeChange(isMuted ? 0 : volume);
     }
   }, [volume, isMuted]);
 
@@ -73,10 +79,12 @@ export default function RadioPlayer() {
     if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.pause();
+        radioTracking.trackPlayPause();
       } else {
         audioRef.current.play().catch((error) => {
           console.error('Failed to play audio:', error);
         });
+        radioTracking.trackPlayStart();
       }
       setIsPlaying(!isPlaying);
     }
