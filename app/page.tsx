@@ -19,6 +19,7 @@ import StartHere from '@/components/windows/StartHere';
 import CommunityChat from '@/components/windows/CommunityChat';
 import { AuthProvider } from '@/lib/contexts/AuthContext';
 import { products } from '@/lib/data/products';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 export default function Home() {
   const { windows, openWindow } = useAppStore();
@@ -26,6 +27,14 @@ export default function Home() {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  // Initialize analytics tracking
+  const { trackWindowOpen } = useAnalytics();
+
+  const handleOpenWindow = (windowId: AppId) => {
+    openWindow(windowId);
+    trackWindowOpen(windowId);
+  };
 
   // Get featured products for homepage
   const featuredProducts = products.filter(p => p.isFeatured);
@@ -285,7 +294,7 @@ export default function Home() {
               <button
                 onClick={() => {
                   setShowHub(true);
-                  setTimeout(() => openWindow('bible-study'), 100);
+                  setTimeout(() => handleOpenWindow('bible-study'), 100);
                 }}
                 className="text-red-500 hover:text-red-400 font-semibold inline-flex items-center gap-2"
               >
@@ -302,7 +311,7 @@ export default function Home() {
               <button
                 onClick={() => {
                   setShowHub(true);
-                  setTimeout(() => openWindow('sam'), 100);
+                  setTimeout(() => handleOpenWindow('sam'), 100);
                 }}
                 className="text-red-500 hover:text-red-400 font-semibold inline-flex items-center gap-2"
               >
@@ -319,7 +328,7 @@ export default function Home() {
               <button
                 onClick={() => {
                   setShowHub(true);
-                  setTimeout(() => openWindow('counseling'), 100);
+                  setTimeout(() => handleOpenWindow('counseling'), 100);
                 }}
                 className="text-red-500 hover:text-red-400 font-semibold inline-flex items-center gap-2"
               >
@@ -390,7 +399,7 @@ export default function Home() {
                   <button
                     onClick={() => {
                       setShowHub(true);
-                      setTimeout(() => openWindow('products'), 100);
+                      setTimeout(() => handleOpenWindow('products'), 100);
                     }}
                     className="px-4 py-3 bg-gray-800/40 hover:bg-gray-800/60 border border-gray-700/30 rounded-lg font-semibold text-sm transition-colors"
                   >
@@ -404,7 +413,7 @@ export default function Home() {
             <button
               onClick={() => {
                 setShowHub(true);
-                setTimeout(() => openWindow('products'), 100);
+                setTimeout(() => handleOpenWindow('products'), 100);
               }}
               className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-lg font-bold transition-all"
             >

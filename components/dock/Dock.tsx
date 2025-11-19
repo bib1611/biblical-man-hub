@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { AppId } from '@/types';
 import { useAppStore } from '@/lib/store';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 interface DockItem {
   id: AppId;
@@ -96,6 +97,12 @@ const dockItems: DockItem[] = [
 
 export default function Dock() {
   const { openWindow, windows } = useAppStore();
+  const { trackWindowOpen } = useAnalytics();
+
+  const handleWindowOpen = (windowId: AppId) => {
+    openWindow(windowId);
+    trackWindowOpen(windowId);
+  };
 
   return (
     <>
@@ -126,7 +133,7 @@ export default function Dock() {
             transition={{ delay: index * 0.05 }}
             whileHover={{ scale: 1.2, rotate: 2 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => openWindow(item.id)}
+            onClick={() => handleWindowOpen(item.id)}
             className={`
               relative w-14 h-14 rounded-xl flex items-center justify-center
               transition-all duration-300 group
@@ -171,7 +178,7 @@ export default function Dock() {
           return (
             <button
               key={item.id}
-              onClick={() => openWindow(item.id)}
+              onClick={() => handleWindowOpen(item.id)}
               className={`
                 relative w-12 h-12 rounded-xl flex items-center justify-center
                 transition-all duration-300
