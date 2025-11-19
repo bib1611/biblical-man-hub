@@ -160,14 +160,14 @@ export default function AdminAnalyticsDashboard() {
   }
 
   // Apply search filter
-  if (searchQuery.trim()) {
-    const query = searchQuery.toLowerCase();
+  if (searchQuery && searchQuery.trim()) {
+    const query = (searchQuery || '').toLowerCase();
     filteredProfiles = filteredProfiles.filter(p =>
-      (p.visitorId || '').toLowerCase().includes(query) ||
-      (p.email || '').toLowerCase().includes(query) ||
-      (p.deviceSummary || '').toLowerCase().includes(query) ||
-      (p.country || '').toLowerCase().includes(query) ||
-      (p.referrerDomain || '').toLowerCase().includes(query)
+      String(p.visitorId || '').toLowerCase().includes(query) ||
+      String(p.email || '').toLowerCase().includes(query) ||
+      String(p.deviceSummary || '').toLowerCase().includes(query) ||
+      String(p.country || '').toLowerCase().includes(query) ||
+      String(p.referrerDomain || '').toLowerCase().includes(query)
     );
   }
 
