@@ -463,13 +463,50 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Scroll Incentive: Section Divider */}
-      <div className="py-6 text-center">
-        <div className="max-w-3xl mx-auto">
-          <div className="h-px bg-gradient-to-r from-transparent via-red-600/50 to-transparent mb-4" />
-          <p className="text-sm text-gray-500 font-semibold">MORE TOOLS BELOW ↓</p>
+      {/* Value Props Section - Hook Users to Keep Scrolling */}
+      <section className="py-16 md:py-20 px-6 bg-gradient-to-b from-black to-red-950/10">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4">
+              Everything You Need to Lead Your Family
+              <br />
+              <span className="text-red-500">In One Place</span>
+            </h2>
+            <p className="text-lg text-gray-400 max-w-2xl mx-auto">
+              Stop piecing together advice from random YouTube videos and blog posts. Get a complete system for Biblical masculinity.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6 mb-12">
+            <div className="text-center p-6">
+              <div className="w-16 h-16 bg-red-600/20 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-red-600/50">
+                <MessageCircle className="text-red-500" size={32} />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-2">AI Biblical Counselor</h3>
+              <p className="text-gray-400">Get instant Scripture-backed guidance for marriage, parenting, and leadership challenges</p>
+            </div>
+
+            <div className="text-center p-6">
+              <div className="w-16 h-16 bg-blue-600/20 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-blue-600/50">
+                <BookOpen className="text-blue-500" size={32} />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-2">Complete Resource Library</h3>
+              <p className="text-gray-400">Curated books, courses, and articles from trusted Biblical teachers - no compromise</p>
+            </div>
+
+            <div className="text-center p-6">
+              <div className="w-16 h-16 bg-green-600/20 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-green-600/50">
+                <Users className="text-green-500" size={32} />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-2">Brotherhood Community</h3>
+              <p className="text-gray-400">Connect with 20,000+ men who refuse to compromise on Biblical truth</p>
+            </div>
+          </div>
+
+          <div className="h-px bg-gradient-to-r from-transparent via-red-600/50 to-transparent mb-6" />
+          <p className="text-center text-sm text-gray-500 font-semibold">EXPLORE YOUR AI GUIDE BELOW ↓</p>
         </div>
-      </div>
+      </section>
 
       {/* Sam AI Chat Feature */}
       <section className="py-16 md:py-24 px-6">
