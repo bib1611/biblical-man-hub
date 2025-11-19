@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAppStore } from '@/lib/store';
 import { AppId } from '@/types';
-import { ArrowRight, BookOpen, MessageCircle, Shield, Mail, ExternalLink } from 'lucide-react';
+import { ArrowRight, BookOpen, MessageCircle, Shield, Mail, ExternalLink, Users, Zap, Target } from 'lucide-react';
 import Dock from '@/components/dock/Dock';
 import Window from '@/components/shared/Window';
 import ContentFeed from '@/components/windows/ContentFeed';
@@ -688,6 +688,70 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Why This Works Section - Address Objections */}
+      <section className="py-16 md:py-20 px-6 bg-gradient-to-b from-red-950/10 to-black">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4">
+              Why Men Choose This Over Everything Else
+            </h2>
+            <p className="text-lg text-gray-400">
+              You've tried podcasts, books, and YouTube. Here's why this is different.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-gradient-to-br from-red-950/40 to-black border border-red-900/30 rounded-xl p-6">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 bg-red-600/20 rounded-lg flex items-center justify-center flex-shrink-0 border border-red-600/30">
+                  <Shield className="text-red-500" size={24} />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-white mb-2">No Compromise on Scripture</h3>
+                  <p className="text-gray-400 text-sm">Everything is filtered through Biblical truth. No modern psychology masquerading as Christianity.</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-blue-950/40 to-black border border-blue-900/30 rounded-xl p-6">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 bg-blue-600/20 rounded-lg flex items-center justify-center flex-shrink-0 border border-blue-600/30">
+                  <Zap className="text-blue-500" size={24} />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-white mb-2">Instant Application</h3>
+                  <p className="text-gray-400 text-sm">Not just theory. Every resource gives you specific actions to take today in your marriage and family.</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-green-950/40 to-black border border-green-900/30 rounded-xl p-6">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 bg-green-600/20 rounded-lg flex items-center justify-center flex-shrink-0 border border-green-600/30">
+                  <Target className="text-green-500" size={24} />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-white mb-2">Cuts Through the Noise</h3>
+                  <p className="text-gray-400 text-sm">Stop wasting time searching. Get curated, vetted resources from teachers who actually follow Scripture.</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-purple-950/40 to-black border border-purple-900/30 rounded-xl p-6">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 bg-purple-600/20 rounded-lg flex items-center justify-center flex-shrink-0 border border-purple-600/30">
+                  <Users className="text-purple-500" size={24} />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-white mb-2">Brotherhood Support</h3>
+                  <p className="text-gray-400 text-sm">You're not alone. Connect with men who are actually doing this, not just talking about it.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section - Personalized by resistance level */}
       <section className="py-20 px-6">
         <div className="max-w-4xl mx-auto text-center">
@@ -712,6 +776,7 @@ export default function Home() {
             {config?.primaryCTA || 'Enter The Hub'}
             <ArrowRight size={24} />
           </button>
+          <p className="text-sm text-gray-500 mt-6">Free to access. No credit card required.</p>
         </div>
       </section>
 
