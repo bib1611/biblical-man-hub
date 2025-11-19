@@ -14,8 +14,8 @@ export async function GET(request: NextRequest) {
     const events = db.getEvents();
 
     // Aggregate engagement metrics by visitor
-    const engagementProfiles = visitors.map((visitor) => {
-      const visitorEvents = events.filter((e) => e.visitorId === visitor.id);
+    const engagementProfiles = visitors.map((visitor: any) => {
+      const visitorEvents = events.filter((e: any) => e.visitorId === visitor.id);
 
       // Bible engagement metrics
       const bibleEvents = visitorEvents.filter((e) =>
