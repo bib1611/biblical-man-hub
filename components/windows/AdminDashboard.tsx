@@ -31,6 +31,8 @@ export default function AdminDashboard() {
   const [selectedLeadStatus, setSelectedLeadStatus] = useState<string>('all');
   const [activeTab, setActiveTab] = useState<'overview' | 'engagement' | 'psychographics'>('overview');
   const [loading, setLoading] = useState(true);
+  const [recoveredLeads, setRecoveredLeads] = useState<any[]>([]);
+  const [recovering, setRecovering] = useState(false);
 
   useEffect(() => {
     fetchAnalytics();
@@ -105,6 +107,20 @@ export default function AdminDashboard() {
       fetchLeads();
     } catch (error) {
       console.error('Failed to update lead:', error);
+    }
+  };
+
+  const recoverLeadsFromResend = async () => {
+    setRecovering(true);
+    try {
+      const response = await fetch('/api/admin/recover-leads?password=Blakedylan2025');
+      const data = await response.json();
+      setRecoveredLeads(data.recoveredLeads || []);
+      console.log('🔥 RECOVERED:', data);
+    } catch (error) {
+      console.error('Failed to recover leads:', error);
+    } finally {
+      setRecovering(false);
     }
   };
 
@@ -312,6 +328,57 @@ export default function AdminDashboard() {
               </div>
             )}
           </div>
+        </div>
+
+        {/* 💰 RECOVERED LEADS FROM RESEND - DATA RECOVERY */}
+        <div className="bg-gradient-to-br from-yellow-950/40 to-black border-2 border-yellow-600/50 rounded-xl p-6 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-yellow-300 flex items-center gap-2">
+              <Zap size={20} className="text-yellow-500" />
+              💰 RECOVERED LEADS FROM RESEND ({recoveredLeads.length})
+            </h2>
+            <button
+              onClick={recoverLeadsFromResend}
+              disabled={recovering}
+              className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 disabled:bg-gray-600 rounded-lg font-semibold transition-colors"
+            >
+              {recovering ? 'Recovering...' : 'Recover Leads'}
+            </button>
+          </div>
+          <p className="text-sm text-yellow-200/80 mb-4">
+            These emails were actually sent from Resend but lost due to database resets. Click "Recover Leads" to fetch them from Resend API.
+          </p>
+          {recoveredLeads.length > 0 ? (
+            <div className="space-y-2 max-h-96 overflow-auto">
+              {recoveredLeads.map((lead: any, index: number) => (
+                <div
+                  key={index}
+                  className="p-3 bg-black/60 rounded-lg border border-yellow-800/50"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-semibold text-yellow-300">{lead.email}</span>
+                        <span className="text-xs px-2 py-1 rounded bg-green-900/60 text-green-200">
+                          {lead.status}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3 text-xs text-gray-400">
+                        <span>Sent: {new Date(lead.sentAt).toLocaleString()}</span>
+                        <span>•</span>
+                        <span>ID: {lead.emailId.slice(0, 8)}...</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-yellow-400">
+              <Zap size={48} className="mx-auto mb-3 opacity-50" />
+              <p>Click "Recover Leads" to fetch emails from Resend</p>
+            </div>
+          )}
         </div>
 
         {/* 🔥 HOT LEADS - ACTIVE RIGHT NOW */}
