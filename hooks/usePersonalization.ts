@@ -55,7 +55,7 @@ export function usePersonalization() {
         secondaryCTA: 'Explore Resources',
         heroMessage: 'Stop Being Soft. Start Leading.',
         urgencyLevel: 'low',
-        showExitIntent: true,
+        showExitIntent: false,
         exitIntentOffer: 'Wait! Get our FREE Biblical Masculinity Framework before you go.',
         nextBestAction: 'email',
       });
@@ -76,7 +76,7 @@ export function usePersonalization() {
             secondaryCTA: 'Explore Resources',
             heroMessage: 'Stop Being Soft. Start Leading.',
             urgencyLevel: 'low',
-            showExitIntent: true,
+            showExitIntent: false,
             exitIntentOffer: 'Wait! Get our FREE Biblical Masculinity Framework before you go.',
             nextBestAction: 'email',
           });
@@ -90,7 +90,7 @@ export function usePersonalization() {
             secondaryCTA: 'Explore Resources',
             heroMessage: 'Stop Being Soft. Start Leading.',
             urgencyLevel: 'low',
-            showExitIntent: true,
+            showExitIntent: false,
             exitIntentOffer: 'Wait! Get our FREE Biblical Masculinity Framework before you go.',
             nextBestAction: 'email',
           });
@@ -103,7 +103,7 @@ export function usePersonalization() {
           secondaryCTA: 'Explore Resources',
           heroMessage: 'Stop Being Soft. Start Leading.',
           urgencyLevel: 'low',
-          showExitIntent: true,
+          false: true,
           exitIntentOffer: 'Wait! Get our FREE Biblical Masculinity Framework before you go.',
           nextBestAction: 'email',
         });
@@ -137,7 +137,7 @@ export function generatePersonalizationConfig(profile: VisitorProfile): Personal
     secondaryCTA: 'Explore Resources',
     heroMessage: 'Stop Being Soft. Start Leading.',
     urgencyLevel: 'low',
-    showExitIntent: true,
+    showExitIntent: false,
     exitIntentOffer: 'Wait! Get our FREE Biblical Masculinity Framework before you go.',
     nextBestAction: 'email',
   };
