@@ -20,6 +20,8 @@ import CommunityChat from '@/components/windows/CommunityChat';
 import { AuthProvider } from '@/lib/contexts/AuthContext';
 import { products } from '@/lib/data/products';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { usePersonalization } from '@/hooks/usePersonalization';
+import ExitIntentPopup from '@/components/ExitIntentPopup';
 
 export default function Home() {
   const { windows, openWindow } = useAppStore();
@@ -30,6 +32,9 @@ export default function Home() {
 
   // Initialize analytics tracking
   const { trackWindowOpen, trackEmailCapture } = useAnalytics();
+
+  // Initialize personalization
+  const { config, profile } = usePersonalization();
 
   // Get featured products for homepage
   const featuredProducts = products.filter(p => p.isFeatured);
@@ -194,6 +199,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-black text-white">
+      {/* Exit Intent Popup */}
+      <ExitIntentPopup />
+
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-black/80 backdrop-blur-md border-b border-red-900/20">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-4 flex items-center justify-between">
@@ -207,7 +215,7 @@ export default function Home() {
             onClick={enterHub}
             className="px-4 md:px-6 py-2 md:py-2 min-h-[44px] bg-red-600 hover:bg-red-700 rounded-lg text-sm md:text-base font-semibold transition-colors"
           >
-            Enter Hub
+            {config?.primaryCTA || 'Enter Hub'}
           </button>
         </div>
       </nav>
@@ -217,12 +225,16 @@ export default function Home() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-              Stop Being Soft.
+              {config?.heroMessage || 'Stop Being Soft.'}
               <br />
-              <span className="text-red-500">Start Leading.</span>
+              <span className="text-red-500">
+                {profile?.isReturning ? 'Ready to Take the Next Step?' : 'Start Leading.'}
+              </span>
             </h1>
             <p className="text-lg md:text-xl lg:text-2xl text-gray-400 mb-8 max-w-2xl mx-auto">
-              Biblical masculinity for men who refuse to compromise
+              {profile?.isReturning
+                ? `Welcome back! Let's pick up where you left off.`
+                : 'Biblical masculinity for men who refuse to compromise'}
             </p>
           </div>
 
@@ -267,7 +279,7 @@ export default function Home() {
               </div>
               <h3 className="text-2xl font-bold mb-3">24/7 Christian Radio</h3>
               <p className="text-gray-400 mb-6 leading-relaxed">
-                Non-stop Biblical teaching from Voddie Baucham, John MacArthur, Paul Washer, and more. Stream truth anytime.
+                Solid Bible teaching, preaching, singing, and storytelling. Your audio companion for truth anytime, anywhere.
               </p>
               <button
                 onClick={() => {

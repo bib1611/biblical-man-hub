@@ -292,7 +292,7 @@ export async function POST(request: NextRequest) {
     const { browser, browserVersion, os, osVersion, device, isMobile } = parseUserAgent(userAgent);
 
     // Create or update visitor
-    let visitor = db.getVisitor(visitorId);
+    let visitor = await db.getVisitor(visitorId);
 
     if (!visitor) {
       // New visitor - get geo data
@@ -425,10 +425,10 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    db.createOrUpdateVisitor(visitor);
+    await db.createOrUpdateVisitor(visitor);
 
     // Log event
-    db.addEvent({
+    await db.addEvent({
       id: uuidv4(),
       visitorId,
       sessionId,

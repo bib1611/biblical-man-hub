@@ -30,6 +30,7 @@ export default function BibleStudy() {
   const [showCopyMenu, setShowCopyMenu] = useState<string | null>(null);
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
 
   const highlightColors = [
     { name: 'yellow', class: 'bg-yellow-500/20 border-yellow-700/30', button: 'bg-yellow-600/20 hover:bg-yellow-600/40 text-yellow-400' },
@@ -38,6 +39,18 @@ export default function BibleStudy() {
     { name: 'red', class: 'bg-red-500/20 border-red-700/30', button: 'bg-red-600/20 hover:bg-red-600/40 text-red-400' },
     { name: 'purple', class: 'bg-purple-500/20 border-purple-700/30', button: 'bg-purple-600/20 hover:bg-purple-600/40 text-purple-400' },
   ];
+
+  useEffect(() => {
+    // Detect screen size for responsive sidebar behavior
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 768); // 768px is the md breakpoint
+    };
+
+    handleResize(); // Check on mount
+    window.addEventListener('resize', handleResize);
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     // Load saved data from localStorage
@@ -255,15 +268,15 @@ export default function BibleStudy() {
       {/* Left Sidebar - Navigation */}
       <motion.div
         initial={false}
-        animate={{ x: isSidebarOpen ? 0 : '-100%' }}
+        animate={{ x: isDesktop ? 0 : (isSidebarOpen ? 0 : '-100%') }}
         transition={{ type: 'tween', duration: 0.3 }}
-        className="w-64 border-r border-red-900/30 flex flex-col md:translate-x-0 fixed md:relative inset-y-0 left-0 z-30 bg-black/95 md:bg-transparent"
+        className="w-64 border-r border-gray-200 flex flex-col md:translate-x-0 fixed md:relative inset-y-0 left-0 z-30 bg-white md:bg-gray-50"
       >
         {/* Search */}
-        <div className="p-4 border-b border-red-900/30">
+        <div className="p-4 border-b border-gray-200">
           <div className="relative">
             <Search
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
               size={16}
             />
             <input
@@ -272,13 +285,13 @@ export default function BibleStudy() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              className="w-full pl-9 pr-3 py-2 bg-black/40 border border-red-900/30 rounded-lg text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-red-600/50"
+              className="w-full pl-9 pr-3 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
             />
           </div>
           {searchMode && (
             <button
               onClick={clearSearch}
-              className="mt-2 w-full px-3 py-1 bg-red-600/20 hover:bg-red-600/40 rounded-lg text-xs text-red-200 transition-colors"
+              className="mt-2 w-full px-3 py-1 bg-blue-100 hover:bg-blue-200 rounded-lg text-xs text-blue-700 transition-colors"
             >
               Clear Search
             </button>
@@ -298,8 +311,8 @@ export default function BibleStudy() {
                 }}
                 className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
                   selectedBook === book.name
-                    ? 'bg-red-600/30 text-red-200 font-semibold'
-                    : 'text-gray-400 hover:bg-red-950/20 hover:text-gray-300'
+                    ? 'bg-blue-100 text-blue-900 font-semibold'
+                    : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
                 }`}
               >
                 {book.name}
@@ -309,10 +322,10 @@ export default function BibleStudy() {
         </div>
 
         {/* Bookmarks */}
-        <div className="border-t border-red-900/30 p-4">
+        <div className="border-t border-gray-200 p-4">
           <button
             onClick={addBookmark}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-600/20 hover:bg-red-600/40 rounded-lg text-sm text-red-200 transition-colors"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-100 hover:bg-blue-200 rounded-lg text-sm text-blue-700 transition-colors"
           >
             <Bookmark size={16} />
             Bookmark Chapter
@@ -321,48 +334,66 @@ export default function BibleStudy() {
       </motion.div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col w-full md:w-auto">
+      <div className="flex-1 flex flex-col w-full md:w-auto bg-white">
         {/* Chapter Navigation */}
-        <div className="p-4 pl-16 md:pl-4 border-b border-red-900/30 flex items-center justify-between">
+        <div className="p-4 pl-16 md:pl-4 border-b border-gray-200 flex items-center justify-between bg-white">
           <div className="flex items-center gap-4">
-            <h2 className="text-xl md:text-xl text-base font-bold text-red-100">
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900">
               {searchMode ? `Search Results: "${searchQuery}"` : `${selectedBook} ${selectedChapter}`}
             </h2>
-            {!searchMode && <div className="flex items-center gap-1 overflow-x-auto scroll-smooth snap-x snap-mandatory md:snap-none scrollbar-hide">
-              {chapters.slice(0, 20).map((ch) => (
-                <button
-                  key={ch}
-                  onClick={() => setSelectedChapter(ch)}
-                  className={`w-10 h-10 md:w-8 md:h-8 rounded text-xs flex-shrink-0 snap-start transition-colors ${
-                    selectedChapter === ch
-                      ? 'bg-red-600/40 text-red-100 font-bold'
-                      : 'bg-gray-800/40 text-gray-400 hover:bg-gray-800/60'
-                  }`}
-                >
-                  {ch}
-                </button>
-              ))}
-              {chapters.length > 20 && (
+            {!searchMode && (
+              <>
+                {/* Mobile: Simple dropdown */}
                 <select
                   value={selectedChapter}
                   onChange={(e) => setSelectedChapter(Number(e.target.value))}
-                  className="ml-2 px-2 py-1 bg-gray-800/40 border border-gray-700/30 rounded text-xs text-gray-300"
+                  className="md:hidden px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg text-sm text-gray-700 font-medium"
                 >
-                  {chapters.slice(20).map((ch) => (
+                  {chapters.map((ch) => (
                     <option key={ch} value={ch}>
-                      {ch}
+                      Chapter {ch}
                     </option>
                   ))}
                 </select>
-              )}
-            </div>}
+
+                {/* Desktop: Chapter buttons */}
+                <div className="hidden md:flex items-center gap-1">
+                  {chapters.slice(0, 20).map((ch) => (
+                    <button
+                      key={ch}
+                      onClick={() => setSelectedChapter(ch)}
+                      className={`w-8 h-8 rounded text-xs flex-shrink-0 transition-colors ${
+                        selectedChapter === ch
+                          ? 'bg-blue-600 text-white font-bold'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      {ch}
+                    </button>
+                  ))}
+                  {chapters.length > 20 && (
+                    <select
+                      value={selectedChapter}
+                      onChange={(e) => setSelectedChapter(Number(e.target.value))}
+                      className="ml-2 px-2 py-1 bg-gray-100 border border-gray-300 rounded text-xs text-gray-700"
+                    >
+                      {chapters.slice(20).map((ch) => (
+                        <option key={ch} value={ch}>
+                          {ch}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                </div>
+              </>
+            )}
           </div>
 
           {/* Toolbar Buttons */}
           <div className="flex items-center gap-2">
             <button
               onClick={() => setCurrentView('home')}
-              className="flex items-center gap-2 px-3 py-3 md:py-2 min-h-[48px] md:min-h-0 bg-red-600/20 hover:bg-red-600/40 rounded-lg text-sm text-red-300 transition-colors"
+              className="flex items-center gap-2 px-3 py-3 md:py-2 min-h-[48px] md:min-h-0 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm text-gray-700 transition-colors"
               title="Return to home"
             >
               <Home size={16} />
@@ -370,14 +401,14 @@ export default function BibleStudy() {
             </button>
             <button
               onClick={() => setShowTutorial(true)}
-              className="flex items-center gap-2 px-3 py-3 md:py-2 min-h-[48px] md:min-h-0 bg-gray-700/20 hover:bg-gray-700/40 rounded-lg text-sm text-gray-300 transition-colors"
+              className="flex items-center gap-2 px-3 py-3 md:py-2 min-h-[48px] md:min-h-0 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm text-gray-700 transition-colors"
               title="Show tutorial"
             >
               <HelpCircle size={16} />
             </button>
             <button
               onClick={() => setShowNotepad(true)}
-              className="flex items-center gap-2 px-3 py-3 md:py-2 min-h-[48px] md:min-h-0 bg-blue-600/20 hover:bg-blue-600/40 rounded-lg text-sm text-blue-300 transition-colors"
+              className="flex items-center gap-2 px-3 py-3 md:py-2 min-h-[48px] md:min-h-0 bg-blue-100 hover:bg-blue-200 rounded-lg text-sm text-blue-700 transition-colors"
               title="Open notepad"
             >
               <FileText size={16} />
@@ -385,7 +416,7 @@ export default function BibleStudy() {
             </button>
             <button
               onClick={() => setShowAudioLibrary(true)}
-              className="flex items-center gap-2 px-3 py-3 md:py-2 min-h-[48px] md:min-h-0 bg-amber-600/20 hover:bg-amber-600/40 rounded-lg text-sm text-amber-300 transition-colors"
+              className="flex items-center gap-2 px-3 py-3 md:py-2 min-h-[48px] md:min-h-0 bg-amber-100 hover:bg-amber-200 rounded-lg text-sm text-amber-700 transition-colors"
               title="Audio library"
             >
               <Library size={16} />
@@ -394,7 +425,7 @@ export default function BibleStudy() {
             {audioVideoId && !searchMode && (
               <button
                 onClick={() => setShowAudio(!showAudio)}
-                className="flex items-center gap-2 px-3 py-3 md:py-2 min-h-[48px] md:min-h-0 bg-amber-600/20 hover:bg-amber-600/40 rounded-lg text-sm text-amber-200 transition-colors"
+                className="flex items-center gap-2 px-3 py-3 md:py-2 min-h-[48px] md:min-h-0 bg-amber-100 hover:bg-amber-200 rounded-lg text-sm text-amber-700 transition-colors"
               >
                 <Volume2 size={16} />
                 <span className="hidden xl:inline">{showAudio ? 'Hide' : 'Play'} Audio</span>
@@ -420,21 +451,21 @@ export default function BibleStudy() {
         )}
 
         {/* Verses */}
-        <div className="flex-1 overflow-auto p-4 md:p-6">
-          <div className="max-w-3xl mx-auto space-y-3 md:space-y-4">
+        <div className="flex-1 overflow-auto p-4 md:p-6 bg-gray-50">
+          <div className="max-w-3xl mx-auto space-y-1 md:space-y-1">
             {isSearching && (
               <div className="text-center py-12">
-                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
-                <p className="mt-4 text-gray-400">Searching the Scriptures...</p>
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <p className="mt-4 text-gray-600">Searching the Scriptures...</p>
               </div>
             )}
             {searchMode && !isSearching && searchResults.length === 0 && (
               <div className="text-center py-12">
-                <p className="text-gray-400">No verses found for "{searchQuery}"</p>
+                <p className="text-gray-600">No verses found for "{searchQuery}"</p>
               </div>
             )}
             {searchMode && !isSearching && searchResults.length > 0 && (
-              <div className="mb-4 text-sm text-gray-400">
+              <div className="mb-4 text-sm text-gray-600">
                 Found {searchResults.length} verse{searchResults.length !== 1 ? 's' : ''}
               </div>
             )}
@@ -451,18 +482,23 @@ export default function BibleStudy() {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: verse.verse * 0.02 }}
-                  className={`group p-3 md:p-4 rounded-lg transition-all ${
+                  className={`group p-2 md:p-3 rounded transition-all ${
                     highlightStyle
                       ? `${highlightStyle} border`
-                      : 'hover:bg-red-950/10'
+                      : 'hover:bg-blue-50/50'
                   }`}
                 >
-                  <div className="flex gap-3 md:gap-4">
-                    <span className="text-red-400 font-bold text-xs md:text-sm flex-shrink-0 pt-0.5">
+                  <div className="flex gap-2 md:gap-3">
+                    <a
+                      href={`#${verseKey}`}
+                      id={verseKey}
+                      className="text-blue-600 hover:text-blue-800 font-semibold text-sm md:text-base flex-shrink-0 pt-0.5 cursor-pointer transition-colors"
+                      title="Link to this verse"
+                    >
                       {searchMode ? `${verse.book} ${verse.chapter}:${verse.verse}` : verse.verse}
-                    </span>
+                    </a>
                     <div className="flex-1">
-                      <p className="text-gray-200 text-sm md:text-base leading-relaxed md:leading-relaxed">{verse.text}</p>
+                      <p className="text-gray-800 text-base md:text-lg leading-relaxed font-serif">{verse.text}</p>
 
                       {/* Verse Actions */}
                       <div className="mt-2 flex items-center gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">

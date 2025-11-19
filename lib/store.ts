@@ -29,7 +29,7 @@ const defaultWindows: Record<AppId, WindowState> = {
     title: 'Bible Study',
     isOpen: false,
     isMinimized: false,
-    isMaximized: false,
+    isMaximized: true,
     position: { x: 150, y: 150 },
     size: { width: 900, height: 700 },
     zIndex: 1,
