@@ -34,18 +34,18 @@ export default function ExitIntentPopup() {
       }
     };
 
-    // Also trigger after 30 seconds if high-value visitor
+    // TEST MODE: Show after 5 seconds for testing (change back to 30000 for production)
     const timer = setTimeout(() => {
-      if (!hasShown && profile && profile.leadScore >= 40 && !profile.hasEmail) {
+      if (!hasShown && !profile?.hasEmail) {
         setIsVisible(true);
         setHasShown(true);
         trackEvent('custom', {
           eventName: 'exit_intent_shown_timer',
-          leadScore: profile.leadScore,
-          timeOnSite: profile.timeOnSite,
+          leadScore: profile?.leadScore || 0,
+          timeOnSite: profile?.timeOnSite || 0,
         });
       }
-    }, 30000);
+    }, 5000); // Changed from 30000 to 5000 for testing
 
     document.addEventListener('mouseleave', handleMouseLeave);
 

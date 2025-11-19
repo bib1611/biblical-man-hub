@@ -596,6 +596,27 @@ export default function Home() {
           <p className="text-sm">Built for men who lead.</p>
         </div>
       </footer>
+
+      {/* DEBUG PANEL - Remove in production */}
+      {process.env.NODE_ENV === 'development' && psychographic && (
+        <div className="fixed bottom-4 right-4 bg-black/90 border border-green-500 rounded-lg p-4 max-w-md text-xs text-green-400 font-mono z-50">
+          <div className="font-bold text-green-300 mb-2">🧠 Psychographic Debug</div>
+          <div className="space-y-1">
+            <div><strong>Personality:</strong> {psychographic.personalityType}</div>
+            <div><strong>Conversion Readiness:</strong> {psychographic.conversionReadiness}/100</div>
+            <div><strong>Message Framing:</strong> {psychographic.messageFraming}</div>
+            <div><strong>Copy Tone:</strong> {psychographic.copyTone}</div>
+            <div><strong>Urgency Level:</strong> {psychographic.urgencyLevel}</div>
+            <div className="pt-2 mt-2 border-t border-green-800">
+              <strong>Current Headline:</strong><br />
+              <span className="text-white text-[10px]">{messaging?.headline}</span>
+            </div>
+            <div className="pt-2 mt-2 border-t border-green-800">
+              <strong>CTA:</strong> {messaging?.cta}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
