@@ -28,17 +28,20 @@ export default function AdminDashboard() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [engagement, setEngagement] = useState<any>(null);
   const [psychographics, setPsychographics] = useState<any>(null);
+  const [enhancedAnalytics, setEnhancedAnalytics] = useState<any>(null);
   const [selectedLeadStatus, setSelectedLeadStatus] = useState<string>('all');
-  const [activeTab, setActiveTab] = useState<'overview' | 'engagement' | 'psychographics'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'engagement' | 'psychographics' | 'enhanced'>('overview');
   const [loading, setLoading] = useState(true);
   const [recoveredLeads, setRecoveredLeads] = useState<any[]>([]);
   const [recovering, setRecovering] = useState(false);
+  const [timeRange, setTimeRange] = useState<'1h' | '24h' | '7d' | '30d'>('24h');
 
   useEffect(() => {
     fetchAnalytics();
     fetchLeads();
     fetchEngagement();
     fetchPsychographics();
+    fetchEnhancedAnalytics();
 
     // Refresh every 30 seconds
     const interval = setInterval(() => {
@@ -46,10 +49,11 @@ export default function AdminDashboard() {
       fetchLeads();
       fetchEngagement();
       fetchPsychographics();
+      fetchEnhancedAnalytics();
     }, 30000);
 
     return () => clearInterval(interval);
-  }, [selectedLeadStatus]);
+  }, [selectedLeadStatus, timeRange]);
 
   const fetchAnalytics = async () => {
     try {
@@ -94,6 +98,16 @@ export default function AdminDashboard() {
       setPsychographics(data);
     } catch (error) {
       console.error('Failed to fetch psychographics:', error);
+    }
+  };
+
+  const fetchEnhancedAnalytics = async () => {
+    try {
+      const response = await fetch(`/api/analytics/dashboard?timeRange=${timeRange}`);
+      const data = await response.json();
+      setEnhancedAnalytics(data);
+    } catch (error) {
+      console.error('Failed to fetch enhanced analytics:', error);
     }
   };
 
@@ -184,6 +198,17 @@ export default function AdminDashboard() {
           >
             <Brain className="inline w-4 h-4 mr-2" />
             Psychographics (Psy-Ops)
+          </button>
+          <button
+            onClick={() => setActiveTab('enhanced')}
+            className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+              activeTab === 'enhanced'
+                ? 'bg-green-600/40 text-green-200 border border-green-600/50'
+                : 'bg-gray-800/40 text-gray-400 border border-gray-700/30 hover:bg-gray-800/60'
+            }`}
+          >
+            <Activity className="inline w-4 h-4 mr-2" />
+            Enhanced Tracking (GA4 + Clarity)
           </button>
         </div>
       </div>
@@ -879,6 +904,229 @@ export default function AdminDashboard() {
                 </div>
               )}
             </div>
+          </div>
+        </>
+        )}
+
+        {/* ENHANCED TRACKING TAB (GA4 + Clarity + Cookie Consent) */}
+        {activeTab === 'enhanced' && enhancedAnalytics && (
+        <>
+          {/* Time Range Selector */}
+          <div className="flex justify-end mb-6">
+            <div className="flex gap-2">
+              {(['1h', '24h', '7d', '30d'] as const).map((range) => (
+                <button
+                  key={range}
+                  onClick={() => setTimeRange(range)}
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
+                    timeRange === range
+                      ? 'bg-green-600/40 text-green-200 border border-green-600/50'
+                      : 'bg-gray-800/40 text-gray-400 border border-gray-700/30 hover:bg-gray-800/60'
+                  }`}
+                >
+                  {range}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Enhanced Metrics Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+            <StatCard
+              icon={<Users />}
+              title="Total Visitors"
+              value={enhancedAnalytics.metrics?.totalVisitors || 0}
+              subtitle={`${enhancedAnalytics.metrics?.newVisitors || 0} new, ${enhancedAnalytics.metrics?.returningVisitors || 0} returning`}
+              color="blue"
+            />
+            <StatCard
+              icon={<Mail />}
+              title="Email Capture"
+              value={`${enhancedAnalytics.metrics?.emailCaptureRate || 0}%`}
+              subtitle="conversion rate"
+              color="green"
+            />
+            <StatCard
+              icon={<TrendingUp />}
+              title="Avg Lead Score"
+              value={enhancedAnalytics.metrics?.avgLeadScore || 0}
+              subtitle="out of 100"
+              color="purple"
+            />
+            <StatCard
+              icon={<Activity />}
+              title="Total Events"
+              value={enhancedAnalytics.metrics?.totalEvents || 0}
+              subtitle="tracked actions"
+              color="amber"
+            />
+            <StatCard
+              icon={<Target />}
+              title="Exit Intent Conv."
+              value={`${enhancedAnalytics.conversions?.exitIntentConversionRate || 0}%`}
+              subtitle={`${enhancedAnalytics.conversions?.exitIntentConverted || 0}/${enhancedAnalytics.conversions?.exitIntentShown || 0} shown`}
+              color="green"
+            />
+          </div>
+
+          {/* Event Breakdown */}
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
+            <div className="bg-gray-900/40 border border-gray-800 rounded-xl p-6">
+              <h3 className="text-lg font-bold text-gray-100 mb-4 flex items-center gap-2">
+                <Zap className="text-amber-500" size={20} />
+                Event Breakdown
+              </h3>
+              <div className="space-y-2">
+                {enhancedAnalytics.events?.byType && Object.entries(enhancedAnalytics.events.byType).length > 0 ? (
+                  Object.entries(enhancedAnalytics.events.byType)
+                    .sort((a: any, b: any) => b[1] - a[1])
+                    .map(([type, count]: [string, any]) => (
+                      <div key={type} className="flex justify-between items-center p-2 bg-black/40 rounded">
+                        <span className="text-sm text-gray-300 capitalize">{type.replace(/_/g, ' ')}</span>
+                        <span className="text-lg font-bold text-amber-400">{count}</span>
+                      </div>
+                    ))
+                ) : (
+                  <div className="text-center py-8 text-gray-500">
+                    <p>No events tracked yet</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="bg-gray-900/40 border border-gray-800 rounded-xl p-6">
+              <h3 className="text-lg font-bold text-gray-100 mb-4 flex items-center gap-2">
+                <ExternalLink className="text-blue-500" size={20} />
+                Traffic Sources
+              </h3>
+              <div className="space-y-2">
+                {enhancedAnalytics.trafficSources && Object.entries(enhancedAnalytics.trafficSources).length > 0 ? (
+                  Object.entries(enhancedAnalytics.trafficSources)
+                    .sort((a: any, b: any) => b[1] - a[1])
+                    .slice(0, 8)
+                    .map(([source, count]: [string, any]) => (
+                      <div key={source} className="flex justify-between items-center p-2 bg-black/40 rounded">
+                        <span className="text-sm text-gray-300">{source}</span>
+                        <span className="text-lg font-bold text-blue-400">{count}</span>
+                      </div>
+                    ))
+                ) : (
+                  <div className="text-center py-8 text-gray-500">
+                    <p>No traffic sources tracked yet</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Psychographic Distribution */}
+          <div className="bg-gray-900/40 border border-gray-800 rounded-xl p-6 mb-6">
+            <h3 className="text-lg font-bold text-gray-100 mb-4 flex items-center gap-2">
+              <Brain className="text-purple-500" size={20} />
+              Psychographic Distribution
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {enhancedAnalytics.psychographics && Object.entries(enhancedAnalytics.psychographics).length > 0 ? (
+                Object.entries(enhancedAnalytics.psychographics).map(([type, count]: [string, any]) => (
+                  <div key={type} className="p-4 bg-black/40 rounded-lg border border-purple-900/30">
+                    <div className="text-xs text-purple-400 uppercase mb-1 capitalize">{type}</div>
+                    <div className="text-2xl font-bold text-gray-200">{count}</div>
+                    <div className="text-xs text-gray-500">visitors</div>
+                  </div>
+                ))
+              ) : (
+                <div className="col-span-4 text-center py-8 text-gray-500">
+                  <p>No psychographic data yet</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Conversion Funnel */}
+          <div className="bg-gray-900/40 border border-gray-800 rounded-xl p-6 mb-6">
+            <h3 className="text-lg font-bold text-gray-100 mb-4 flex items-center gap-2">
+              <Target className="text-green-500" size={20} />
+              Conversion Funnel
+            </h3>
+            <div className="grid md:grid-cols-3 gap-4">
+              <div className="p-4 bg-gradient-to-br from-blue-950/40 to-black border border-blue-900/30 rounded-xl">
+                <div className="text-sm text-blue-400 mb-2">Email Submissions</div>
+                <div className="text-4xl font-bold text-blue-300 mb-1">{enhancedAnalytics.conversions?.emailSubmits || 0}</div>
+                <div className="text-xs text-gray-500">total conversions</div>
+              </div>
+              <div className="p-4 bg-gradient-to-br from-amber-950/40 to-black border border-amber-900/30 rounded-xl">
+                <div className="text-sm text-amber-400 mb-2">Exit Intent Shown</div>
+                <div className="text-4xl font-bold text-amber-300 mb-1">{enhancedAnalytics.conversions?.exitIntentShown || 0}</div>
+                <div className="text-xs text-gray-500">popups displayed</div>
+              </div>
+              <div className="p-4 bg-gradient-to-br from-green-950/40 to-black border border-green-900/30 rounded-xl">
+                <div className="text-sm text-green-400 mb-2">Exit Intent Converted</div>
+                <div className="text-4xl font-bold text-green-300 mb-1">{enhancedAnalytics.conversions?.exitIntentConverted || 0}</div>
+                <div className="text-xs text-gray-500">{enhancedAnalytics.conversions?.exitIntentConversionRate || 0}% conversion</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Recent Events */}
+          <div className="bg-gray-900/40 border border-gray-800 rounded-xl p-6">
+            <h3 className="text-lg font-bold text-gray-100 mb-4 flex items-center gap-2">
+              <Activity className="text-red-500" size={20} />
+              Recent Events (Last 50)
+            </h3>
+            <div className="space-y-2 max-h-96 overflow-auto">
+              {enhancedAnalytics.events?.recent && enhancedAnalytics.events.recent.length > 0 ? (
+                enhancedAnalytics.events.recent.map((event: any, i: number) => (
+                  <div
+                    key={i}
+                    className="p-3 bg-black/40 rounded-lg border border-gray-800/50 text-xs"
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-semibold text-gray-300 capitalize">{event.event_type?.replace(/_/g, ' ')}</span>
+                      <span className="text-gray-500">{new Date(event.created_at).toLocaleString()}</span>
+                    </div>
+                    {event.event_data && (
+                      <div className="text-gray-500 mt-1">
+                        {typeof event.event_data === 'string'
+                          ? event.event_data.substring(0, 100)
+                          : JSON.stringify(event.event_data).substring(0, 100)}
+                      </div>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  <p>No recent events</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Analytics Links */}
+          <div className="mt-6 grid md:grid-cols-2 gap-4">
+            <a
+              href="https://analytics.google.com/analytics/web/#/p455284742/reports/intelligenthome"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-between p-4 bg-gradient-to-br from-blue-950/40 to-black border border-blue-900/30 rounded-xl hover:border-blue-600/50 transition-all"
+            >
+              <div>
+                <div className="font-bold text-blue-300 mb-1">Open Google Analytics 4</div>
+                <div className="text-xs text-gray-500">View full GA4 dashboard (ID: G-FK1SM7ZE9E)</div>
+              </div>
+              <ExternalLink className="text-blue-400" size={20} />
+            </a>
+            <a
+              href="https://clarity.microsoft.com/projects/view/u8n8nrd4x3/dashboard"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-between p-4 bg-gradient-to-br from-purple-950/40 to-black border border-purple-900/30 rounded-xl hover:border-purple-600/50 transition-all"
+            >
+              <div>
+                <div className="font-bold text-purple-300 mb-1">Open Microsoft Clarity</div>
+                <div className="text-xs text-gray-500">View session recordings & heatmaps (ID: u8n8nrd4x3)</div>
+              </div>
+              <ExternalLink className="text-purple-400" size={20} />
+            </a>
           </div>
         </>
         )}
