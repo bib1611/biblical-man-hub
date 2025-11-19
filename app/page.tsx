@@ -288,13 +288,21 @@ export default function Home() {
 
               <form onSubmit={handleEmailSubmit} className="space-y-3">
                 {submitStatus === 'success' && (
-                  <div className="p-4 bg-green-900/30 border-2 border-green-600/60 rounded-xl text-green-200 text-center text-sm">
-                    <strong>🎉 Success!</strong> Check your email (and spam folder).
+                  <div className="p-5 bg-green-600/90 border-2 border-green-400 rounded-xl text-white text-center font-semibold shadow-lg shadow-green-600/50 animate-pulse">
+                    <div className="flex items-center justify-center gap-2 text-lg">
+                      <span className="text-2xl">🎉</span>
+                      <strong>Success! You're In!</strong>
+                    </div>
+                    <p className="text-sm mt-2 text-green-100">Check your email (and spam folder) for instant access.</p>
                   </div>
                 )}
                 {submitStatus === 'error' && (
-                  <div className="p-4 bg-red-900/30 border-2 border-red-600/60 rounded-xl text-red-200 text-center text-sm">
-                    <strong>Error!</strong> Please try again.
+                  <div className="p-5 bg-red-600/90 border-2 border-red-400 rounded-xl text-white text-center font-semibold shadow-lg shadow-red-600/50">
+                    <div className="flex items-center justify-center gap-2 text-lg">
+                      <span className="text-2xl">⚠️</span>
+                      <strong>Submission Failed</strong>
+                    </div>
+                    <p className="text-sm mt-2 text-red-100">Please check your email address and try again.</p>
                   </div>
                 )}
                 <div className="flex flex-col sm:flex-row gap-3">
@@ -362,7 +370,7 @@ export default function Home() {
 
       {/* Scroll Incentive: "Keep Reading" Visual Anchor */}
       <div className="py-6 text-center">
-        <div className="inline-flex flex-col items-center gap-2 opacity-60 hover:opacity-100 transition-opacity">
+        <div className="inline-flex flex-col items-center gap-2 opacity-60">
           <div className="text-sm text-gray-500 font-semibold">KEEP SCROLLING</div>
           <div className="w-6 h-10 border-2 border-gray-600 rounded-full flex items-start justify-center p-2">
             <div className="w-1 h-2 bg-gray-600 rounded-full animate-bounce" />
@@ -573,7 +581,7 @@ export default function Home() {
             {featuredProducts.map((product) => (
               <div
                 key={product.id}
-                className="p-6 bg-gradient-to-br from-red-950/40 to-black border border-red-900/30 rounded-xl hover:border-red-600/50 transition-all group"
+                className="p-6 bg-gradient-to-br from-red-950/40 to-black border border-red-900/30 rounded-xl"
               >
                 <div className="flex items-center justify-between mb-3">
                   {product.price === 0 ? (
