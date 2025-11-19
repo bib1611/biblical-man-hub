@@ -103,7 +103,7 @@ export function usePersonalization() {
           secondaryCTA: 'Explore Resources',
           heroMessage: 'Stop Being Soft. Start Leading.',
           urgencyLevel: 'low',
-          false: true,
+          showExitIntent: false,
           exitIntentOffer: 'Wait! Get our FREE Biblical Masculinity Framework before you go.',
           nextBestAction: 'email',
         });
