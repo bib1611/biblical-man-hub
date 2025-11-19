@@ -48,7 +48,20 @@ export function usePersonalization() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!visitorId) return;
+    // ⚠️ SAFETY: If no visitorId yet, set fallback config immediately so popup works
+    if (!visitorId) {
+      setConfig({
+        primaryCTA: 'Get Free Access',
+        secondaryCTA: 'Explore Resources',
+        heroMessage: 'Stop Being Soft. Start Leading.',
+        urgencyLevel: 'low',
+        showExitIntent: true,
+        exitIntentOffer: 'Wait! Get our FREE Biblical Masculinity Framework before you go.',
+        nextBestAction: 'email',
+      });
+      setIsLoading(false);
+      return;
+    }
 
     // Fetch visitor profile from analytics
     async function loadProfile() {
@@ -57,13 +70,43 @@ export function usePersonalization() {
         if (response.ok) {
           const data = await response.json();
           setProfile(data.profile);
-          setConfig(data.config);
+          // ⚠️ SAFETY: Ensure config is set even if API returns incomplete data
+          setConfig(data.config || {
+            primaryCTA: 'Get Free Access',
+            secondaryCTA: 'Explore Resources',
+            heroMessage: 'Stop Being Soft. Start Leading.',
+            urgencyLevel: 'low',
+            showExitIntent: true,
+            exitIntentOffer: 'Wait! Get our FREE Biblical Masculinity Framework before you go.',
+            nextBestAction: 'email',
+          });
           setPsychographic(data.psychographic);
           setMessaging(data.messaging);
           setTiming(data.timing);
+        } else {
+          // ⚠️ FALLBACK: If API returns non-200, still set default config
+          setConfig({
+            primaryCTA: 'Get Free Access',
+            secondaryCTA: 'Explore Resources',
+            heroMessage: 'Stop Being Soft. Start Leading.',
+            urgencyLevel: 'low',
+            showExitIntent: true,
+            exitIntentOffer: 'Wait! Get our FREE Biblical Masculinity Framework before you go.',
+            nextBestAction: 'email',
+          });
         }
       } catch (error) {
         console.error('Failed to load personalization:', error);
+        // ⚠️ FALLBACK: Set default config so popup still works even if API fails
+        setConfig({
+          primaryCTA: 'Get Free Access',
+          secondaryCTA: 'Explore Resources',
+          heroMessage: 'Stop Being Soft. Start Leading.',
+          urgencyLevel: 'low',
+          showExitIntent: true,
+          exitIntentOffer: 'Wait! Get our FREE Biblical Masculinity Framework before you go.',
+          nextBestAction: 'email',
+        });
       } finally {
         setIsLoading(false);
       }

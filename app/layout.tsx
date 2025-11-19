@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { BehavioralTracker } from "@/components/BehavioralTracker";
 import ExitIntentPopup from "@/components/ExitIntentPopup";
+import { SilentErrorBoundary } from "@/components/ErrorBoundary";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
