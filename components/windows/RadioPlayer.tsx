@@ -177,7 +177,7 @@ export default function RadioPlayer() {
 
   // Apple Music Style Layout
   return (
-    <div className="h-full flex flex-col bg-gradient-to-b from-zinc-900 to-black text-white relative overflow-hidden">
+    <div className="h-full flex flex-col bg-gradient-to-b from-zinc-900 to-black text-white relative overflow-auto">
       {/* Background Artwork Blur - Apple Music style */}
       <div
         className="absolute inset-0 opacity-30 blur-3xl"
