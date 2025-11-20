@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { BookOpen, ExternalLink, Clock, TrendingUp, Flame } from 'lucide-react';
+import Link from 'next/link';
 
 interface Article {
   id: string;
@@ -135,11 +136,10 @@ export default function SubstackArticles() {
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
-              className={`px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-semibold transition-all whitespace-nowrap ${
-                selectedCategory === category
-                  ? 'bg-blue-600/40 text-blue-200 border border-blue-600/50'
-                  : 'bg-gray-800/40 text-gray-400 border border-gray-700/30 hover:bg-gray-800/60'
-              }`}
+              className={`px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-semibold transition-all whitespace-nowrap ${selectedCategory === category
+                ? 'bg-blue-600/40 text-blue-200 border border-blue-600/50'
+                : 'bg-gray-800/40 text-gray-400 border border-gray-700/30 hover:bg-gray-800/60'
+                }`}
             >
               {category === 'all' ? 'All Articles' : category}
             </button>
@@ -156,11 +156,10 @@ export default function SubstackArticles() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
-              className={`relative flex flex-col p-5 md:p-6 rounded-xl border transition-all hover:scale-[1.02] ${
-                article.isFeatured
-                  ? 'bg-gradient-to-br from-blue-950/40 to-cyan-950/30 border-blue-600/50 hover:border-blue-500/70'
-                  : 'bg-gradient-to-br from-gray-950/30 to-black/40 border-gray-700/30 hover:border-blue-600/50'
-              }`}
+              className={`relative flex flex-col p-5 md:p-6 rounded-xl border transition-all hover:scale-[1.02] ${article.isFeatured
+                ? 'bg-gradient-to-br from-blue-950/40 to-cyan-950/30 border-blue-600/50 hover:border-blue-500/70'
+                : 'bg-gradient-to-br from-gray-950/30 to-black/40 border-gray-700/30 hover:border-blue-600/50'
+                }`}
             >
               {/* Featured Badge */}
               {article.isFeatured && (
@@ -209,18 +208,27 @@ export default function SubstackArticles() {
               </div>
 
               {/* Read Button */}
-              <a
-                href={article.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full py-2.5 rounded-lg font-semibold text-white transition-all flex items-center justify-center gap-2 group bg-gradient-to-r from-blue-600/80 to-cyan-600/80 hover:from-blue-500 hover:to-cyan-500"
-              >
-                Read Article
-                <ExternalLink
-                  size={14}
-                  className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"
-                />
-              </a>
+              {article.id === '6' ? (
+                <Link
+                  href="/articles/i-fought-beasts-at-ephesus"
+                  className="w-full py-2.5 rounded-lg font-semibold text-white transition-all flex items-center justify-center gap-2 group bg-gradient-to-r from-blue-600/80 to-cyan-600/80 hover:from-blue-500 hover:to-cyan-500"
+                >
+                  Read Article
+                </Link>
+              ) : (
+                <a
+                  href={article.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-2.5 rounded-lg font-semibold text-white transition-all flex items-center justify-center gap-2 group bg-gradient-to-r from-blue-600/80 to-cyan-600/80 hover:from-blue-500 hover:to-cyan-500"
+                >
+                  Read Article
+                  <ExternalLink
+                    size={14}
+                    className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"
+                  />
+                </a>
+              )}
             </motion.article>
           ))}
         </div>
