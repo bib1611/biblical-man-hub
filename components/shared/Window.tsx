@@ -94,11 +94,11 @@ export default function Window({ id, children }: WindowProps) {
       ? { top: 0, left: 0, right: 0, bottom: 80, width: '100%', height: 'calc(100% - 80px)' } // Full screen on mobile, leave space for bottom nav
       : { top: 0, left: 80, right: 0, bottom: 0, width: 'calc(100% - 80px)', height: '100%' } // Leave space for dock on desktop
     : {
-        top: windowState.position.y,
-        left: windowState.position.x,
-        width: windowState.size.width,
-        height: windowState.size.height,
-      };
+      top: windowState.position.y,
+      left: windowState.position.x,
+      width: windowState.size.width,
+      height: windowState.size.height,
+    };
 
   return (
     <motion.div
@@ -107,7 +107,7 @@ export default function Window({ id, children }: WindowProps) {
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
       transition={{ duration: 0.2 }}
-      className="fixed overflow-hidden rounded-lg shadow-2xl border border-red-900/50 bg-black/95 backdrop-blur-md"
+      className="fixed overflow-hidden rounded-lg shadow-2xl border border-white/10 bg-black"
       style={{
         ...windowStyle,
         zIndex: windowState.zIndex,
@@ -116,10 +116,10 @@ export default function Window({ id, children }: WindowProps) {
     >
       {/* Window Title Bar */}
       <div
-        className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-red-950/80 to-black/80 border-b border-red-900/30 cursor-grab active:cursor-grabbing"
+        className="flex items-center justify-between px-4 py-3 bg-black border-b border-white/10 cursor-grab active:cursor-grabbing"
         onMouseDown={handleMouseDown}
       >
-        <h2 className="text-sm font-bold text-red-100 tracking-wide uppercase">
+        <h2 className="text-sm font-bold text-white tracking-wide uppercase">
           {windowState.title}
         </h2>
 
@@ -129,32 +129,32 @@ export default function Window({ id, children }: WindowProps) {
             <>
               <button
                 onClick={() => minimizeWindow(id)}
-                className="w-8 h-8 rounded-full bg-yellow-600/20 hover:bg-yellow-600/40 border border-yellow-700/50 flex items-center justify-center transition-all hover:scale-110"
+                className="w-8 h-8 rounded-full border border-white/20 hover:bg-white/10 flex items-center justify-center transition-all hover:scale-110"
                 title="Minimize"
               >
-                <Minus size={14} className="text-yellow-400" />
+                <Minus size={14} className="text-white/60" />
               </button>
               <button
                 onClick={() => maximizeWindow(id)}
-                className="w-8 h-8 rounded-full bg-green-600/20 hover:bg-green-600/40 border border-green-700/50 flex items-center justify-center transition-all hover:scale-110"
+                className="w-8 h-8 rounded-full border border-white/20 hover:bg-white/10 flex items-center justify-center transition-all hover:scale-110"
                 title="Maximize"
               >
-                <Square size={12} className="text-green-400" />
+                <Square size={12} className="text-white/60" />
               </button>
             </>
           )}
           <button
             onClick={() => closeWindow(id)}
-            className="w-12 h-12 md:w-8 md:h-8 rounded-full bg-red-600/20 hover:bg-red-600/60 border border-red-700/50 flex items-center justify-center transition-all hover:scale-110"
+            className="w-12 h-12 md:w-8 md:h-8 rounded-full border border-white/20 hover:bg-white/10 flex items-center justify-center transition-all hover:scale-110"
             title="Close"
           >
-            <X size={isMobile ? 18 : 14} className="text-red-400" />
+            <X size={isMobile ? 18 : 14} className="text-white/60" />
           </button>
         </div>
       </div>
 
       {/* Window Content */}
-      <div className="h-[calc(100%-52px)] overflow-auto bg-black/40 backdrop-blur-sm">
+      <div className="h-[calc(100%-52px)] overflow-auto bg-black">
         {children}
       </div>
     </motion.div>

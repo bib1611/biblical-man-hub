@@ -120,12 +120,12 @@ export default function Home() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="relative w-screen h-screen overflow-hidden bg-gradient-to-br from-black via-red-950/10 to-black"
+        className="relative w-screen h-screen overflow-hidden bg-black"
       >
         <div
-          className="absolute inset-0 opacity-5"
+          className="absolute inset-0 opacity-[0.02]"
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ff0000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
           }}
         />
 
@@ -204,18 +204,18 @@ export default function Home() {
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="text-center max-w-2xl px-8">
                 <div className="mb-6 inline-block">
-                  <div className="w-24 h-24 bg-gradient-to-br from-red-600 to-red-900 rounded-2xl flex items-center justify-center shadow-2xl shadow-red-900/50">
+                  <div className="w-24 h-24 border-2 border-white/20 rounded-2xl flex items-center justify-center">
                     <span className="text-5xl font-bold text-white">†</span>
                   </div>
                 </div>
-                <h1 className="text-3xl md:text-5xl font-bold text-red-100 mb-4 tracking-tight">
+                <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight">
                   The Biblical Man Hub
                 </h1>
                 <p className="text-lg md:text-xl text-gray-400 mb-8">
                   Your command center for Biblical transformation.
                 </p>
                 <p className="text-xs md:text-sm text-gray-500">
-                  Click an icon at the bottom to get started
+                  Click an icon to get started
                 </p>
               </div>
             </div>
