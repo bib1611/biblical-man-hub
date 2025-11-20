@@ -14,6 +14,7 @@ import {
     LogOut
 } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
+import MiniPlayer from '@/components/MiniPlayer';
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
@@ -38,6 +39,9 @@ export default function DashboardLayout({ children, activeApp, onAppChange }: Da
 
     if (!isClient) return null;
 
+
+    // ... (inside component)
+
     return (
         <div className="flex h-screen w-full bg-black text-white overflow-hidden">
             {/* Desktop Sidebar */}
@@ -57,8 +61,8 @@ export default function DashboardLayout({ children, activeApp, onAppChange }: Da
                                 key={item.id}
                                 onClick={() => onAppChange(item.id)}
                                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${isActive
-                                        ? 'bg-white text-black font-medium'
-                                        : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                                    ? 'bg-white text-black font-medium'
+                                    : 'text-gray-400 hover:bg-white/5 hover:text-white'
                                     }`}
                             >
                                 <Icon size={20} />
@@ -67,6 +71,13 @@ export default function DashboardLayout({ children, activeApp, onAppChange }: Da
                         );
                     })}
                 </nav>
+
+                {/* Mini Player for Desktop */}
+                {activeApp !== 'radio' && (
+                    <div className="border-t border-white/10 pt-4">
+                        <MiniPlayer onExpand={() => onAppChange('radio')} />
+                    </div>
+                )}
 
                 <div className="p-4 border-t border-white/10">
                     <button className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white transition-colors">
@@ -93,6 +104,13 @@ export default function DashboardLayout({ children, activeApp, onAppChange }: Da
                 <main className="flex-1 overflow-auto relative bg-black">
                     {children}
                 </main>
+
+                {/* Mini Player for Mobile */}
+                {activeApp !== 'radio' && (
+                    <div className="md:hidden border-t border-white/10 bg-black">
+                        <MiniPlayer onExpand={() => onAppChange('radio')} />
+                    </div>
+                )}
 
                 {/* Mobile Bottom Navigation */}
                 <nav className="md:hidden flex items-center justify-around p-2 border-t border-white/10 bg-black pb-safe">
