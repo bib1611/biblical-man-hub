@@ -47,10 +47,10 @@ export async function GET(request: NextRequest) {
       pagesVisited: [],
       windowsOpened: user.uiState?.windowsOpened || [],
       trafficSource: user.preferences?.original_traffic_source,
-      trafficMedium: null,
-      country: null,
-      city: null,
-      timezone: null,
+      trafficMedium: undefined,
+      country: undefined,
+      city: undefined,
+      timezone: undefined,
     } : {
       // Old visitor_profiles system
       visitorId: visitor?.id || visitorId,
