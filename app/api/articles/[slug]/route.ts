@@ -64,34 +64,43 @@ function parseSubstackArticle(html: string, slug: string) {
     const imageMatch = html.match(/<meta property="og:image" content="([^"]+)"/);
     const imageUrl = imageMatch ? imageMatch[1] : null;
 
-    // Extract article content
-    // Try multiple patterns to find Substack content
-    let contentMatch = html.match(/<div[^>]*class="[^"]*available-content[^"]*"[^>]*>([\s\S]*?)<\/div>\s*<div[^>]*class="[^"]*subscription-widget/);
+    // Extract article content - extract just paragraphs and headings
+    const paragraphs: string[] = [];
+    const headings: string[] = [];
 
-    if (!contentMatch) {
-      // Try alternative pattern
-      contentMatch = html.match(/<article[^>]*>([\s\S]*?)<\/article>/);
-    }
-
-    if (!contentMatch) {
-      // Try finding main content area
-      contentMatch = html.match(/<div[^>]*class="[^"]*body[^"]*"[^>]*>([\s\S]*?)<\/div>/);
-    }
-
-    let contentHtml = contentMatch ? contentMatch[1] : '';
-
-    // If still no content, try to extract paragraphs from the page
-    if (!contentHtml) {
-      const paragraphs = html.match(/<p[^>]*>([\s\S]*?)<\/p>/g);
-      if (paragraphs && paragraphs.length > 3) {
-        // Take paragraphs that look like article content (longer than 50 chars)
-        contentHtml = paragraphs
-          .filter(p => cleanHtml(p).length > 50)
-          .join('\n');
+    // Get all paragraphs
+    const pMatches = html.match(/<p[^>]*>([\s\S]*?)<\/p>/g) || [];
+    for (const p of pMatches) {
+      const cleaned = cleanHtml(p.replace(/<p[^>]*>/, '').replace(/<\/p>/, ''));
+      // Only include substantial paragraphs (more than 30 chars, not subscription text)
+      if (cleaned.length > 30 &&
+          !cleaned.includes('Subscribe') &&
+          !cleaned.includes('Type your email') &&
+          !cleaned.includes('paid subscriber') &&
+          !cleaned.includes('free subscriber') &&
+          !cleaned.includes('@') && // likely email
+          !cleaned.includes('Share') &&
+          !cleaned.toLowerCase().includes('comments')) {
+        paragraphs.push(`<p>${cleaned}</p>`);
       }
     }
 
-    // Clean up the content
+    // Get all h2/h3 headings
+    const h2Matches = html.match(/<h2[^>]*>([\s\S]*?)<\/h2>/g) || [];
+    const h3Matches = html.match(/<h3[^>]*>([\s\S]*?)<\/h3>/g) || [];
+
+    for (const h of [...h2Matches, ...h3Matches]) {
+      const cleaned = cleanHtml(h.replace(/<h[23][^>]*>/, '').replace(/<\/h[23]>/, ''));
+      if (cleaned.length > 3) {
+        headings.push(h.includes('<h2') ? `<h2>${cleaned}</h2>` : `<h3>${cleaned}</h3>`);
+      }
+    }
+
+    // Build clean content from paragraphs (take the main body paragraphs)
+    // Usually the article starts after the first few meta paragraphs
+    let contentHtml = paragraphs.slice(0, Math.min(paragraphs.length, 50)).join('\n');
+
+    // Clean up
     contentHtml = cleanSubstackContent(contentHtml);
 
     // Extract plain text preview (first 200 chars)
