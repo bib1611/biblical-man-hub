@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Pause, Volume2, VolumeX, Radio as RadioIcon, Music, Mic } from 'lucide-react';
 import { useRadioEngagement } from '@/hooks/useRadioEngagement';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { useRadioStore } from '@/lib/store/radio';
 
 interface NowPlayingData {
   title?: string;
@@ -13,15 +14,17 @@ interface NowPlayingData {
 }
 
 export default function RadioPlayer() {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(0.8);
-  const [isMuted, setIsMuted] = useState(false);
-  const [nowPlaying, setNowPlaying] = useState<NowPlayingData>({});
+  // Global State
+  const { isPlaying, volume, isMuted, nowPlaying, setIsPlaying, setVolume, toggleMute, setNowPlaying } = useRadioStore();
+
+  // Local UI State
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Refs
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef<number>();
+  const animationRef = useRef<number | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
 
@@ -51,18 +54,38 @@ export default function RadioPlayer() {
   };
 
   useEffect(() => {
+    // Initial song identification
+    if (!nowPlaying.title) {
+      identifySong();
+    }
+
+    // Poll for updates every 30 seconds
+    const interval = setInterval(identifySong, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = isMuted ? 0 : volume;
-      // Track volume changes
-      radioTracking.trackVolumeChange(volume);
     }
   }, [volume, isMuted]);
 
   useEffect(() => {
     if (isPlaying) {
-      identifySong();
-      const interval = setInterval(identifySong, 180000); // Check every 3 mins
-      return () => clearInterval(interval);
+      // Ensure audio context is resumed (browser policy)
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      if (AudioContext && (analyserRef.current?.context as AudioContext).state === 'suspended') {
+        (analyserRef.current?.context as AudioContext).resume();
+      }
+
+      // If we're mounting and it's supposed to be playing, make sure it is
+      if (audioRef.current && audioRef.current.paused) {
+        audioRef.current.play().catch(e => console.error("Playback failed:", e));
+      }
+    } else {
+      if (audioRef.current && !audioRef.current.paused) {
+        audioRef.current.pause();
+      }
     }
   }, [isPlaying]);
 
@@ -70,145 +93,189 @@ export default function RadioPlayer() {
     if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.pause();
-        radioTracking.trackPlayPause();
+        radioTracking.trackPlayStop();
       } else {
-        audioRef.current.play().catch((error) => {
-          console.error('Failed to play audio:', error);
-        });
-        radioTracking.trackPlayStart();
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          setIsLoading(true);
+          playPromise
+            .then(() => {
+              setIsLoading(false);
+              setError(null);
+              radioTracking.trackPlayStart();
+            })
+            .catch((err) => {
+              console.error("Playback error:", err);
+              setIsLoading(false);
+              setError("Stream unavailable. Please try again.");
+            });
+        }
       }
       setIsPlaying(!isPlaying);
     }
   };
 
-  const toggleMute = () => {
-    setIsMuted(!isMuted);
-  };
+  // Visualizer Logic (Simplified for brevity, keeping existing logic mostly intact)
+  useEffect(() => {
+    if (!canvasRef.current || !audioRef.current) return;
+
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Initialize Audio Context only once
+    if (!analyserRef.current) {
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      const audioCtx = new AudioContext();
+      const analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 256;
+
+      // Connect source
+      if (!sourceRef.current) {
+        const source = audioCtx.createMediaElementSource(audioRef.current);
+        source.connect(analyser);
+        analyser.connect(audioCtx.destination);
+        sourceRef.current = source;
+      }
+
+      analyserRef.current = analyser;
+    }
+
+    const analyser = analyserRef.current;
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    const draw = () => {
+      animationRef.current = requestAnimationFrame(draw);
+      analyser.getByteFrequencyData(dataArray);
+
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const barWidth = (canvas.width / bufferLength) * 2.5;
+      let barHeight;
+      let x = 0;
+
+      for (let i = 0; i < bufferLength; i++) {
+        barHeight = dataArray[i] / 2;
+
+        // Gradient bars
+        const gradient = ctx.createLinearGradient(0, canvas.height - barHeight, 0, canvas.height);
+        gradient.addColorStop(0, '#ef4444'); // Red-500
+        gradient.addColorStop(1, '#7f1d1d'); // Red-900
+
+        ctx.fillStyle = gradient;
+        ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+
+        x += barWidth + 1;
+      }
+    };
+
+    draw();
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, []);
 
   return (
-    <div className="min-h-full flex flex-col bg-gradient-to-br from-gray-900 via-black to-gray-900 text-gray-100">
+    <div className="h-full flex flex-col bg-zinc-900 text-white relative overflow-hidden">
+      {/* Background Artwork Blur */}
+      <div
+        className="absolute inset-0 opacity-20 blur-3xl pointer-events-none"
+        style={{
+          backgroundImage: `url(${nowPlaying.artwork || 'https://images.unsplash.com/photo-1478737270239-2f02b77ac6b5?w=800&q=80'})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}
+      />
+
       {/* Header */}
-      <div className="p-4 md:p-6 border-b border-gray-800/50">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-red-600 to-orange-600 rounded-lg flex items-center justify-center">
-              <RadioIcon size={20} className="text-white" />
-            </div>
-            <div>
-              <h1 className="text-lg md:text-xl font-bold text-white">The King's Radio</h1>
-              <p className="text-xs text-gray-400">Live Biblical Teaching</p>
+      <div className="relative z-10 p-6 border-b border-white/10 flex items-center justify-between bg-black/20 backdrop-blur-sm">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center shadow-lg shadow-red-900/20">
+            <RadioIcon size={20} className="text-white" />
+          </div>
+          <div>
+            <h2 className="font-bold text-lg tracking-tight">The King's Radio</h2>
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+              <span className="text-xs text-red-400 font-medium uppercase tracking-wider">Live Broadcast</span>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <div className={`w-2 h-2 rounded-full ${isPlaying ? 'bg-red-500 animate-pulse' : 'bg-gray-600'}`} />
-            <span className="text-xs text-gray-400">{isPlaying ? 'LIVE' : 'OFFLINE'}</span>
-          </div>
+        </div>
+        <div className="flex items-center gap-2 text-xs text-gray-400 bg-black/40 px-3 py-1.5 rounded-full border border-white/5">
+          <Music size={12} />
+          <span>128kbps MP3</span>
         </div>
       </div>
 
-      {/* Main Player Area */}
-      <div className="flex flex-col items-center justify-center p-6 md:p-8 relative">
-        {/* Album Art / Cover */}
+      {/* Main Content */}
+      <div className="flex-1 relative z-10 flex flex-col items-center justify-center p-8 gap-8">
+        {/* Album Art */}
         <motion.div
-          animate={{
-            scale: isPlaying ? [1, 1.02, 1] : 1,
-          }}
-          transition={{
-            duration: 3,
-            repeat: isPlaying ? Infinity : 0,
-            ease: 'easeInOut',
-          }}
-          className="relative mb-6 md:mb-8"
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="relative w-64 h-64 md:w-80 md:h-80 rounded-2xl overflow-hidden shadow-2xl shadow-black/50 border border-white/10 group"
         >
-          <div className="w-48 h-48 md:w-64 md:h-64 rounded-2xl overflow-hidden shadow-2xl shadow-red-900/30 bg-gradient-to-br from-red-900/40 via-black to-orange-900/40 border border-red-900/30">
-            {nowPlaying.artwork ? (
-              <img
-                src={nowPlaying.artwork}
-                alt="Now Playing"
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center relative overflow-hidden">
-                {/* Animated background */}
-                {isPlaying && (
-                  <>
-                    <motion.div
-                      animate={{ scale: [1, 1.5], opacity: [0.3, 0] }}
-                      transition={{ duration: 3, repeat: Infinity }}
-                      className="absolute inset-0 bg-gradient-to-br from-red-600/50 to-orange-600/50 rounded-full"
-                    />
-                    <motion.div
-                      animate={{ scale: [1, 1.5], opacity: [0.3, 0] }}
-                      transition={{ duration: 3, repeat: Infinity, delay: 1 }}
-                      className="absolute inset-0 bg-gradient-to-br from-orange-600/50 to-red-600/50 rounded-full"
-                    />
-                  </>
-                )}
-
-                {/* Center icon */}
-                <div className="relative z-10 flex flex-col items-center">
-                  <Mic size={80} className="text-red-500 mb-4" />
-                  <Music size={40} className="text-orange-500 animate-pulse" />
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Vinyl Record Effect when playing */}
-          {isPlaying && (
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-              className="absolute -bottom-4 -right-4 w-24 h-24 bg-gradient-to-br from-gray-800 to-black rounded-full border-4 border-gray-700 opacity-60"
-            >
-              <div className="absolute inset-2 bg-gradient-to-br from-red-900 to-orange-900 rounded-full" />
-              <div className="absolute inset-6 bg-black rounded-full" />
-            </motion.div>
-          )}
+          <img
+            src={nowPlaying.artwork || 'https://images.unsplash.com/photo-1478737270239-2f02b77ac6b5?w=800&q=80'}
+            alt="Album Art"
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          />
+          {/* Overlay Gradient */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
         </motion.div>
 
-        {/* Now Playing Info */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={nowPlaying.title}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="text-center mb-6 max-w-md"
-          >
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-2 line-clamp-2">
-              {nowPlaying.title || 'Biblical Teaching'}
-            </h2>
-            <p className="text-lg text-gray-400">
-              {nowPlaying.artist || 'The King\'s Radio'}
-            </p>
-            {isPlaying && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="mt-3 flex items-center justify-center gap-2"
-              >
-                <div className="h-1 w-1 bg-red-500 rounded-full animate-pulse" />
-                <span className="text-xs text-gray-500 uppercase tracking-wider">Live Stream</span>
-                <div className="h-1 w-1 bg-red-500 rounded-full animate-pulse" />
-              </motion.div>
-            )}
-          </motion.div>
-        </AnimatePresence>
+        {/* Song Info */}
+        <div className="text-center space-y-2">
+          <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
+            {nowPlaying.title || 'Connecting to Stream...'}
+          </h1>
+          <p className="text-lg text-gray-400 font-medium">
+            {nowPlaying.artist || 'The Biblical Man Hub'}
+          </p>
+        </div>
+
+        {/* Visualizer Canvas */}
+        <div className="w-full max-w-2xl h-24 bg-black/20 rounded-xl overflow-hidden border border-white/5 backdrop-blur-sm">
+          <canvas
+            ref={canvasRef}
+            width={800}
+            height={100}
+            className="w-full h-full opacity-80"
+          />
+        </div>
 
         {/* Controls */}
-        <div className="w-full max-w-md">
-          {/* Play/Pause and Volume in one row */}
-          <div className="flex items-center justify-center gap-6 mb-6">
-            {/* Volume Control */}
+        <div className="flex flex-col items-center gap-6 w-full max-w-md">
+          {/* Play/Pause */}
+          <button
+            onClick={togglePlay}
+            disabled={isLoading}
+            className="w-20 h-20 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-xl shadow-white/10 disabled:opacity-50 disabled:cursor-not-allowed group"
+          >
+            {isLoading ? (
+              <div className="w-8 h-8 border-4 border-gray-300 border-t-black rounded-full animate-spin" />
+            ) : isPlaying ? (
+              <Pause size={32} className="fill-current" />
+            ) : (
+              <Play size={32} className="fill-current ml-1" />
+            )}
+          </button>
+
+          {/* Volume */}
+          <div className="flex items-center gap-4 w-full px-8">
             <button
               onClick={toggleMute}
-              className="w-12 h-12 bg-gray-800/60 hover:bg-gray-700/60 rounded-full flex items-center justify-center transition-all"
+              className="text-gray-400 hover:text-white transition-colors"
             >
-              {isMuted ? (
-                <VolumeX size={20} className="text-gray-300" />
+              {isMuted || volume === 0 ? (
+                <VolumeX size={20} />
               ) : (
-                <Volume2 size={20} className="text-white" />
+                <Volume2 size={20} />
               )}
             </button>
 
@@ -225,7 +292,6 @@ export default function RadioPlayer() {
                 <Play size={32} className="text-gray-900 ml-1" fill="currentColor" />
               )}
             </motion.button>
-
             {/* Volume slider placeholder for symmetry */}
             <div className="w-12 h-12" />
           </div>
@@ -319,6 +385,6 @@ export default function RadioPlayer() {
 
       {/* Hidden Audio Element */}
       <audio ref={audioRef} src={streamUrl} preload="none" />
-    </div>
+    </div >
   );
 }

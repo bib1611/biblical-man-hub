@@ -25,6 +25,7 @@ import { useABTest } from '@/hooks/useABTest';
 import ExitIntentPopup from '@/components/ExitIntentPopup';
 import StickyMobileCTA from '@/components/StickyMobileCTA';
 import LandingPage from '@/components/LandingPage';
+import GlobalAudioProvider from '@/components/GlobalAudioProvider';
 import { AnimatePresence, motion } from 'framer-motion';
 
 export default function Home() {
@@ -117,6 +118,7 @@ export default function Home() {
 
   return (
     <AuthProvider>
+      <GlobalAudioProvider />
       <DashboardLayout activeApp={activeApp} onAppChange={setActiveApp}>
         {activeApp === 'bible' && <BibleStudy />}
         {activeApp === 'radio' && <RadioPlayer />}
