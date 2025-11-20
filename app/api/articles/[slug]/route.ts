@@ -48,7 +48,7 @@ export async function GET(
 function parseSubstackArticle(html: string, slug: string) {
   try {
     // Extract title
-    const titleMatch = html.match(/<h1[^>]*class="[^"]*post-title[^"]*"[^>]*>(.*?)<\/h1>/s) ||
+    const titleMatch = html.match(/<h1[^>]*class="[^"]*post-title[^"]*"[^>]*>([\s\S]*?)<\/h1>/) ||
                       html.match(/<meta property="og:title" content="([^"]+)"/);
     const title = titleMatch ? cleanHtml(titleMatch[1]) : 'Untitled';
 
