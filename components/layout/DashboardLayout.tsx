@@ -39,8 +39,6 @@ export default function DashboardLayout({ children, activeApp, onAppChange }: Da
     if (!isClient) return null;
 
 
-    // ... (inside component)
-
     return (
         <div className="flex h-screen w-full bg-black text-white overflow-hidden">
             {/* Desktop Sidebar */}

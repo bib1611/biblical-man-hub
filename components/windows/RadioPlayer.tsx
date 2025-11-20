@@ -73,9 +73,10 @@ export default function RadioPlayer() {
   useEffect(() => {
     if (isPlaying) {
       // Ensure audio context is resumed (browser policy)
+      // Ensure audio context is resumed (browser policy)
       const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-      if (AudioContext && (analyserRef.current?.context as AudioContext).state === 'suspended') {
-        (analyserRef.current?.context as AudioContext).resume();
+      if (AudioContext && analyserRef.current && (analyserRef.current.context as AudioContext).state === 'suspended') {
+        (analyserRef.current.context as AudioContext).resume();
       }
 
       // If we're mounting and it's supposed to be playing, make sure it is
