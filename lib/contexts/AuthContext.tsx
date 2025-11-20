@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useSession } from './SessionContext';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -14,11 +15,19 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
+  const { user, isCreator } = useSession();
 
   useEffect(() => {
-    // Check authentication status on mount (cookies are checked server-side)
-    checkAuthStatus();
-  }, []);
+    // Auto-authenticate if user is creator from session system
+    if (isCreator) {
+      setIsAuthenticated(true);
+      setLoading(false);
+      console.log('👑 Creator auto-authenticated via session system');
+    } else {
+      // Check authentication status via old system
+      checkAuthStatus();
+    }
+  }, [isCreator]);
 
   const checkAuthStatus = async () => {
     setLoading(true);

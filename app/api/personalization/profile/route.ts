@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDB } from '@/lib/db';
+import { getUserById } from '@/lib/session';
 import { generatePersonalizationConfig } from '@/hooks/usePersonalization';
 import {
   buildPsychographicProfile,
@@ -16,11 +17,42 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'visitorId required' }, { status: 400 });
     }
 
-    const db = getDB();
-    const visitor = await db.getVisitor(visitorId);
+    // Try new session system first
+    let user = await getUserById(visitorId);
+    let visitor = null;
 
-    // Build visitor profile
-    const profile = {
+    // Fallback to old system if user not found in new system
+    if (!user) {
+      const db = getDB();
+      visitor = await db.getVisitor(visitorId);
+    }
+
+    // Build visitor profile (from new or old system)
+    const profile = user ? {
+      // New session system
+      visitorId: user.id,
+      sessionId: '',
+      isReturning: user.loginCount > 1,
+      visitCount: user.loginCount || 1,
+      hasEmail: !!user.email,
+      hasInteractedWithSam: user.uiState?.interactedWithSam || false,
+      hasUsedBible: user.uiState?.windowsOpened?.includes('bible-study') || false,
+      hasUsedRadio: user.uiState?.windowsOpened?.includes('radio') || false,
+      hasPurchased: false, // TODO: integrate with Gumroad
+      leadScore: 0,
+      status: 'active',
+      timeOnSite: 0,
+      pageViews: 0,
+      lastVisit: user.lastSeen,
+      pagesVisited: [],
+      windowsOpened: user.uiState?.windowsOpened || [],
+      trafficSource: user.preferences?.original_traffic_source,
+      trafficMedium: null,
+      country: null,
+      city: null,
+      timezone: null,
+    } : {
+      // Old visitor_profiles system
       visitorId: visitor?.id || visitorId,
       sessionId: visitor?.sessionId || '',
       isReturning: visitor ? (visitor.pageViews > 1 || (visitor.visitCount || 0) > 1) : false,
