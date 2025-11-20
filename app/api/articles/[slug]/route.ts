@@ -129,15 +129,31 @@ function parseSubstackArticle(html: string, slug: string) {
 }
 
 function cleanHtml(html: string): string {
-  return html
+  let cleaned = html
     .replace(/<[^>]+>/g, '')
+    // HTML entities
     .replace(/&nbsp;/g, ' ')
     .replace(/&quot;/g, '"')
     .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'")
+    // Unicode entities (curly quotes, dashes, etc.)
+    .replace(/&#8220;/g, '"')  // left double quote
+    .replace(/&#8221;/g, '"')  // right double quote
+    .replace(/&#8216;/g, "'")  // left single quote
+    .replace(/&#8217;/g, "'")  // right single quote
+    .replace(/&#8212;/g, '—')  // em dash
+    .replace(/&#8211;/g, '–')  // en dash
+    .replace(/&#8230;/g, '...')  // ellipsis
+    // Remove any remaining HTML entities
+    .replace(/&#\d+;/g, '')
+    // Remove escaped unicode like \u201C
+    .replace(/\\u[\dA-F]{4}/gi, '')
     .trim();
+
+  return cleaned;
 }
 
 function cleanSubstackContent(html: string): string {
