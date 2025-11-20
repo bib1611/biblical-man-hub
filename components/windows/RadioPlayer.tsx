@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, Volume2, VolumeX, Radio as RadioIcon, Music, Heart, MoreHorizontal } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, Radio as RadioIcon, Music, Heart, MoreHorizontal, Lock, Crown, ChevronDown } from 'lucide-react';
 import { useRadioEngagement } from '@/hooks/useRadioEngagement';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { useRadioStore } from '@/lib/store/radio';
@@ -13,6 +13,34 @@ interface NowPlayingData {
   artwork?: string;
 }
 
+interface RadioFeed {
+  id: string;
+  name: string;
+  streamUrl: string;
+  isPremium: boolean;
+  description: string;
+  quality: string;
+}
+
+const RADIO_FEEDS: RadioFeed[] = [
+  {
+    id: 'free',
+    name: 'FFBR Free',
+    streamUrl: 'https://c13.radioboss.fm:8639/stream',
+    isPremium: false,
+    description: 'Biblical teaching & worship music',
+    quality: '128kbps',
+  },
+  {
+    id: 'premium',
+    name: 'FFBR Premium',
+    streamUrl: 'https://ffbrmobile.com/premium-stream', // Replace with actual premium stream URL
+    isPremium: true,
+    description: 'Ad-free, exclusive content, higher quality',
+    quality: '320kbps',
+  },
+];
+
 export default function RadioPlayer() {
   // Global State
   const { isPlaying, volume, isMuted, nowPlaying, setIsPlaying, setVolume, toggleMute, setNowPlaying } = useRadioStore();
@@ -20,22 +48,18 @@ export default function RadioPlayer() {
   // Local UI State
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [currentFeed, setCurrentFeed] = useState<RadioFeed>(RADIO_FEEDS[0]);
+  const [hasPremiumAccess, setHasPremiumAccess] = useState(false); // Check if user has paid for premium
+  const [showFeedSelector, setShowFeedSelector] = useState(false);
 
   // Refs
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef<number | null>(null);
-  const analyserRef = useRef<AnalyserNode | null>(null);
-  const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
 
   // Initialize Radio engagement tracking
   const radioTracking = useRadioEngagement();
   const { trackRadioListen } = useAnalytics();
 
-  // The King's Radio stream URL (via RadioBoss FM - 128kbps MP3)
-  const streamUrl = 'https://c13.radioboss.fm:8639/stream';
-
-  const identifySong = async () => {
+  const identifySong = async (streamUrl: string) => {
     try {
       const response = await fetch('/api/identify-song', {
         method: 'POST',
@@ -62,7 +86,7 @@ export default function RadioPlayer() {
       // Fallback to default
       setNowPlaying({
         title: 'Live Broadcast',
-        artist: 'The King\'s Radio',
+        artist: currentFeed.name,
         artwork: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&q=80',
       });
     }
@@ -71,13 +95,13 @@ export default function RadioPlayer() {
   useEffect(() => {
     // Initial song identification
     if (!nowPlaying.title) {
-      identifySong();
+      identifySong(currentFeed.streamUrl);
     }
 
     // Poll for updates every 30 seconds
-    const interval = setInterval(identifySong, 30000);
+    const interval = setInterval(() => identifySong(currentFeed.streamUrl), 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [currentFeed]);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -89,9 +113,6 @@ export default function RadioPlayer() {
     if (isPlaying) {
       // Ensure audio context is resumed (browser policy)
       const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-      if (AudioContext && analyserRef.current && (analyserRef.current.context as AudioContext).state === 'suspended') {
-        (analyserRef.current.context as AudioContext).resume();
-      }
 
       // If we're mounting and it's supposed to be playing, make sure it is
       if (audioRef.current && audioRef.current.paused) {
@@ -128,6 +149,32 @@ export default function RadioPlayer() {
     }
   };
 
+  const switchFeed = (feed: RadioFeed) => {
+    if (feed.isPremium && !hasPremiumAccess) {
+      // Redirect to payment page
+      window.open('https://buy.stripe.com/3cIdRa2kM8WJgmIabYcMM1T', '_blank');
+      return;
+    }
+
+    // Stop current playback
+    if (audioRef.current && !audioRef.current.paused) {
+      audioRef.current.pause();
+    }
+
+    setCurrentFeed(feed);
+    setShowFeedSelector(false);
+
+    // If was playing, start new feed
+    if (isPlaying) {
+      setTimeout(() => {
+        audioRef.current?.play();
+      }, 100);
+    }
+
+    // Identify new song
+    identifySong(feed.streamUrl);
+  };
+
   // Apple Music Style Layout
   return (
     <div className="h-full flex flex-col bg-gradient-to-b from-zinc-900 to-black text-white relative overflow-hidden">
@@ -143,6 +190,59 @@ export default function RadioPlayer() {
 
       {/* Main Content - Apple Music Layout */}
       <div className="flex-1 relative z-10 flex flex-col items-center justify-center p-4 md:p-8 max-w-3xl mx-auto w-full">
+
+        {/* Feed Selector */}
+        <div className="mb-4 relative">
+          <button
+            onClick={() => setShowFeedSelector(!showFeedSelector)}
+            className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full border border-white/20 transition-all"
+          >
+            {currentFeed.isPremium && <Crown size={16} className="text-yellow-500" />}
+            <span className="text-sm font-semibold">{currentFeed.name}</span>
+            <ChevronDown size={16} className={`transition-transform ${showFeedSelector ? 'rotate-180' : ''}`} />
+          </button>
+
+          {/* Dropdown */}
+          <AnimatePresence>
+            {showFeedSelector && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="absolute top-full mt-2 left-0 right-0 bg-zinc-900/95 backdrop-blur-xl border border-white/20 rounded-2xl overflow-hidden shadow-2xl"
+              >
+                {RADIO_FEEDS.map((feed) => (
+                  <button
+                    key={feed.id}
+                    onClick={() => switchFeed(feed)}
+                    className={`w-full px-4 py-4 flex items-start gap-3 hover:bg-white/10 transition-colors ${currentFeed.id === feed.id ? 'bg-white/5' : ''
+                      }`}
+                  >
+                    {feed.isPremium ? (
+                      hasPremiumAccess ? (
+                        <Crown size={20} className="text-yellow-500 mt-0.5" />
+                      ) : (
+                        <Lock size={20} className="text-gray-400 mt-0.5" />
+                      )
+                    ) : (
+                      <RadioIcon size={20} className="text-red-500 mt-0.5" />
+                    )}
+                    <div className="flex-1 text-left">
+                      <div className="font-semibold text-white flex items-center gap-2">
+                        {feed.name}
+                        {feed.isPremium && !hasPremiumAccess && (
+                          <span className="text-xs px-2 py-0.5 bg-red-600 rounded-full">Upgrade</span>
+                        )}
+                      </div>
+                      <div className="text-xs text-gray-400 mt-1">{feed.description}</div>
+                      <div className="text-xs text-gray-500 mt-1">{feed.quality}</div>
+                    </div>
+                  </button>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
 
         {/* Live Badge */}
         <div className="mb-4 flex items-center gap-2 px-4 py-2 bg-red-600/20 backdrop-blur-sm rounded-full border border-red-500/30">
@@ -163,6 +263,11 @@ export default function RadioPlayer() {
             alt="Album Art"
             className="w-full h-full object-cover rounded-2xl"
           />
+          {currentFeed.isPremium && hasPremiumAccess && (
+            <div className="absolute top-4 right-4 bg-yellow-500/20 backdrop-blur-sm border border-yellow-500/30 rounded-full p-2">
+              <Crown size={20} className="text-yellow-500" />
+            </div>
+          )}
         </motion.div>
 
         {/* Song Info - Apple Music typography */}
@@ -246,7 +351,7 @@ export default function RadioPlayer() {
           {/* Stream Quality Badge */}
           <div className="flex items-center justify-center gap-2 text-xs text-gray-500">
             <Music size={12} />
-            <span>128kbps • Lossless Quality</span>
+            <span>{currentFeed.quality} • {currentFeed.isPremium ? 'Premium' : 'Free'}</span>
           </div>
         </div>
       </div>
@@ -254,6 +359,29 @@ export default function RadioPlayer() {
       {/* Support Section - Apple Music style bottom sheet */}
       <div className="relative z-10 border-t border-white/10 bg-gradient-to-b from-zinc-900/80 to-black/80 backdrop-blur-xl">
         <div className="max-w-3xl mx-auto p-6">
+          {!hasPremiumAccess && (
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-5 bg-gradient-to-br from-yellow-950/30 to-transparent rounded-2xl border border-yellow-900/20 mb-4">
+              <div className="text-center md:text-left">
+                <h3 className="text-base font-semibold text-white mb-1.5 flex items-center gap-2 justify-center md:justify-start">
+                  <Crown size={16} className="text-yellow-500" />
+                  Upgrade to Premium
+                </h3>
+                <p className="text-sm text-gray-400">
+                  Ad-free listening • Higher quality • Exclusive content
+                </p>
+              </div>
+              <a
+                href="https://buy.stripe.com/3cIdRa2kM8WJgmIabYcMM1T"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-6 py-3 bg-yellow-500 hover:bg-yellow-400 text-black rounded-full font-semibold text-sm transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+              >
+                <Crown size={18} />
+                Get Premium
+              </a>
+            </div>
+          )}
+
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-5 bg-gradient-to-br from-red-950/30 to-transparent rounded-2xl border border-red-900/20">
             <div className="text-center md:text-left">
               <h3 className="text-base font-semibold text-white mb-1.5 flex items-center gap-2 justify-center md:justify-start">
@@ -292,7 +420,7 @@ export default function RadioPlayer() {
       </div>
 
       {/* Hidden Audio Element */}
-      <audio ref={audioRef} src={streamUrl} preload="none" />
+      <audio ref={audioRef} src={currentFeed.streamUrl} preload="none" />
     </div>
   );
 }
