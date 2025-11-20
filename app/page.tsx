@@ -27,6 +27,7 @@ import StickyMobileCTA from '@/components/StickyMobileCTA';
 import LandingPage from '@/components/LandingPage';
 import { AnimatePresence, motion } from 'framer-motion';
 import { SilentErrorBoundary } from '@/components/ErrorBoundary';
+import GlobalAudioProvider from '@/components/GlobalAudioProvider';
 
 export default function Home() {
   const { windows, openWindow } = useAppStore();
@@ -119,15 +120,21 @@ export default function Home() {
 
   // Hub view after user clicks "Enter The Hub"
   return (
-    <div className="min-h-screen bg-black text-white p-20">
-      <h1 className="text-4xl font-bold text-red-500 mb-4">BARE BONES TEST MODE</h1>
-      <p className="text-xl">If you see this, the crash was in DashboardLayout or AuthProvider.</p>
-      <button
-        onClick={() => setViewMode('landing')}
-        className="mt-8 px-6 py-3 bg-white text-black rounded-full font-bold"
-      >
-        Go Back
-      </button>
-    </div>
+    <AuthProvider>
+      <GlobalAudioProvider />
+      <DashboardLayout activeApp={activeApp} onAppChange={setActiveApp}>
+        {activeApp === 'bible' && <BibleStudy />}
+        {activeApp === 'radio' && <RadioPlayer />}
+        {activeApp === 'sam' && <SamAssistant />}
+        {activeApp === 'admin' && <ProtectedAdminDashboard />}
+        {activeApp === 'products' && <ProductsHub />}
+        {activeApp === 'content-feed' && <ContentFeed />}
+        {activeApp === 'counseling' && <SubstackArticles />}
+        {activeApp === 'community' && <CommunityChat />}
+        {activeApp === 'about' && <About />}
+        {activeApp === 'start-here' && <StartHere />}
+        {activeApp === 'contact' && <ContactForm />}
+      </DashboardLayout>
+    </AuthProvider>
   );
 }
