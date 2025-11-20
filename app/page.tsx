@@ -32,6 +32,7 @@ export default function Home() {
   const { windows, openWindow } = useAppStore();
   const [viewMode, setViewMode] = useState<'landing' | 'hub'>('landing');
   const [showHub, setShowHub] = useState(false);
+  const [activeApp, setActiveApp] = useState<string>('bible');
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -117,8 +118,6 @@ export default function Home() {
   }
 
   // Hub view after user clicks "Enter The Hub"
-  const [activeApp, setActiveApp] = useState<string>('bible');
-
   return (
     <div className="min-h-screen bg-black text-white p-20">
       <h1 className="text-4xl font-bold text-red-500 mb-4">BARE BONES TEST MODE</h1>
