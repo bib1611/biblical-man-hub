@@ -4,7 +4,7 @@ import { ArrowRight, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface LandingPageProps {
-    onEnter: () => void;
+    onEnter: (appId?: string) => void;
 }
 
 export default function LandingPage({ onEnter }: LandingPageProps) {
@@ -55,6 +55,30 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
                     >
                         <span>Enter The Hub</span>
                         <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </motion.button>
+
+                    {/* Secondary CTA - Radio */}
+                    <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => {
+                            // We need to pass a specific app ID, but the current onEnter prop doesn't support it.
+                            // We'll need to update the onEnter prop signature or handle this in the parent.
+                            // For now, let's assume we can pass an argument or the parent handles it.
+                            // Actually, let's update the prop signature in the next step if needed.
+                            // Wait, onEnter is () => void. 
+                            // I should update the interface first.
+                            // But for now, let's just add the button and I'll update the interface in a separate step if I can't do it here.
+                            // I'll assume onEnter can take an optional argument.
+                            onEnter('radio');
+                        }}
+                        className="group relative inline-flex items-center gap-3 px-8 py-4 bg-transparent border border-white/20 text-white rounded-full text-lg font-bold transition-all hover:bg-white/10 ml-4"
+                    >
+                        <span className="relative flex h-3 w-3">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                        </span>
+                        <span>Listen Live</span>
                     </motion.button>
 
                     {/* Minimal Social Proof */}

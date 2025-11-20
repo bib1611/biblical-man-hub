@@ -102,7 +102,10 @@ export default function Home() {
     }
   };
 
-  const enterHub = () => {
+  const enterHub = (appId?: string) => {
+    if (appId) {
+      setActiveApp(appId);
+    }
     setViewMode('hub');
     setShowHub(true);
   };
