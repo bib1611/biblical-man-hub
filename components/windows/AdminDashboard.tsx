@@ -170,8 +170,8 @@ export default function AdminDashboard() {
           <button
             onClick={() => setActiveTab('overview')}
             className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'overview'
-                ? 'bg-green-600/40 text-green-200 border border-green-600/50'
-                : 'bg-gray-800/40 text-gray-400 border border-gray-700/30 hover:bg-gray-800/60'
+              ? 'bg-green-600/40 text-green-200 border border-green-600/50'
+              : 'bg-gray-800/40 text-gray-400 border border-gray-700/30 hover:bg-gray-800/60'
               }`}
           >
             <TrendingUp className="inline w-4 h-4 mr-2" />
@@ -180,8 +180,8 @@ export default function AdminDashboard() {
           <button
             onClick={() => setActiveTab('engagement')}
             className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'engagement'
-                ? 'bg-green-600/40 text-green-200 border border-green-600/50'
-                : 'bg-gray-800/40 text-gray-400 border border-gray-700/30 hover:bg-gray-800/60'
+              ? 'bg-green-600/40 text-green-200 border border-green-600/50'
+              : 'bg-gray-800/40 text-gray-400 border border-gray-700/30 hover:bg-gray-800/60'
               }`}
           >
             <Eye className="inline w-4 h-4 mr-2" />
@@ -190,8 +190,8 @@ export default function AdminDashboard() {
           <button
             onClick={() => setActiveTab('psychographics')}
             className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'psychographics'
-                ? 'bg-green-600/40 text-green-200 border border-green-600/50'
-                : 'bg-gray-800/40 text-gray-400 border border-gray-700/30 hover:bg-gray-800/60'
+              ? 'bg-green-600/40 text-green-200 border border-green-600/50'
+              : 'bg-gray-800/40 text-gray-400 border border-gray-700/30 hover:bg-gray-800/60'
               }`}
           >
             <Brain className="inline w-4 h-4 mr-2" />
@@ -200,8 +200,8 @@ export default function AdminDashboard() {
           <button
             onClick={() => setActiveTab('enhanced')}
             className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'enhanced'
-                ? 'bg-green-600/40 text-green-200 border border-green-600/50'
-                : 'bg-gray-800/40 text-gray-400 border border-gray-700/30 hover:bg-gray-800/60'
+              ? 'bg-green-600/40 text-green-200 border border-green-600/50'
+              : 'bg-gray-800/40 text-gray-400 border border-gray-700/30 hover:bg-gray-800/60'
               }`}
           >
             <Activity className="inline w-4 h-4 mr-2" />
@@ -531,8 +531,8 @@ export default function AdminDashboard() {
                       key={status}
                       onClick={() => setSelectedLeadStatus(status)}
                       className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${selectedLeadStatus === status
-                          ? 'bg-green-600/40 text-green-200 border border-green-600/50'
-                          : 'bg-gray-800/40 text-gray-400 border border-gray-700/30 hover:bg-gray-800/60'
+                        ? 'bg-green-600/40 text-green-200 border border-green-600/50'
+                        : 'bg-gray-800/40 text-gray-400 border border-gray-700/30 hover:bg-gray-800/60'
                         }`}
                     >
                       {status}
@@ -630,6 +630,13 @@ export default function AdminDashboard() {
                 value={engagement.summary?.samUsers || 0}
                 subtitle="AI interactions"
                 color="amber"
+              />
+              <StatCard
+                icon={<Music />}
+                title="Songs Listened"
+                value={engagement.summary?.totalSongsListened || 0}
+                subtitle="Total tracks"
+                color="red"
               />
             </div>
 
@@ -915,8 +922,8 @@ export default function AdminDashboard() {
                     key={range}
                     onClick={() => setTimeRange(range)}
                     className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${timeRange === range
-                        ? 'bg-green-600/40 text-green-200 border border-green-600/50'
-                        : 'bg-gray-800/40 text-gray-400 border border-gray-700/30 hover:bg-gray-800/60'
+                      ? 'bg-green-600/40 text-green-200 border border-green-600/50'
+                      : 'bg-gray-800/40 text-gray-400 border border-gray-700/30 hover:bg-gray-800/60'
                       }`}
                   >
                     {range}
