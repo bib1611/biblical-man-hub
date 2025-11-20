@@ -11,6 +11,7 @@ interface DBAdapter {
   getVisitorsToday(): Promise<number>;
   getEmailCaptureRate(): Promise<number>;
   getAverageTimeOnSite(): Promise<number>;
+  healthCheck(): Promise<boolean>;
 
   // Events
   addEvent(event: AnalyticsEvent): Promise<void>;
@@ -48,6 +49,15 @@ class SupabaseDB implements DBAdapter {
     }
 
     this.supabase = createClient(supabaseUrl, supabaseKey);
+  }
+
+  async healthCheck(): Promise<boolean> {
+    try {
+      const { error } = await this.supabase.from('visitor_profiles').select('count', { count: 'exact', head: true }).limit(1);
+      return !error;
+    } catch (e) {
+      return false;
+    }
   }
 
   // --- Visitors ---
@@ -533,6 +543,10 @@ class InMemoryDB implements DBAdapter {
   private events: AnalyticsEvent[] = [];
   private leads: Map<string, Lead> = new Map();
   private conversations: Map<string, ConversationLog> = new Map();
+
+  async healthCheck(): Promise<boolean> {
+    return true;
+  }
 
   async getVisitor(id: string): Promise<Visitor | undefined> {
     return this.visitors.get(id);

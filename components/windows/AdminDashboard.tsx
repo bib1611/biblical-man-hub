@@ -4,23 +4,33 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   Users,
-  TrendingUp,
-  Mail,
-  MessageSquare,
-  DollarSign,
   Clock,
+  MousePointer,
+  TrendingUp,
+  Globe,
+  Smartphone,
+  Monitor,
+  Search,
+  Mail,
+  DollarSign,
+  Target,
+  Shield,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
+  Music,
+  RefreshCw,
   Activity,
-  Star,
+  Eye,
+  Brain,
+  MessageSquare,
   ExternalLink,
   AlertCircle,
+  Zap,
+  Star,
   BookOpen,
   Radio,
-  Brain,
-  Target,
-  Eye,
-  Ear,
-  Zap,
-  Music,
+  Ear
 } from 'lucide-react';
 import { AnalyticsSnapshot, Lead } from '@/types';
 
@@ -154,14 +164,26 @@ export default function AdminDashboard() {
     <div className="h-full overflow-auto bg-gradient-to-br from-gray-950 via-black to-gray-950 text-gray-100">
       {/* Header */}
       <div className="p-6 border-b border-gray-800 bg-black/40 sticky top-0 z-10">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-green-400 mb-1">Admin Dashboard</h1>
-            <p className="text-sm text-gray-400">Real-time analytics and lead management</p>
+            <h2 className="text-2xl font-bold mb-2">Analytics Overview</h2>
+            <p className="text-gray-400">Real-time platform insights</p>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-            <span className="text-xs text-gray-400">Live</span>
+          <div className="flex items-center gap-4">
+            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border ${analytics?.dbStatus
+              ? 'bg-green-500/10 text-green-400 border-green-500/20'
+              : 'bg-red-500/10 text-red-400 border-red-500/20'
+              }`}>
+              <div className={`w-2 h-2 rounded-full ${analytics?.dbStatus ? 'bg-green-500' : 'bg-red-500'}`} />
+              {analytics?.dbStatus ? 'System Operational' : 'Database Disconnected'}
+            </div>
+            <button
+              onClick={fetchAnalytics}
+              className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+              title="Refresh Data"
+            >
+              <RefreshCw size={20} className={loading ? 'animate-spin' : ''} />
+            </button>
           </div>
         </div>
 

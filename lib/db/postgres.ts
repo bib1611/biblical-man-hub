@@ -6,6 +6,17 @@ import { Visitor, AnalyticsEvent, Lead, ConversationLog } from '@/types';
  * Replaces the in-memory database with persistent Postgres storage
  */
 class PostgresDB {
+  // System
+  async healthCheck(): Promise<boolean> {
+    try {
+      await sql`SELECT 1`;
+      return true;
+    } catch (error) {
+      console.error('Database health check failed:', error);
+      return false;
+    }
+  }
+
   // Visitors
   async getVisitor(id: string): Promise<Visitor | undefined> {
     try {

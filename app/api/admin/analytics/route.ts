@@ -294,7 +294,10 @@ export async function GET(request: NextRequest) {
       .sort((a, b) => b.visits - a.visits)
       .slice(0, 10);
 
+    const dbStatus = await db.healthCheck();
+
     const snapshot: AnalyticsSnapshot & {
+      dbStatus: boolean;
       bounceRate: number;
       topPagesVisited: Array<{ page: string; visits: number }>;
       // Extended analytics
@@ -321,6 +324,7 @@ export async function GET(request: NextRequest) {
       leadTemperature: { hot: number; warm: number; cold: number };
       leadsGoingCold: Array<{ id: string; leadScore: number; hoursAgo: number; trafficSource: string; pagesVisited: string[]; windowsOpened: string[]; lastPage: string }>;
     } = {
+      dbStatus,
       visitorsToday: await db.getVisitorsToday(),
       visitorsOnline: (await db.getActiveVisitors(5)).length,
       emailCaptureRate: await db.getEmailCaptureRate(),

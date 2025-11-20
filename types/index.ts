@@ -204,4 +204,5 @@ export interface AnalyticsSnapshot {
   emailCaptures?: number;
   recentActiveVisitors?: any[];
   hotLeads?: any[];
+  dbStatus?: boolean;
 }
