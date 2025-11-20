@@ -65,9 +65,31 @@ function parseSubstackArticle(html: string, slug: string) {
     const imageUrl = imageMatch ? imageMatch[1] : null;
 
     // Extract article content
-    // Substack typically wraps article content in a div with class containing "body" or "available-content"
-    const contentMatch = html.match(/<div[^>]*class="[^"]*available-content[^"]*"[^>]*>([\s\S]*?)<\/div>\s*<div[^>]*class="[^"]*subscription-widget-wrap/);
+    // Try multiple patterns to find Substack content
+    let contentMatch = html.match(/<div[^>]*class="[^"]*available-content[^"]*"[^>]*>([\s\S]*?)<\/div>\s*<div[^>]*class="[^"]*subscription-widget/);
+
+    if (!contentMatch) {
+      // Try alternative pattern
+      contentMatch = html.match(/<article[^>]*>([\s\S]*?)<\/article>/);
+    }
+
+    if (!contentMatch) {
+      // Try finding main content area
+      contentMatch = html.match(/<div[^>]*class="[^"]*body[^"]*"[^>]*>([\s\S]*?)<\/div>/);
+    }
+
     let contentHtml = contentMatch ? contentMatch[1] : '';
+
+    // If still no content, try to extract paragraphs from the page
+    if (!contentHtml) {
+      const paragraphs = html.match(/<p[^>]*>([\s\S]*?)<\/p>/g);
+      if (paragraphs && paragraphs.length > 3) {
+        // Take paragraphs that look like article content (longer than 50 chars)
+        contentHtml = paragraphs
+          .filter(p => cleanHtml(p).length > 50)
+          .join('\n');
+      }
+    }
 
     // Clean up the content
     contentHtml = cleanSubstackContent(contentHtml);
