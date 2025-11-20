@@ -63,6 +63,10 @@ export async function GET(request: NextRequest) {
         (e: any) => e.data.eventName === 'radio_play_started'
       ).length;
 
+      const songsListened = visitorEvents.filter(
+        (e: any) => e.type === 'radio_listen'
+      ).length;
+
       const radioSkips = radioEvents
         .filter((e: any) => e.data.eventName === 'radio_total_session')
         .reduce((sum: number, e: any) => sum + (e.data.skips || 0), 0);
@@ -171,6 +175,7 @@ export async function GET(request: NextRequest) {
         radio: {
           totalListeningTime: radioListeningTime,
           sessionsCount: radioSessions,
+          songsListened,
           averageSessionLength: avgRadioSession,
           skips: radioSkips,
           bingeSessions,
@@ -215,9 +220,9 @@ export async function GET(request: NextRequest) {
     const avgEngagementScore =
       totalVisitors > 0
         ? Math.round(
-            engagementProfiles.reduce((sum: number, p: any) => sum + p.engagementScore, 0) /
-              totalVisitors
-          )
+          engagementProfiles.reduce((sum: number, p: any) => sum + p.engagementScore, 0) /
+          totalVisitors
+        )
         : 0;
 
     const bibleUsers = engagementProfiles.filter(
@@ -249,6 +254,11 @@ export async function GET(request: NextRequest) {
 
     const totalRadioTime = engagementProfiles.reduce(
       (sum: number, p: any) => sum + p.radio.totalListeningTime,
+      0
+    );
+
+    const totalSongsListened = engagementProfiles.reduce(
+      (sum: number, p: any) => sum + p.radio.songsListened,
       0
     );
 
@@ -284,6 +294,7 @@ export async function GET(request: NextRequest) {
         lowEngagement,
         avgBibleTime,
         avgRadioTime,
+        totalSongsListened,
         exitIntentConversionRate,
       },
       topEngaged,
