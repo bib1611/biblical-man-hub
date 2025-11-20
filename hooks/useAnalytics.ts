@@ -386,7 +386,7 @@ export function useAnalytics() {
   }, []);
 
   const trackEvent = async (
-    type: 'page_view' | 'window_open' | 'email_capture' | 'counselor_mode_enabled' | 'purchase' | 'sam_chat' | 'heartbeat' | 'custom',
+    type: 'page_view' | 'window_open' | 'email_capture' | 'counselor_mode_enabled' | 'purchase' | 'sam_chat' | 'heartbeat' | 'radio_listen' | 'custom',
     data: Record<string, any> = {}
   ) => {
     try {
@@ -426,6 +426,10 @@ export function useAnalytics() {
     trackEvent('sam_chat', { messageCount, mode });
   };
 
+  const trackRadioListen = (songTitle: string, artist: string) => {
+    trackEvent('radio_listen', { songTitle, artist });
+  };
+
   return {
     trackEvent,
     trackWindowOpen,
@@ -433,6 +437,7 @@ export function useAnalytics() {
     trackCounselorMode,
     trackPurchase,
     trackSamChat,
+    trackRadioListen,
     visitorId,
     sessionId,
   };
