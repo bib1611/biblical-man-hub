@@ -11,7 +11,8 @@ import {
     Menu,
     X,
     Home,
-    LogOut
+    LogOut,
+    FileText
 } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import MiniPlayer from '@/components/MiniPlayer';
@@ -25,6 +26,7 @@ interface DashboardLayoutProps {
 const navItems = [
     { id: 'bible', label: 'Bible', icon: BookOpen },
     { id: 'radio', label: 'Radio', icon: Radio },
+    { id: 'counseling', label: 'Articles', icon: FileText },
     { id: 'sam', label: 'Ask Sam', icon: MessageSquare },
     { id: 'admin', label: 'Admin', icon: ShieldAlert },
 ];
