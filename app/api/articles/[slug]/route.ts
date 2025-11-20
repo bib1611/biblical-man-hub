@@ -2,10 +2,10 @@ import { NextResponse } from 'next/server';
 
 export async function GET(
   request: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { slug } = params;
+    const { slug } = await params;
 
     // Fetch the full Substack article HTML
     const articleUrl = `https://biblicalman.substack.com/p/${slug}`;
