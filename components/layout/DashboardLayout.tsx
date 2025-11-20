@@ -14,6 +14,7 @@ import {
     LogOut
 } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
+import MiniPlayer from '@/components/MiniPlayer';
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
@@ -69,6 +70,13 @@ export default function DashboardLayout({ children, activeApp, onAppChange }: Da
                     })}
                 </nav>
 
+                {/* Mini Player for Desktop */}
+                {activeApp !== 'radio' && (
+                    <div className="border-t border-white/10 pt-4">
+                        <MiniPlayer onExpand={() => onAppChange('radio')} />
+                    </div>
+                )}
+
                 <div className="p-4 border-t border-white/10">
                     <button className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white transition-colors">
                         <LogOut size={20} />
@@ -95,6 +103,12 @@ export default function DashboardLayout({ children, activeApp, onAppChange }: Da
                     {children}
                 </main>
 
+                {/* Mini Player for Mobile */}
+                {activeApp !== 'radio' && (
+                    <div className="md:hidden border-t border-white/10 bg-black">
+                        <MiniPlayer onExpand={() => onAppChange('radio')} />
+                    </div>
+                )}
 
                 {/* Mobile Bottom Navigation */}
                 <nav className="md:hidden flex items-center justify-around p-2 border-t border-white/10 bg-black pb-safe">

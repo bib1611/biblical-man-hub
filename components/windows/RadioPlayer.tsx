@@ -36,20 +36,35 @@ export default function RadioPlayer() {
   const streamUrl = 'https://c13.radioboss.fm:8639/stream';
 
   const identifySong = async () => {
-    // Simulate metadata updates for now
-    const songs = [
-      { title: 'Way Maker', artist: 'Sinach', artwork: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&q=80' },
-      { title: 'Goodness of God', artist: 'Bethel Music', artwork: 'https://images.unsplash.com/photo-1514525253440-b393452e3383?w=800&q=80' },
-      { title: '10,000 Reasons', artist: 'Matt Redman', artwork: 'https://images.unsplash.com/photo-1459749411177-2a2965e7853f?w=800&q=80' },
-      { title: 'Oceans', artist: 'Hillsong United', artwork: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&q=80' },
-    ];
+    try {
+      const response = await fetch('/api/identify-song', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ streamUrl }),
+      });
 
-    const randomSong = songs[Math.floor(Math.random() * songs.length)];
-    setNowPlaying(randomSong);
+      const data = await response.json();
 
-    // Track the listen
-    if (randomSong.title && randomSong.artist) {
-      trackRadioListen(randomSong.title, randomSong.artist);
+      if (data.success && data.title) {
+        const songData = {
+          title: data.title,
+          artist: data.artist || 'The King\'s Radio',
+          artwork: data.artwork || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&q=80',
+        };
+
+        setNowPlaying(songData);
+
+        // Track the listen
+        trackRadioListen(songData.title, songData.artist);
+      }
+    } catch (error) {
+      console.error('Failed to identify song:', error);
+      // Fallback to default
+      setNowPlaying({
+        title: 'Live Broadcast',
+        artist: 'The King\'s Radio',
+        artwork: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&q=80',
+      });
     }
   };
 
