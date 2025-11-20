@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, Volume2, VolumeX, Radio as RadioIcon, Music, Mic } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, Radio as RadioIcon, Music, Heart, MoreHorizontal } from 'lucide-react';
 import { useRadioEngagement } from '@/hooks/useRadioEngagement';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { useRadioStore } from '@/lib/store/radio';
@@ -88,7 +88,6 @@ export default function RadioPlayer() {
   useEffect(() => {
     if (isPlaying) {
       // Ensure audio context is resumed (browser policy)
-      // Ensure audio context is resumed (browser policy)
       const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
       if (AudioContext && analyserRef.current && (analyserRef.current.context as AudioContext).state === 'suspended') {
         (analyserRef.current.context as AudioContext).resume();
@@ -113,17 +112,15 @@ export default function RadioPlayer() {
       } else {
         const playPromise = audioRef.current.play();
         if (playPromise !== undefined) {
-          setIsLoading(true);
           playPromise
             .then(() => {
               setIsLoading(false);
-              setError(null);
               radioTracking.trackPlayStart();
             })
-            .catch((err) => {
-              console.error("Playback error:", err);
+            .catch((error) => {
+              console.error('Playback failed:', error);
+              setError('Failed to play stream');
               setIsLoading(false);
-              setError("Stream unavailable. Please try again.");
             });
         }
       }
@@ -131,76 +128,12 @@ export default function RadioPlayer() {
     }
   };
 
-  // Visualizer Logic (Simplified for brevity, keeping existing logic mostly intact)
-  useEffect(() => {
-    if (!canvasRef.current || !audioRef.current) return;
-
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    // Initialize Audio Context only once
-    if (!analyserRef.current) {
-      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-      const audioCtx = new AudioContext();
-      const analyser = audioCtx.createAnalyser();
-      analyser.fftSize = 256;
-
-      // Connect source
-      if (!sourceRef.current) {
-        const source = audioCtx.createMediaElementSource(audioRef.current);
-        source.connect(analyser);
-        analyser.connect(audioCtx.destination);
-        sourceRef.current = source;
-      }
-
-      analyserRef.current = analyser;
-    }
-
-    const analyser = analyserRef.current;
-    const bufferLength = analyser.frequencyBinCount;
-    const dataArray = new Uint8Array(bufferLength);
-
-    const draw = () => {
-      animationRef.current = requestAnimationFrame(draw);
-      analyser.getByteFrequencyData(dataArray);
-
-      ctx.fillStyle = '#000';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      const barWidth = (canvas.width / bufferLength) * 2.5;
-      let barHeight;
-      let x = 0;
-
-      for (let i = 0; i < bufferLength; i++) {
-        barHeight = dataArray[i] / 2;
-
-        // Gradient bars
-        const gradient = ctx.createLinearGradient(0, canvas.height - barHeight, 0, canvas.height);
-        gradient.addColorStop(0, '#ef4444'); // Red-500
-        gradient.addColorStop(1, '#7f1d1d'); // Red-900
-
-        ctx.fillStyle = gradient;
-        ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
-
-        x += barWidth + 1;
-      }
-    };
-
-    draw();
-
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
-  }, []);
-
+  // Apple Music Style Layout
   return (
-    <div className="h-full flex flex-col bg-zinc-900 text-white relative overflow-hidden">
-      {/* Background Artwork Blur */}
+    <div className="h-full flex flex-col bg-gradient-to-b from-zinc-900 to-black text-white relative overflow-hidden">
+      {/* Background Artwork Blur - Apple Music style */}
       <div
-        className="absolute inset-0 opacity-20 blur-3xl pointer-events-none"
+        className="absolute inset-0 opacity-30 blur-3xl"
         style={{
           backgroundImage: `url(${nowPlaying.artwork || 'https://images.unsplash.com/photo-1478737270239-2f02b77ac6b5?w=800&q=80'})`,
           backgroundSize: 'cover',
@@ -208,168 +141,127 @@ export default function RadioPlayer() {
         }}
       />
 
-      {/* Header */}
-      <div className="relative z-10 p-6 border-b border-white/10 flex items-center justify-between bg-black/20 backdrop-blur-sm">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center shadow-lg shadow-red-900/20">
-            <RadioIcon size={20} className="text-white" />
-          </div>
-          <div>
-            <h2 className="font-bold text-lg tracking-tight">The King's Radio</h2>
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-              <span className="text-xs text-red-400 font-medium uppercase tracking-wider">Live Broadcast</span>
-            </div>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 text-xs text-gray-400 bg-black/40 px-3 py-1.5 rounded-full border border-white/5">
-          <Music size={12} />
-          <span>128kbps MP3</span>
-        </div>
-      </div>
+      {/* Main Content - Apple Music Layout */}
+      <div className="flex-1 relative z-10 flex flex-col items-center justify-center p-4 md:p-8 max-w-3xl mx-auto w-full">
 
-      {/* Main Content */}
-      <div className="flex-1 relative z-10 flex flex-col items-center justify-center p-8 gap-8">
-        {/* Album Art */}
+        {/* Live Badge */}
+        <div className="mb-4 flex items-center gap-2 px-4 py-2 bg-red-600/20 backdrop-blur-sm rounded-full border border-red-500/30">
+          <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+          <span className="text-xs font-semibold text-red-400 uppercase tracking-wider">Live Broadcast</span>
+        </div>
+
+        {/* Album Art - Apple Music style with shadow */}
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="relative w-64 h-64 md:w-80 md:h-80 rounded-2xl overflow-hidden shadow-2xl shadow-black/50 border border-white/10 group"
+          transition={{ duration: 0.5 }}
+          className="relative w-72 h-72 md:w-96 md:h-96 mb-8"
         >
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black/50 rounded-2xl shadow-2xl shadow-black/60" />
           <img
             src={nowPlaying.artwork || 'https://images.unsplash.com/photo-1478737270239-2f02b77ac6b5?w=800&q=80'}
             alt="Album Art"
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            className="w-full h-full object-cover rounded-2xl"
           />
-          {/* Overlay Gradient */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
         </motion.div>
 
-        {/* Song Info */}
-        <div className="text-center space-y-2">
-          <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
-            {nowPlaying.title || 'Connecting to Stream...'}
+        {/* Song Info - Apple Music typography */}
+        <div className="text-center mb-6 w-full">
+          <h1 className="text-2xl md:text-3xl font-semibold text-white mb-2 tracking-tight">
+            {nowPlaying.title || 'The King\'s Radio'}
           </h1>
-          <p className="text-lg text-gray-400 font-medium">
-            {nowPlaying.artist || 'The Biblical Man Hub'}
+          <p className="text-lg text-red-400 font-medium">
+            {nowPlaying.artist || 'Live Biblical Teaching'}
           </p>
         </div>
 
-        {/* Visualizer Canvas */}
-        <div className="w-full max-w-2xl h-24 bg-black/20 rounded-xl overflow-hidden border border-white/5 backdrop-blur-sm">
-          <canvas
-            ref={canvasRef}
-            width={800}
-            height={100}
-            className="w-full h-full opacity-80"
-          />
+        {/* Action Buttons - Apple Music style */}
+        <div className="flex items-center gap-6 mb-8">
+          <button className="text-gray-400 hover:text-red-400 transition-colors">
+            <Heart size={24} />
+          </button>
+          <button className="text-gray-400 hover:text-white transition-colors">
+            <MoreHorizontal size={24} />
+          </button>
         </div>
 
-        {/* Controls */}
-        <div className="flex flex-col items-center gap-6 w-full max-w-md">
-          {/* Play/Pause */}
-          <button
-            onClick={togglePlay}
-            disabled={isLoading}
-            className="w-20 h-20 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-xl shadow-white/10 disabled:opacity-50 disabled:cursor-not-allowed group"
-          >
-            {isLoading ? (
-              <div className="w-8 h-8 border-4 border-gray-300 border-t-black rounded-full animate-spin" />
-            ) : isPlaying ? (
-              <Pause size={32} className="fill-current" />
-            ) : (
-              <Play size={32} className="fill-current ml-1" />
-            )}
-          </button>
+        {/* Controls - Apple Music layout */}
+        <div className="w-full max-w-md space-y-6">
 
-          {/* Volume */}
-          <div className="flex items-center gap-4 w-full px-8">
+          {/* Play/Pause Button - Apple Music style */}
+          <div className="flex items-center justify-center gap-8">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={togglePlay}
+              disabled={isLoading}
+              className="w-16 h-16 bg-white hover:bg-gray-100 rounded-full flex items-center justify-center shadow-xl transition-all disabled:opacity-50"
+            >
+              {isLoading ? (
+                <div className="w-6 h-6 border-3 border-gray-300 border-t-black rounded-full animate-spin" />
+              ) : isPlaying ? (
+                <Pause size={28} className="text-black" fill="currentColor" />
+              ) : (
+                <Play size={28} className="text-black ml-1" fill="currentColor" />
+              )}
+            </motion.button>
+          </div>
+
+          {/* Volume Control - Apple Music style */}
+          <div className="flex items-center gap-3 px-2">
             <button
               onClick={toggleMute}
               className="text-gray-400 hover:text-white transition-colors"
             >
               {isMuted || volume === 0 ? (
-                <VolumeX size={20} />
+                <VolumeX size={18} />
               ) : (
-                <Volume2 size={20} />
+                <Volume2 size={18} />
               )}
             </button>
 
-            {/* Play/Pause Button */}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={togglePlay}
-              className="w-20 h-20 bg-white hover:bg-gray-100 rounded-full flex items-center justify-center shadow-2xl transition-all"
+            <div className="flex-1 relative h-1 bg-gray-700 rounded-full overflow-hidden group cursor-pointer"
+              onClick={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const percentage = x / rect.width;
+                setVolume(Math.max(0, Math.min(1, percentage)));
+              }}
             >
-              {isPlaying ? (
-                <Pause size={32} className="text-gray-900" fill="currentColor" />
-              ) : (
-                <Play size={32} className="text-gray-900 ml-1" fill="currentColor" />
-              )}
-            </motion.button>
-            {/* Volume slider placeholder for symmetry */}
-            <div className="w-12 h-12" />
-          </div>
-
-          {/* Volume Slider */}
-          <div className="flex items-center gap-3 px-4">
-            <Volume2 size={16} className="text-gray-500" />
-            <div className="flex-1 relative group">
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                value={volume}
-                onChange={(e) => setVolume(parseFloat(e.target.value))}
-                className="w-full h-1 bg-gray-800 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-lg hover:[&::-webkit-slider-thumb]:scale-110 [&::-webkit-slider-thumb]:transition-transform"
-              />
               <div
-                className="absolute top-0 left-0 h-1 bg-white rounded-full pointer-events-none"
+                className="absolute top-0 left-0 h-full bg-white rounded-full"
                 style={{ width: `${volume * 100}%` }}
               />
+              <div
+                className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                style={{ left: `calc(${volume * 100}% - 6px)` }}
+              />
             </div>
-            <span className="text-xs text-gray-500 w-8 text-right font-mono">
+
+            <span className="text-xs text-gray-400 w-8 text-right tabular-nums">
               {Math.round(volume * 100)}
             </span>
           </div>
 
-          {/* Visualizer Bars */}
-          {isPlaying && (
-            <div className="flex items-center justify-center gap-1 h-12 mt-6">
-              {[...Array(40)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  animate={{
-                    height: ['30%', '100%', '30%'],
-                  }}
-                  transition={{
-                    duration: 0.4 + Math.random() * 0.4,
-                    repeat: Infinity,
-                    ease: 'easeInOut',
-                    delay: i * 0.03,
-                  }}
-                  className="w-1 bg-gradient-to-t from-red-600 to-white rounded-full"
-                  style={{ opacity: 0.6 + Math.random() * 0.4 }}
-                />
-              ))}
-            </div>
-          )}
+          {/* Stream Quality Badge */}
+          <div className="flex items-center justify-center gap-2 text-xs text-gray-500">
+            <Music size={12} />
+            <span>128kbps • Lossless Quality</span>
+          </div>
         </div>
       </div>
 
-      {/* Bottom Section */}
-      <div className="border-t border-gray-800/50 p-4">
-        <div className="max-w-2xl mx-auto space-y-4">
-          {/* Support CTA */}
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-4 bg-gradient-to-r from-gray-800/40 to-gray-900/40 rounded-xl border border-gray-700/30">
+      {/* Support Section - Apple Music style bottom sheet */}
+      <div className="relative z-10 border-t border-white/10 bg-gradient-to-b from-zinc-900/80 to-black/80 backdrop-blur-xl">
+        <div className="max-w-3xl mx-auto p-6">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-5 bg-gradient-to-br from-red-950/30 to-transparent rounded-2xl border border-red-900/20">
             <div className="text-center md:text-left">
-              <h3 className="text-sm font-semibold text-white mb-1">
+              <h3 className="text-base font-semibold text-white mb-1.5 flex items-center gap-2 justify-center md:justify-start">
+                <Heart size={16} className="text-red-500" />
                 Support The King's Radio
               </h3>
-              <p className="text-xs text-gray-400">
-                Help keep Biblical truth on the air
+              <p className="text-sm text-gray-400">
+                Help keep Biblical truth broadcasting 24/7
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -377,7 +269,7 @@ export default function RadioPlayer() {
                 href="https://buy.stripe.com/3cIdRa2kM8WJgmIabYcMM1T"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-6 py-2.5 bg-white hover:bg-gray-100 text-gray-900 rounded-full font-semibold text-sm transition-all shadow-lg"
+                className="px-6 py-3 bg-white hover:bg-gray-100 text-black rounded-full font-semibold text-sm transition-all shadow-lg hover:shadow-xl"
               >
                 Give Now
               </a>
@@ -385,22 +277,22 @@ export default function RadioPlayer() {
                 href="https://biblicalman.substack.com/subscribe"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-6 py-2.5 bg-gray-800/60 hover:bg-gray-700/60 text-white border border-gray-600/50 rounded-full text-sm font-medium transition-all"
+                className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-full text-sm font-medium transition-all backdrop-blur-sm"
               >
                 Subscribe
               </a>
             </div>
           </div>
 
-          {/* Stream Info */}
-          <div className="text-center text-xs text-gray-500">
-            <p>Biblical Teaching • Stream powered by RadioBoss FM</p>
+          {/* Footer Info */}
+          <div className="text-center text-xs text-gray-500 mt-4">
+            <p>Biblical Teaching • Powered by RadioBoss FM</p>
           </div>
         </div>
       </div>
 
       {/* Hidden Audio Element */}
       <audio ref={audioRef} src={streamUrl} preload="none" />
-    </div >
+    </div>
   );
 }
