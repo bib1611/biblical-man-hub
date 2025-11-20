@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS visitor_profiles (
   referrer TEXT,
   device_type TEXT,
   browser TEXT,
+  browser_version TEXT,
   country TEXT
 );
 
@@ -52,3 +53,7 @@ CREATE POLICY "Enable all for service role" ON behavioral_events
 -- Grant permissions
 GRANT ALL ON visitor_profiles TO service_role;
 GRANT ALL ON behavioral_events TO service_role;
+
+-- Migration: Add browser_version column if it doesn't exist
+-- Run this if you're updating an existing database
+ALTER TABLE visitor_profiles ADD COLUMN IF NOT EXISTS browser_version TEXT;
