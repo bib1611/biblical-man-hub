@@ -182,19 +182,19 @@ export default function ArticlePage() {
           {/* Article Body */}
           <div
             className="prose prose-invert prose-lg md:prose-xl max-w-none
-              prose-headings:text-white prose-headings:font-bold
-              prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6
-              prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4
-              prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-6
-              prose-a:text-red-400 prose-a:no-underline hover:prose-a:underline
+              prose-headings:text-white prose-headings:font-bold prose-headings:tracking-tight
+              prose-h2:text-2xl md:prose-h2:text-4xl prose-h2:mt-16 prose-h2:mb-6 prose-h2:leading-tight
+              prose-h3:text-xl md:prose-h3:text-2xl prose-h3:mt-10 prose-h3:mb-4
+              prose-p:text-gray-200 prose-p:leading-[1.8] prose-p:mb-6 prose-p:text-lg
+              prose-a:text-red-400 prose-a:font-medium prose-a:no-underline hover:prose-a:underline prose-a:transition-all
               prose-strong:text-white prose-strong:font-bold
-              prose-em:text-gray-300
-              prose-blockquote:border-l-4 prose-blockquote:border-red-500 prose-blockquote:pl-6 prose-blockquote:italic prose-blockquote:text-gray-300 prose-blockquote:bg-red-900/10 prose-blockquote:py-4 prose-blockquote:pr-4 prose-blockquote:rounded-r-lg
-              prose-ul:text-gray-300 prose-ul:my-6
-              prose-ol:text-gray-300 prose-ol:my-6
-              prose-li:my-2
-              prose-img:rounded-xl prose-img:shadow-2xl prose-img:my-8
-              prose-hr:border-white/10 prose-hr:my-12"
+              prose-em:text-gray-300 prose-em:italic
+              prose-blockquote:border-l-4 prose-blockquote:border-red-500 prose-blockquote:pl-8 prose-blockquote:pr-6 prose-blockquote:py-6 prose-blockquote:my-8 prose-blockquote:italic prose-blockquote:text-xl prose-blockquote:text-gray-100 prose-blockquote:bg-gradient-to-r prose-blockquote:from-red-900/20 prose-blockquote:to-transparent prose-blockquote:rounded-r-xl prose-blockquote:shadow-lg
+              prose-ul:text-gray-200 prose-ul:my-6 prose-ul:space-y-2
+              prose-ol:text-gray-200 prose-ol:my-6 prose-ol:space-y-2
+              prose-li:my-3 prose-li:leading-relaxed
+              prose-img:rounded-2xl prose-img:shadow-2xl prose-img:my-12 prose-img:w-full prose-img:border prose-img:border-white/10
+              prose-hr:border-white/10 prose-hr:my-16"
             dangerouslySetInnerHTML={{ __html: article.contentHtml }}
           />
 

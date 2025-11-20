@@ -140,17 +140,40 @@ function cleanSubstackContent(html: string): string {
     .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
     // Remove style tags
     .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+    // Remove subscription widgets and buttons
+    .replace(/<div[^>]*class="[^"]*subscription[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '')
+    .replace(/<button[^>]*subscribe[^>]*>[\s\S]*?<\/button>/gi, '')
+    // Remove share buttons and social elements
+    .replace(/<div[^>]*class="[^"]*share[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '')
+    .replace(/<a[^>]*class="[^"]*social[^"]*"[^>]*>[\s\S]*?<\/a>/gi, '')
+    // Remove Substack branding
+    .replace(/<div[^>]*class="[^"]*pencraft[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '')
+    // Remove captioned images divs (keep just the img)
+    .replace(/<div[^>]*class="[^"]*captioned-image[^"]*"[^>]*>([\s\S]*?)<\/div>/gi, '$1')
+    // Remove figure wrappers (keep content)
+    .replace(/<figure[^>]*>([\s\S]*?)<\/figure>/gi, '$1')
     // Remove data attributes
     .replace(/\s*data-[a-z-]+="[^"]*"/gi, '')
-    // Remove class attributes (but keep structure)
+    // Remove most class attributes but keep basic ones
     .replace(/\s*class="[^"]*"/gi, '')
     // Remove id attributes
     .replace(/\s*id="[^"]*"/gi, '')
+    // Remove style attributes
+    .replace(/\s*style="[^"]*"/gi, '')
     // Remove empty paragraphs
     .replace(/<p[^>]*>\s*<\/p>/gi, '')
+    // Remove empty divs
+    .replace(/<div[^>]*>\s*<\/div>/gi, '')
+    // Clean up multiple line breaks
+    .replace(/(<br\s*\/?>\s*){3,}/gi, '<br><br>')
     // Clean up whitespace
     .replace(/\s+/g, ' ')
     .trim();
+
+  // Convert headings to proper semantic HTML
+  cleaned = cleaned
+    .replace(/<h1[^>]*>([\s\S]*?)<\/h1>/gi, '<h2>$1</h2>') // Convert h1 to h2
+    .replace(/<strong[^>]*><h2>([\s\S]*?)<\/h2><\/strong>/gi, '<h2>$1</h2>') // Unwrap bold from headings;
 
   return cleaned;
 }
