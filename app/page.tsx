@@ -17,6 +17,7 @@ import About from '@/components/windows/About';
 import StartHere from '@/components/windows/StartHere';
 import CommunityChat from '@/components/windows/CommunityChat';
 import { AuthProvider } from '@/lib/contexts/AuthContext';
+import { SessionProvider } from '@/lib/contexts/SessionContext';
 import { products } from '@/lib/data/products';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { usePersonalization } from '@/hooks/usePersonalization';
@@ -120,21 +121,23 @@ export default function Home() {
 
   // Hub view after user clicks "Enter The Hub"
   return (
-    <AuthProvider>
-      <GlobalAudioProvider />
-      <DashboardLayout activeApp={activeApp} onAppChange={setActiveApp}>
-        {activeApp === 'bible' && <BibleStudy />}
-        {activeApp === 'radio' && <RadioPlayer />}
-        {activeApp === 'sam' && <SamAssistant />}
-        {activeApp === 'admin' && <ProtectedAdminDashboard />}
-        {activeApp === 'products' && <ProductsHub />}
-        {activeApp === 'content-feed' && <ContentFeed />}
-        {activeApp === 'counseling' && <SubstackArticles />}
-        {activeApp === 'community' && <CommunityChat />}
-        {activeApp === 'about' && <About />}
-        {activeApp === 'start-here' && <StartHere />}
-        {activeApp === 'contact' && <ContactForm />}
-      </DashboardLayout>
-    </AuthProvider>
+    <SessionProvider>
+      <AuthProvider>
+        <GlobalAudioProvider />
+        <DashboardLayout activeApp={activeApp} onAppChange={setActiveApp}>
+          {activeApp === 'bible' && <BibleStudy />}
+          {activeApp === 'radio' && <RadioPlayer />}
+          {activeApp === 'sam' && <SamAssistant />}
+          {activeApp === 'admin' && <ProtectedAdminDashboard />}
+          {activeApp === 'products' && <ProductsHub />}
+          {activeApp === 'content-feed' && <ContentFeed />}
+          {activeApp === 'counseling' && <SubstackArticles />}
+          {activeApp === 'community' && <CommunityChat />}
+          {activeApp === 'about' && <About />}
+          {activeApp === 'start-here' && <StartHere />}
+          {activeApp === 'contact' && <ContactForm />}
+        </DashboardLayout>
+      </AuthProvider>
+    </SessionProvider>
   );
 }
