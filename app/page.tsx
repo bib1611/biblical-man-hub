@@ -25,9 +25,12 @@ import { useScrollDepth } from '@/hooks/useScrollDepth';
 import { useABTest } from '@/hooks/useABTest';
 import ExitIntentPopup from '@/components/ExitIntentPopup';
 import StickyMobileCTA from '@/components/StickyMobileCTA';
+import LandingPage from '@/components/LandingPage';
+import { AnimatePresence, motion } from 'framer-motion';
 
 export default function Home() {
   const { windows, openWindow } = useAppStore();
+  const [viewMode, setViewMode] = useState<'landing' | 'hub'>('landing');
   const [showHub, setShowHub] = useState(false);
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -100,13 +103,24 @@ export default function Home() {
   };
 
   const enterHub = () => {
+    setViewMode('hub');
     setShowHub(true);
   };
+
+  if (viewMode === 'landing') {
+    console.log('Rendering Landing Page Mode');
+    return <LandingPage onEnter={enterHub} />;
+  }
 
   if (showHub) {
     return (
       <AuthProvider>
-        <div className="relative w-screen h-screen overflow-hidden bg-gradient-to-br from-black via-red-950/10 to-black">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="relative w-screen h-screen overflow-hidden bg-gradient-to-br from-black via-red-950/10 to-black"
+        >
           <div
             className="absolute inset-0 opacity-5"
             style={{
@@ -206,7 +220,7 @@ export default function Home() {
               </div>
             )}
           </div>
-        </div>
+        </motion.div>
       </AuthProvider>
     );
   }

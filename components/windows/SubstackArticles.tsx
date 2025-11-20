@@ -172,11 +172,23 @@ export default function SubstackArticles() {
               {/* Article Image (if available) */}
               {article.imageUrl && (
                 <div className="mb-4 -mx-5 -mt-5 md:-mx-6 md:-mt-6">
-                  <img
-                    src={article.imageUrl}
-                    alt={article.title}
-                    className="w-full h-48 object-cover rounded-t-xl"
-                  />
+                  {article.title.includes('Ephesus') ? (
+                    <Link href="/articles/i-fought-beasts-at-ephesus">
+                      <img
+                        src={article.imageUrl}
+                        alt={article.title}
+                        className="w-full h-48 object-cover rounded-t-xl cursor-pointer hover:opacity-90 transition-opacity"
+                      />
+                    </Link>
+                  ) : (
+                    <a href={article.url} target="_blank" rel="noopener noreferrer">
+                      <img
+                        src={article.imageUrl}
+                        alt={article.title}
+                        className="w-full h-48 object-cover rounded-t-xl cursor-pointer hover:opacity-90 transition-opacity"
+                      />
+                    </a>
+                  )}
                 </div>
               )}
 
@@ -188,9 +200,20 @@ export default function SubstackArticles() {
               </div>
 
               {/* Title & Excerpt */}
-              <h3 className="text-lg md:text-xl font-bold text-blue-100 mb-2 line-clamp-2 hover:text-blue-300 transition-colors">
-                {article.title}
-              </h3>
+              {/* Title & Excerpt */}
+              {article.title.includes('Ephesus') ? (
+                <Link href="/articles/i-fought-beasts-at-ephesus">
+                  <h3 className="text-lg md:text-xl font-bold text-blue-100 mb-2 line-clamp-2 hover:text-blue-300 transition-colors cursor-pointer">
+                    {article.title}
+                  </h3>
+                </Link>
+              ) : (
+                <a href={article.url} target="_blank" rel="noopener noreferrer">
+                  <h3 className="text-lg md:text-xl font-bold text-blue-100 mb-2 line-clamp-2 hover:text-blue-300 transition-colors cursor-pointer">
+                    {article.title}
+                  </h3>
+                </a>
+              )}
               <p className="text-sm text-gray-400 mb-4 line-clamp-3 flex-1">
                 {article.excerpt}
               </p>
@@ -208,12 +231,12 @@ export default function SubstackArticles() {
               </div>
 
               {/* Read Button */}
-              {article.id === '6' ? (
+              {article.title.includes('Ephesus') ? (
                 <Link
                   href="/articles/i-fought-beasts-at-ephesus"
                   className="w-full py-2.5 rounded-lg font-semibold text-white transition-all flex items-center justify-center gap-2 group bg-gradient-to-r from-blue-600/80 to-cyan-600/80 hover:from-blue-500 hover:to-cyan-500"
                 >
-                  Read Article
+                  Read Now (Local)
                 </Link>
               ) : (
                 <a

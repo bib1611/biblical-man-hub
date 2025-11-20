@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
     const profile = {
       visitorId: visitor?.id || visitorId,
       sessionId: visitor?.sessionId || '',
-      isReturning: visitor ? visitor.pageViews > 1 || visitor.visitCount > 1 : false,
+      isReturning: visitor ? (visitor.pageViews > 1 || (visitor.visitCount || 0) > 1) : false,
       visitCount: visitor?.visitCount || 1,
       hasEmail: !!visitor?.email,
       hasInteractedWithSam: visitor?.interactedWithSam || false,
@@ -67,7 +67,10 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Personalization error:', error);
     return NextResponse.json(
-      { error: 'Failed to load personalization' },
+      {
+        error: 'Failed to load personalization',
+        details: error instanceof Error ? error.message : String(error)
+      },
       { status: 500 }
     );
   }
