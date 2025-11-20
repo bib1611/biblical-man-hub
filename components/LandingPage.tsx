@@ -50,7 +50,7 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
                     <motion.button
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
-                        onClick={onEnter}
+                        onClick={() => onEnter()}
                         className="group relative inline-flex items-center gap-3 px-8 py-4 bg-white text-black rounded-full text-lg font-bold transition-all hover:bg-gray-200"
                     >
                         <span>Enter The Hub</span>
@@ -102,9 +102,9 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
             {/* Minimal Footer */}
             <footer className="p-8 text-center z-10">
                 <div className="flex items-center justify-center gap-6 text-xs text-gray-600 uppercase tracking-widest">
-                    <button onClick={onEnter} className="hover:text-white transition-colors">Manifesto</button>
-                    <button onClick={onEnter} className="hover:text-white transition-colors">About</button>
-                    <button onClick={onEnter} className="hover:text-white transition-colors">Login</button>
+                    <button onClick={() => onEnter()} className="hover:text-white transition-colors">Manifesto</button>
+                    <button onClick={() => onEnter()} className="hover:text-white transition-colors">About</button>
+                    <button onClick={() => onEnter()} className="hover:text-white transition-colors">Login</button>
                 </div>
             </footer>
         </div>
