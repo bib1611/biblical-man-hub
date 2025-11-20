@@ -12,7 +12,7 @@ import { VisitorProfile } from '@/hooks/usePersonalization';
 export async function GET(request: NextRequest) {
   try {
     const db = getDB();
-    const visitors = db.getAllVisitors();
+    const visitors = await db.getAllVisitors();
 
     // Build psychographic profiles for all visitors
     const psychographicProfiles = visitors.map((visitor: any) => {
@@ -79,11 +79,11 @@ export async function GET(request: NextRequest) {
     const avgConversionReadiness =
       psychographicProfiles.length > 0
         ? Math.round(
-            psychographicProfiles.reduce(
-              (sum: number, p: any) => sum + p.psychographic.conversionReadiness,
-              0
-            ) / psychographicProfiles.length
-          )
+          psychographicProfiles.reduce(
+            (sum: number, p: any) => sum + p.psychographic.conversionReadiness,
+            0
+          ) / psychographicProfiles.length
+        )
         : 0;
 
     const highReadiness = psychographicProfiles.filter(

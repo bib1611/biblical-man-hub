@@ -95,6 +95,7 @@ export interface Visitor {
   name?: string;
   firstSeen: string;
   lastSeen: string;
+  visitCount: number;
 
   // Geographic Intelligence
   ip: string;

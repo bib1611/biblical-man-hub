@@ -62,7 +62,7 @@ async function sendConversationAlert(conversation: ConversationLog, visitorId: s
   }
 
   const db = getDB();
-  const visitor = db.getVisitor(visitorId);
+  const visitor = await db.getVisitor(visitorId);
 
   const message = `💬 HIGH-INTENT CONVERSATION ALERT!
 

@@ -6,11 +6,11 @@ export async function POST(request: NextRequest) {
     const { visitorId } = await request.json();
     const db = getDB();
 
-    const visitor = db.getVisitor(visitorId);
+    const visitor = await db.getVisitor(visitorId);
     if (visitor) {
       visitor.lastSeen = new Date().toISOString();
       visitor.isActive = true;
-      db.createOrUpdateVisitor(visitor);
+      await db.createOrUpdateVisitor(visitor);
     }
 
     return NextResponse.json({ success: true });

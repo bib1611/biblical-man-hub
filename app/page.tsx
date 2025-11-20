@@ -21,7 +21,10 @@ import { AuthProvider } from '@/lib/contexts/AuthContext';
 import { products } from '@/lib/data/products';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { usePersonalization } from '@/hooks/usePersonalization';
+import { useScrollDepth } from '@/hooks/useScrollDepth';
+import { useABTest } from '@/hooks/useABTest';
 import ExitIntentPopup from '@/components/ExitIntentPopup';
+import StickyMobileCTA from '@/components/StickyMobileCTA';
 
 export default function Home() {
   const { windows, openWindow } = useAppStore();
@@ -35,6 +38,17 @@ export default function Home() {
 
   // Initialize personalization with psychographic data
   const { config, profile, messaging, timing, psychographic } = usePersonalization();
+
+  // 🧪 A/B TEST: Headline Variations
+  const headlineVariant = useABTest({
+    testName: 'homepage_headline_v1',
+    variants: ['A', 'B'],
+    weights: [0.5, 0.5],
+  });
+
+  // 📜 SCROLL DEPTH: Trigger urgency at 50% scroll
+  const { hasReached } = useScrollDepth();
+  const showUrgencyBanner = hasReached(50);
 
   // Get featured products for homepage
   const featuredProducts = products.filter(p => p.isFeatured);
@@ -92,118 +106,132 @@ export default function Home() {
   if (showHub) {
     return (
       <AuthProvider>
-      <div className="relative w-screen h-screen overflow-hidden bg-gradient-to-br from-black via-red-950/10 to-black">
-        <div
-          className="absolute inset-0 opacity-5"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ff0000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          }}
-        />
+        <div className="relative w-screen h-screen overflow-hidden bg-gradient-to-br from-black via-red-950/10 to-black">
+          <div
+            className="absolute inset-0 opacity-5"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ff0000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            }}
+          />
 
-        <div className="relative w-full h-full">
-          <Dock />
+          <div className="relative w-full h-full">
+            <Dock />
 
-          <div className="absolute left-0 md:left-20 top-0 right-0 bottom-0 md:bottom-0 bottom-20">
-            {windows['content-feed'].isOpen && (
-              <Window id="content-feed">
-                <ContentFeed />
-              </Window>
-            )}
+            <div className="absolute left-0 md:left-20 top-0 right-0 bottom-0 md:bottom-0 bottom-20">
+              {windows['content-feed'].isOpen && (
+                <Window id="content-feed">
+                  <ContentFeed />
+                </Window>
+              )}
 
-            {windows['bible-study'].isOpen && (
-              <Window id="bible-study">
-                <BibleStudy />
-              </Window>
-            )}
+              {windows['bible-study'].isOpen && (
+                <Window id="bible-study">
+                  <BibleStudy />
+                </Window>
+              )}
 
-            {windows['sam'].isOpen && (
-              <Window id="sam">
-                <SamAssistant />
-              </Window>
-            )}
+              {windows['sam'].isOpen && (
+                <Window id="sam">
+                  <SamAssistant />
+                </Window>
+              )}
 
-            {windows['products'].isOpen && (
-              <Window id="products">
-                <ProductsHub />
-              </Window>
-            )}
+              {windows['products'].isOpen && (
+                <Window id="products">
+                  <ProductsHub />
+                </Window>
+              )}
 
-            {windows['radio'].isOpen && (
-              <Window id="radio">
-                <RadioPlayer />
-              </Window>
-            )}
+              {windows['radio'].isOpen && (
+                <Window id="radio">
+                  <RadioPlayer />
+                </Window>
+              )}
 
-            {windows['counseling'].isOpen && (
-              <Window id="counseling">
-                <SubstackArticles />
-              </Window>
-            )}
+              {windows['counseling'].isOpen && (
+                <Window id="counseling">
+                  <SubstackArticles />
+                </Window>
+              )}
 
-            {windows['about'].isOpen && (
-              <Window id="about">
-                <About />
-              </Window>
-            )}
+              {windows['about'].isOpen && (
+                <Window id="about">
+                  <About />
+                </Window>
+              )}
 
-            {windows['start-here'].isOpen && (
-              <Window id="start-here">
-                <StartHere />
-              </Window>
-            )}
+              {windows['start-here'].isOpen && (
+                <Window id="start-here">
+                  <StartHere />
+                </Window>
+              )}
 
-            {windows['contact'].isOpen && (
-              <Window id="contact">
-                <ContactForm />
-              </Window>
-            )}
+              {windows['contact'].isOpen && (
+                <Window id="contact">
+                  <ContactForm />
+                </Window>
+              )}
 
-            {windows['community'].isOpen && (
-              <Window id="community">
-                <CommunityChat />
-              </Window>
-            )}
+              {windows['community'].isOpen && (
+                <Window id="community">
+                  <CommunityChat />
+                </Window>
+              )}
 
-            {windows['admin'].isOpen && (
-              <Window id="admin">
-                <ProtectedAdminDashboard />
-              </Window>
+              {windows['admin'].isOpen && (
+                <Window id="admin">
+                  <ProtectedAdminDashboard />
+                </Window>
+              )}
+            </div>
+
+            {Object.values(windows).every((w) => !w.isOpen) && (
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="text-center max-w-2xl px-8">
+                  <div className="mb-6 inline-block">
+                    <div className="w-24 h-24 bg-gradient-to-br from-red-600 to-red-900 rounded-2xl flex items-center justify-center shadow-2xl shadow-red-900/50">
+                      <span className="text-5xl font-bold text-white">†</span>
+                    </div>
+                  </div>
+                  <h1 className="text-3xl md:text-5xl font-bold text-red-100 mb-4 tracking-tight">
+                    The Biblical Man Hub
+                  </h1>
+                  <p className="text-lg md:text-xl text-gray-400 mb-8">
+                    Your command center for Biblical transformation.
+                  </p>
+                  <p className="text-xs md:text-sm text-gray-500">
+                    Click an icon at the bottom to get started
+                  </p>
+                </div>
+              </div>
             )}
           </div>
-
-          {Object.values(windows).every((w) => !w.isOpen) && (
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="text-center max-w-2xl px-8">
-                <div className="mb-6 inline-block">
-                  <div className="w-24 h-24 bg-gradient-to-br from-red-600 to-red-900 rounded-2xl flex items-center justify-center shadow-2xl shadow-red-900/50">
-                    <span className="text-5xl font-bold text-white">†</span>
-                  </div>
-                </div>
-                <h1 className="text-3xl md:text-5xl font-bold text-red-100 mb-4 tracking-tight">
-                  The Biblical Man Hub
-                </h1>
-                <p className="text-lg md:text-xl text-gray-400 mb-8">
-                  Your command center for Biblical transformation.
-                </p>
-                <p className="text-xs md:text-sm text-gray-500">
-                  Click an icon at the bottom to get started
-                </p>
-              </div>
-            </div>
-          )}
         </div>
-      </div>
       </AuthProvider>
     );
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white font-sans selection:bg-red-900 selection:text-white">
       {/* Exit Intent Popup */}
       <ExitIntentPopup />
 
+      {/* Sticky Mobile CTA */}
+      <StickyMobileCTA
+        onChat={() => {
+          setShowHub(true);
+          setTimeout(() => openWindow('sam'), 100);
+          trackWindowOpen('sam');
+        }}
+        onShop={() => {
+          setShowHub(true);
+          setTimeout(() => openWindow('products'), 100);
+          trackWindowOpen('products');
+        }}
+      />
+
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 bg-black/80 backdrop-blur-md border-b border-red-900/20">
+      <nav className="fixed top-0 w-full z-50 bg-black/80 backdrop-blur-md border-b border-red-900/20 animate-fade-in-up">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-4 flex items-center justify-between">
           <div className="flex items-center gap-2 md:gap-3">
             <div className="w-9 h-9 md:w-10 md:h-10 bg-gradient-to-br from-red-600 to-red-900 rounded-lg flex items-center justify-center">
@@ -234,11 +262,15 @@ export default function Home() {
             )}
 
             {/* Psychographic headline */}
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-              {messaging?.headline || config?.heroMessage || 'Stop Being Soft.'}
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight font-heading animate-scale-in">
+              {headlineVariant === 'B'
+                ? (messaging?.headline || 'Lead Your Family.')
+                : (messaging?.headline || config?.heroMessage || 'Stop Being Soft.')}
               <br />
               <span className="text-red-500">
-                {profile?.isReturning ? 'Ready to Take the Next Step?' : 'Start Leading.'}
+                {profile?.isReturning
+                  ? 'Ready to Take the Next Step?'
+                  : (headlineVariant === 'B' ? 'Build Your Legacy.' : 'Start Leading.')}
               </span>
             </h1>
 
@@ -393,7 +425,7 @@ export default function Home() {
       <section className="py-16 px-6 bg-gradient-to-b from-black to-red-950/10">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-4xl font-bold mb-3">
+            <h2 className="text-3xl md:text-4xl font-bold mb-3 font-heading">
               Proven Resources for Biblical Manhood
             </h2>
             <p className="text-lg text-gray-400 mb-6">
@@ -412,11 +444,10 @@ export default function Home() {
                 className="p-5 bg-gradient-to-br from-red-950/40 to-black border border-red-900/30 rounded-xl cursor-pointer hover:border-red-600/50 hover:scale-[1.02] transition-all group"
               >
                 <div className="flex items-center justify-between mb-3">
-                  <span className={`px-3 py-1.5 rounded-full text-xs font-bold ${
-                    product.price === 0
-                      ? 'bg-green-600/20 border border-green-600/50 text-green-300'
-                      : 'bg-purple-600/20 border border-purple-600/50 text-purple-300'
-                  }`}>
+                  <span className={`px-3 py-1.5 rounded-full text-xs font-bold ${product.price === 0
+                    ? 'bg-green-600/20 border border-green-600/50 text-green-300'
+                    : 'bg-purple-600/20 border border-purple-600/50 text-purple-300'
+                    }`}>
                     {product.price === 0 ? 'FREE' : `$${product.price}`}
                   </span>
                 </div>
@@ -445,7 +476,7 @@ export default function Home() {
       <section className="py-16 md:py-20 px-6 bg-gradient-to-b from-red-950/20 to-black">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-5xl font-bold mb-4">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4 font-heading">
               Trusted by 20,000+ Men Leading Their Families
             </h2>
             <p className="text-lg text-gray-400">
@@ -530,7 +561,7 @@ export default function Home() {
       <section className="py-16 md:py-20 px-6 bg-gradient-to-b from-black to-red-950/10">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-5xl font-bold mb-4">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4 font-heading">
               Everything You Need to Lead Your Family
               <br />
               <span className="text-red-500">In One Place</span>
@@ -582,7 +613,7 @@ export default function Home() {
                   AI-POWERED GUIDANCE
                 </span>
               </div>
-              <h2 className="text-3xl md:text-5xl font-bold mb-6">
+              <h2 className="text-3xl md:text-5xl font-bold mb-6 font-heading">
                 {psychographic?.painPoints?.[0]
                   ? `Get Help With ${psychographic.painPoints[0]}`
                   : 'Get Instant Biblical Guidance'}
@@ -593,8 +624,8 @@ export default function Home() {
                 {(profile?.leadScore ?? 0) > 70
                   ? "You're serious about this. Sam has advanced frameworks for high-level leadership challenges. Ask the hard questions."
                   : psychographic?.personalityType === 'analytical'
-                  ? 'Sam provides Scripture-backed answers with full context and references. Get precise guidance for your specific situation.'
-                  : 'Struggling with marriage? Need leadership advice? Want to find the right resource? Sam is trained on Biblical truth and can help you navigate your specific situation with wisdom from Scripture and trusted teachers.'}
+                    ? 'Sam provides Scripture-backed answers with full context and references. Get precise guidance for your specific situation.'
+                    : 'Struggling with marriage? Need leadership advice? Want to find the right resource? Sam is trained on Biblical truth and can help you navigate your specific situation with wisdom from Scripture and trusted teachers.'}
               </p>
               <div className="space-y-4 mb-8">
                 <div className="flex items-start gap-3">
@@ -677,27 +708,27 @@ export default function Home() {
           </div>
 
           <div className="text-center mb-8 md:mb-12">
-            {/* Urgency Banner */}
-            <div className="inline-block mb-6 px-6 py-3 bg-amber-600/20 border-2 border-amber-600/50 rounded-lg animate-pulse">
+            {/* Urgency Banner - Triggered by Scroll Depth */}
+            <div className={`inline-block mb-6 px-6 py-3 bg-amber-600/20 border-2 border-amber-600/50 rounded-lg transition-all duration-500 ${showUrgencyBanner ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
               <p className="text-amber-300 font-bold flex items-center gap-2">
                 <span className="text-xl">⚡</span>
                 Limited Time: Get FREE bonuses with any purchase this week
               </p>
             </div>
 
-            <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-4">
+            <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-4 font-heading">
               {psychographic?.personalityType === 'analytical'
                 ? 'Data-Driven Frameworks That Work'
                 : psychographic?.personalityType === 'skeptic'
-                ? 'Proven Systems (Not Theory)'
-                : 'Frameworks That Actually Work'}
+                  ? 'Proven Systems (Not Theory)'
+                  : 'Frameworks That Actually Work'}
             </h2>
             <p className="text-base md:text-lg lg:text-xl text-gray-400">
               {psychographic?.buyingStyle === 'researcher'
                 ? 'Evidence-based systems with real results. Full breakdowns included.'
                 : psychographic?.buyingStyle === 'impulsive'
-                ? 'Get instant access. Start transforming today.'
-                : 'No theory. No fluff. Just tested systems for Biblical masculinity.'}
+                  ? 'Get instant access. Start transforming today.'
+                  : 'No theory. No fluff. Just tested systems for Biblical masculinity.'}
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -850,15 +881,15 @@ export default function Home() {
             {psychographic?.resistanceLevel === 'low'
               ? "You're Ready. Let's Do This."
               : psychographic?.resistanceLevel === 'medium'
-              ? 'Ready to Take the Next Step?'
-              : 'Ready to Stop Making Excuses?'}
+                ? 'Ready to Take the Next Step?'
+                : 'Ready to Stop Making Excuses?'}
           </h2>
           <p className="text-xl text-gray-400 mb-8">
             {psychographic?.resistanceLevel === 'low'
               ? "You've seen enough. Time to access the full framework and start leading."
               : psychographic?.resistanceLevel === 'medium'
-              ? 'Join thousands of men who made the decision to lead their families biblically.'
-              : 'Every day you wait is another day your family suffers from weak leadership.'}
+                ? 'Join thousands of men who made the decision to lead their families biblically.'
+                : 'Every day you wait is another day your family suffers from weak leadership.'}
           </p>
           <button
             onClick={enterHub}

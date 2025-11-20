@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { X, Mail, ArrowRight } from 'lucide-react';
 import { usePersonalization } from '@/hooks/usePersonalization';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { useExitIntent } from '@/hooks/useExitIntent';
 
 export default function ExitIntentPopup() {
   const [isVisible, setIsVisible] = useState(false);
@@ -59,34 +60,31 @@ export default function ExitIntentPopup() {
 
   const { config, profile } = usePersonalization();
   const { trackEmailCapture, trackEvent } = useAnalytics();
+  const { isExitIntent } = useExitIntent({ enabled: !hasShown && config?.showExitIntent });
+
+  useEffect(() => {
+    if (isExitIntent && !hasShown) {
+      setIsVisible(true);
+      setHasShown(true);
+
+      // 🔥 PERSIST: Mark as shown in localStorage for 24 hours
+      try {
+        localStorage.setItem('exit_intent_shown_session', 'true');
+        localStorage.setItem('exit_intent_shown_timestamp', Date.now().toString());
+      } catch (e) {
+        // Silent fail
+      }
+
+      trackEvent('custom', {
+        eventName: 'exit_intent_shown',
+        leadScore: profile?.leadScore || 0,
+        hasEmail: profile?.hasEmail || false,
+      });
+    }
+  }, [isExitIntent, hasShown, profile, trackEvent]);
 
   useEffect(() => {
     if (!config?.showExitIntent || hasShown) return;
-
-    let exitIntentTriggered = false;
-
-    const handleMouseLeave = (e: MouseEvent) => {
-      // Only trigger if mouse is leaving from the top (not scrolling)
-      if (e.clientY <= 0 && !exitIntentTriggered && !hasShown) {
-        exitIntentTriggered = true;
-        setIsVisible(true);
-        setHasShown(true);
-
-        // 🔥 PERSIST: Mark as shown in localStorage for 24 hours
-        try {
-          localStorage.setItem('exit_intent_shown_session', 'true');
-          localStorage.setItem('exit_intent_shown_timestamp', Date.now().toString());
-        } catch (e) {
-          // Silent fail
-        }
-
-        trackEvent('custom', {
-          eventName: 'exit_intent_shown',
-          leadScore: profile?.leadScore || 0,
-          hasEmail: profile?.hasEmail || false,
-        });
-      }
-    };
 
     // STRATEGIC MODE: Show after 10 seconds if they haven't seen it and don't have email
     const timer = setTimeout(() => {
@@ -110,10 +108,7 @@ export default function ExitIntentPopup() {
       }
     }, 10000); // STRATEGIC: 10 seconds for natural engagement
 
-    document.addEventListener('mouseleave', handleMouseLeave);
-
     return () => {
-      document.removeEventListener('mouseleave', handleMouseLeave);
       clearTimeout(timer);
     };
   }, [config, hasShown, profile, trackEvent]);

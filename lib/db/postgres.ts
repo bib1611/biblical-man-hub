@@ -382,6 +382,7 @@ class PostgresDB {
       sessionId: row.session_id,
       firstSeen: row.first_seen,
       lastSeen: row.last_seen,
+      visitCount: row.visit_count || 1,
       ip: row.ip,
       country: row.country,
       city: row.city,

@@ -314,6 +314,7 @@ export async function POST(request: NextRequest) {
         sessionId,
         firstSeen: timestamp,
         lastSeen: timestamp,
+        visitCount: 1,
 
         // Geographic data
         ip,
@@ -444,40 +445,6 @@ export async function POST(request: NextRequest) {
       data,
       timestamp,
     });
-
-    // 🔥 DUAL-WRITE: Also store in Supabase for Enhanced Tracking dashboard
-    try {
-      // Upsert visitor profile to Supabase
-      await supabase.from('visitor_profiles').upsert({
-        id: visitor.id,
-        session_id: visitor.sessionId,
-        created_at: visitor.firstSeen,
-        updated_at: visitor.lastSeen,
-        is_returning: visitor.pageViews > 1,
-        has_email: !!visitor.email,
-        email: visitor.email,
-        lead_score: visitor.leadScore,
-        psychographic_data: null, // Will be populated by personalization system
-        traffic_source: visitor.trafficSource,
-        referrer: visitor.referrer,
-        device_type: visitor.device,
-        browser: visitor.browser,
-        country: visitor.country,
-      }, { onConflict: 'id' });
-
-      // Insert event to Supabase
-      await supabase.from('behavioral_events').insert({
-        id: uuidv4(),
-        visitor_id: visitor.id,
-        session_id: sessionId,
-        event_type: type,
-        event_data: data,
-        created_at: timestamp,
-      });
-    } catch (supabaseError) {
-      console.error('Supabase dual-write error:', supabaseError);
-      // Don't fail the request if Supabase write fails
-    }
 
     return NextResponse.json({
       success: true,
