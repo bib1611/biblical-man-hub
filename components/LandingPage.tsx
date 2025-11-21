@@ -17,12 +17,12 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
                     <div className="font-sans font-bold tracking-widest text-sm uppercase text-gray-500">
                         The Biblical Man Truth
                     </div>
-                    <button
-                        onClick={() => onEnter()}
+                    <a
+                        href="/member/login"
                         className="text-xs font-sans uppercase tracking-widest text-red-500 hover:text-red-400 transition-colors"
                     >
-                        Enter Member Hub →
-                    </button>
+                        Member Login →
+                    </a>
                 </div>
             </div>
 
@@ -163,16 +163,27 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
                             "Stop being soft. Stop compromising Scripture. Start leading like the man God called you to be."
                         </p>
 
-                        <button
-                            onClick={() => onEnter()}
-                            className="group inline-flex items-center gap-3 px-8 py-4 bg-white text-black rounded font-bold text-lg transition-all hover:bg-gray-200"
-                        >
-                            <span>Enter The Hub</span>
-                            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                        </button>
+                        <div className="max-w-2xl mx-auto mb-8 p-6 bg-gray-900/50 border border-gray-800 rounded-lg">
+                            <h4 className="text-xl font-bold text-white mb-3 font-sans">Get Full Access to The Biblical Man Hub</h4>
+                            <p className="text-gray-300 mb-4">
+                                Access all resources, the War Room, King's Radio, Intel Articles, and The Armory for just <strong className="text-red-500 text-2xl">$3</strong>
+                            </p>
+                            <p className="text-sm text-gray-400 mb-6">
+                                One-time payment. Lifetime access. After payment, you'll receive an email to create your account.
+                            </p>
+                            <a
+                                href="https://buy.stripe.com/YOUR_STRIPE_LINK"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="group inline-flex items-center gap-3 px-8 py-4 bg-red-600 text-white rounded font-bold text-lg transition-all hover:bg-red-700"
+                            >
+                                <span>Get Access Now ($3)</span>
+                                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                            </a>
+                        </div>
 
-                        <p className="mt-4 text-sm text-gray-600">
-                            Already a member? <button onClick={() => onEnter()} className="text-red-500 underline hover:text-red-400 transition-colors">Access Member Hub</button>
+                        <p className="text-sm text-gray-500">
+                            Already a member? <a href="/member/login" className="text-red-500 underline hover:text-red-400 transition-colors">Login here</a>
                         </p>
                     </div>
                 </motion.div>
