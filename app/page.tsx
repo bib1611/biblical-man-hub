@@ -140,10 +140,21 @@ export default function Home() {
   };
 
   // Wrap everything in SessionProvider so session is initialized immediately
+  // Check if we should show hub based on both state AND current URL
+  const shouldShowHub = () => {
+    if (viewMode === 'hub') return true;
+    // Also check URL params in case state hasn't updated yet
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('app')) return true;
+    }
+    return false;
+  };
+
   return (
     <SessionProvider>
       <AuthProvider>
-        {viewMode === 'landing' ? (
+        {!shouldShowHub() ? (
           <LandingPage onEnter={enterHub} />
         ) : (
           <>
