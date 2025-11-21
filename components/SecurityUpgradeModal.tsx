@@ -86,6 +86,9 @@ export default function SecurityUpgradeModal({ appName }: SecurityUpgradeModalPr
                             >
                                 Cancel Login
                             </button>
+                            <p className="text-[10px] text-center text-gray-600 mt-2">
+                                Problems signing in? Email <a href="mailto:biblicalmancustomers1611@yahoo.com" className="text-red-500 hover:underline">biblicalmancustomers1611@yahoo.com</a>
+                            </p>
                         </form>
                     ) : (
                         <div className="space-y-3">

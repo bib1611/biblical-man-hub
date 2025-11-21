@@ -348,9 +348,11 @@ export default function RadioPlayer() {
                   {loginStatus === 'error' && (
                     <p className="text-xs text-red-400">Email not found or not a member.</p>
                   )}
-                  {loginStatus === 'success' && (
-                    <p className="text-xs text-green-400">Welcome back, brother.</p>
+                  <p className="text-xs text-green-400">Welcome back, brother.</p>
                   )}
+                  <p className="text-[10px] text-center text-gray-500 mt-1">
+                    Problems signing in? Email <a href="mailto:biblicalmancustomers1611@yahoo.com" className="text-yellow-500 hover:underline">biblicalmancustomers1611@yahoo.com</a>
+                  </p>
                 </form>
               ) : (
                 <a

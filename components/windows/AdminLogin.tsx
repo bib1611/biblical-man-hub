@@ -6,6 +6,7 @@ import { Lock, Shield, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '@/lib/contexts/AuthContext';
 
 export default function AdminLogin() {
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -15,12 +16,13 @@ export default function AdminLogin() {
     e.preventDefault();
     setError('');
 
-    const success = await login(password);
+    const success = await login(email, password);
     if (success) {
       // Successfully logged in
+      setEmail('');
       setPassword('');
     } else {
-      setError('Invalid password. Access denied.');
+      setError('Invalid credentials. Access denied.');
       setPassword('');
     }
   };
@@ -49,6 +51,21 @@ export default function AdminLogin() {
 
         {/* Login Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+              Email Address
+            </label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-3 bg-black/40 border border-red-900/30 rounded-lg text-gray-100 placeholder-gray-500 focus:outline-none focus:border-red-600/50 focus:ring-2 focus:ring-red-600/20 transition-all"
+              placeholder="admin@example.com"
+              required
+            />
+          </div>
+
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
               Password

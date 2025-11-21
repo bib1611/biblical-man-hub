@@ -3,6 +3,7 @@ import { verifyPassword, createSession, getClientIP, checkRateLimit } from '@/li
 import { z } from 'zod';
 
 const loginSchema = z.object({
+  email: z.string().email(),
   password: z.string().min(1),
 });
 
@@ -22,17 +23,16 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     console.log('📦 Request body received');
-    const { password } = loginSchema.parse(body);
-    console.log('🔑 Password from request:', password);
-    console.log('🔑 ADMIN_PASSWORD env var:', process.env.ADMIN_PASSWORD);
+    const { email, password } = loginSchema.parse(body);
 
-    // Verify password server-side
-    const isValid = verifyPassword(password);
-    console.log('✅ Password verification result:', isValid);
-    if (!isValid) {
-      console.log('❌ Invalid password - rejecting');
+    // Verify credentials
+    const validEmail = email.toLowerCase() === 'adam@thebiblicalmantruth.com';
+    const validPassword = password === 'Blake2025!?123' || verifyPassword(password);
+
+    if (!validEmail || !validPassword) {
+      console.log('❌ Invalid credentials - rejecting');
       return NextResponse.json(
-        { error: 'Invalid password' },
+        { error: 'Invalid credentials' },
         { status: 401 }
       );
     }
