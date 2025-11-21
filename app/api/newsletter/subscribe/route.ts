@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
+import { createClient } from '@supabase/supabase-js';
+import { emailSequence } from '@/lib/email-sequences';
 
 const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
   : null;
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,16 +32,33 @@ export async function POST(request: NextRequest) {
       // Continue anyway - we still want to send the welcome sequence
     }
 
-    // 2. Send welcome email sequence
+    // 2. Add to email sequence database
+    const { error: dbError } = await supabase
+      .from('email_sequence_subscribers')
+      .upsert(
+        {
+          email,
+          subscribed_at: new Date().toISOString(),
+          current_day: 1,
+          last_email_sent_at: new Date().toISOString(), // Day 1 sent immediately
+        },
+        { onConflict: 'email' }
+      );
+
+    if (dbError) {
+      console.error('Failed to add to email sequence:', dbError);
+    }
+
+    // 3. Send Day 1 email immediately
     if (resend) {
-      await sendWelcomeSequence(email);
+      await sendEmailDay(email, 1);
     } else {
-      console.log('Email service not configured. Would send welcome sequence to:', email);
+      console.log('Email service not configured. Would send Day 1 to:', email);
     }
 
     return NextResponse.json({
       success: true,
-      message: 'Successfully subscribed! Check your email for welcome message.'
+      message: 'Successfully subscribed! Check your email for Day 1 of your challenge.'
     });
   } catch (error) {
     console.error('Newsletter subscription error:', error);
@@ -73,81 +97,28 @@ async function storeInGoogleSheets(email: string): Promise<boolean> {
   }
 }
 
-async function sendWelcomeSequence(email: string): Promise<void> {
+async function sendEmailDay(email: string, day: number): Promise<void> {
   if (!resend) return;
 
   const fromEmail = process.env.EMAIL_FROM || 'adam@biblicalman.com';
+  const emailTemplate = emailSequence.find((e) => e.day === day);
 
-  // Email 1: Welcome (immediate)
-  await resend.emails.send({
-    from: fromEmail,
-    to: email,
-    subject: 'Welcome to The Biblical Man',
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h1 style="color: #dc2626; font-size: 32px; font-weight: bold;">Welcome to The Biblical Man</h1>
+  if (!emailTemplate) {
+    console.error(`Email template for day ${day} not found`);
+    return;
+  }
 
-        <p style="font-size: 18px; line-height: 1.6; color: #333;">
-          You just joined 20,000+ men and women who refuse to settle for mediocrity.
-        </p>
+  try {
+    await resend.emails.send({
+      from: fromEmail,
+      to: email,
+      subject: emailTemplate.subject,
+      html: emailTemplate.html,
+    });
 
-        <p style="font-size: 16px; line-height: 1.6; color: #333;">
-          Here's what you can expect:
-        </p>
-
-        <ul style="font-size: 16px; line-height: 1.8; color: #333;">
-          <li><strong>Weekly Biblical Truth</strong> - No fluff. No compromise. Just raw, unfiltered teaching.</li>
-          <li><strong>Practical Frameworks</strong> - Real systems for marriage, parenting, finances, and spiritual warfare.</li>
-          <li><strong>Direct Access</strong> - Tools, resources, and community to help you lead.</li>
-        </ul>
-
-        <div style="margin: 30px 0; padding: 20px; background: #fee2e2; border-left: 4px solid #dc2626;">
-          <p style="margin: 0; font-size: 16px; color: #333;">
-            <strong>Your next email arrives in 24 hours.</strong> I'll introduce you to the Substack where I publish weekly.
-          </p>
-        </div>
-
-        <p style="font-size: 16px; line-height: 1.6; color: #333;">
-          In the meantime, here's what you should do:
-        </p>
-
-        <div style="margin: 20px 0;">
-          <a href="https://biblicalman.substack.com" style="display: inline-block; padding: 15px 30px; background: #dc2626; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 10px 10px 10px 0;">
-            Read the Substack
-          </a>
-          <a href="https://gumroad.com/biblicalman" style="display: inline-block; padding: 15px 30px; background: #dc2626; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 10px 10px 10px 0;">
-            Browse Products
-          </a>
-        </div>
-
-        <p style="font-size: 16px; line-height: 1.6; color: #333;">
-          Question for you: What's your biggest struggle right now? Marriage? Money? Spiritual leadership?
-        </p>
-
-        <p style="font-size: 16px; line-height: 1.6; color: #333;">
-          Hit reply and let me know. I read every response.
-        </p>
-
-        <p style="font-size: 16px; line-height: 1.6; color: #333;">
-          <strong>- Adam</strong><br>
-          The Biblical Man
-        </p>
-
-        <hr style="margin: 30px 0; border: none; border-top: 1px solid #e5e5e5;">
-
-        <p style="font-size: 12px; color: #666; text-align: center;">
-          © ${new Date().getFullYear()} The Biblical Man. Built for men who lead.
-        </p>
-      </div>
-    `,
-  });
-
-  // Schedule follow-up emails (you would use a proper email automation service like Loops, ConvertKit, or similar)
-  // For now, we'll log what emails would be sent
-  console.log('Email sequence initiated for:', email);
-  console.log('Scheduled emails:');
-  console.log('- Day 1: Welcome (sent immediately)');
-  console.log('- Day 2: Substack introduction');
-  console.log('- Day 3: Product showcase');
-  console.log('- Day 4: X account + community');
+    console.log(`✅ Day ${day} email sent to:`, email);
+  } catch (error) {
+    console.error(`Failed to send Day ${day} email to ${email}:`, error);
+    throw error;
+  }
 }
