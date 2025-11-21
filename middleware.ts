@@ -4,7 +4,12 @@ import type { NextRequest } from 'next/server';
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  // Protect /member/hub routes
+  // If user is on the landing page and has a member session, send them to the hub
+  if (pathname === '/' && request.cookies.get('member_session')?.value) {
+    const hubUrl = new URL('/hub', request.url);
+    return NextResponse.redirect(hubUrl);
+  }
+
   if (pathname.startsWith('/member/hub')) {
     const sessionToken = request.cookies.get('member_session')?.value;
 
