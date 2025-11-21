@@ -110,7 +110,7 @@ async function handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent) {
 }
 
 async function sendSetupEmail(email: string, setupToken: string) {
-  const fromEmail = process.env.EMAIL_FROM || 'adam@biblicalman.com';
+  const fromEmail = process.env.EMAIL_FROM || 'adam@thebiblicalmantruth.com';
   const setupUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://thebiblicalmantruth.com'}/member/setup?token=${setupToken}`;
 
   try {

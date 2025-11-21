@@ -218,7 +218,7 @@ function MemberSetupContent() {
           </form>
 
           <p className="mt-6 text-center text-sm text-gray-500">
-            Questions? Email adam@biblicalman.com
+            Questions? Email adam@thebiblicalmantruth.com
           </p>
         </div>
       </motion.div>
