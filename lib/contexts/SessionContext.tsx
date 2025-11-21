@@ -32,6 +32,7 @@ interface SessionContextType {
 
   // Session management
   refreshSession: () => Promise<void>;
+  login: (email: string) => Promise<boolean>;
 }
 
 const SessionContext = createContext<SessionContextType | undefined>(undefined);
@@ -210,6 +211,28 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const login = async (email: string): Promise<boolean> => {
+    try {
+      const response = await fetch('/api/session/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.user) {
+          setUser(data.user);
+          return true;
+        }
+      }
+      return false;
+    } catch (error) {
+      console.error('Login failed:', error);
+      return false;
+    }
+  };
+
   return (
     <SessionContext.Provider
       value={{
@@ -222,7 +245,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         updateUIState,
         trackActivity,
         markArticleViewed,
-        refreshSession
+        refreshSession,
+        login
       }}
     >
       {children}

@@ -2,10 +2,11 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, Volume2, VolumeX, Music, Heart, MoreHorizontal } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, Music, Heart, MoreHorizontal, Crown } from 'lucide-react';
 import { useRadioEngagement } from '@/hooks/useRadioEngagement';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { useRadioStore } from '@/lib/store/radio';
+import { useSession } from '@/lib/contexts/SessionContext';
 import RadioVisualization from '@/components/RadioVisualization';
 
 interface NowPlayingData {
@@ -54,6 +55,7 @@ export default function RadioPlayer() {
   // Local UI State
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasPremiumAccess, setHasPremiumAccess] = useState(false);
 
   // Get current feed
   const currentFeed = RADIO_FEEDS[0];
@@ -61,6 +63,32 @@ export default function RadioPlayer() {
   // Initialize Radio engagement tracking
   const radioTracking = useRadioEngagement();
   const { trackRadioListen } = useAnalytics();
+  const { user, login } = useSession();
+
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginStatus, setLoginStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+  useEffect(() => {
+    if (user?.preferences?.isMember) {
+      setHasPremiumAccess(true);
+    }
+  }, [user]);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginStatus('loading');
+    const success = await login(loginEmail);
+    if (success) {
+      setLoginStatus('success');
+      setTimeout(() => {
+        setIsLoggingIn(false);
+        setHasPremiumAccess(true);
+      }, 1500);
+    } else {
+      setLoginStatus('error');
+    }
+  };
 
   const identifySong = async (streamUrl: string) => {
     try {
@@ -240,6 +268,61 @@ export default function RadioPlayer() {
       {/* Support Section - Apple Music style bottom sheet */}
       <div className="relative z-10 border-t border-white/10 bg-gradient-to-b from-zinc-900/80 to-black/80 backdrop-blur-xl">
         <div className="max-w-3xl mx-auto p-6">
+          {!hasPremiumAccess && (
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-5 bg-gradient-to-br from-yellow-950/30 to-transparent rounded-2xl border border-yellow-900/20 mb-4">
+              <div className="text-center md:text-left">
+                <h3 className="text-base font-semibold text-white mb-1.5 flex items-center gap-2 justify-center md:justify-start">
+                  <Crown size={16} className="text-yellow-500" />
+                  Upgrade to Premium
+                </h3>
+                <p className="text-sm text-gray-400">
+                  Ad-free listening • Higher quality • Exclusive content
+                </p>
+                <button
+                  onClick={() => setIsLoggingIn(!isLoggingIn)}
+                  className="text-xs text-yellow-500 hover:text-yellow-400 underline mt-2"
+                >
+                  Already a member? Login here
+                </button>
+              </div>
+
+              {isLoggingIn ? (
+                <form onSubmit={handleLogin} className="flex flex-col gap-2 w-full md:w-auto">
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    value={loginEmail}
+                    onChange={(e) => setLoginEmail(e.target.value)}
+                    className="px-4 py-2 bg-black/50 border border-yellow-900/50 rounded-lg text-sm text-white focus:outline-none focus:border-yellow-500"
+                    required
+                  />
+                  <button
+                    type="submit"
+                    disabled={loginStatus === 'loading'}
+                    className="px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-white rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
+                  >
+                    {loginStatus === 'loading' ? 'Checking...' : 'Access Account'}
+                  </button>
+                  {loginStatus === 'error' && (
+                    <p className="text-xs text-red-400">Email not found or not a member.</p>
+                  )}
+                  {loginStatus === 'success' && (
+                    <p className="text-xs text-green-400">Welcome back, brother.</p>
+                  )}
+                </form>
+              ) : (
+                <a
+                  href="https://buy.stripe.com/3cIdRa2kM8WJgmIabYcMM1T"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-6 py-3 bg-yellow-500 hover:bg-yellow-400 text-black rounded-full font-semibold text-sm transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                >
+                  <Crown size={18} />
+                  Get Premium
+                </a>
+              )}
+            </div>
+          )}
 
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-5 bg-gradient-to-br from-red-950/30 to-transparent rounded-2xl border border-red-900/20">
             <div className="text-center md:text-left">
