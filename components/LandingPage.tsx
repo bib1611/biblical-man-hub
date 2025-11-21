@@ -188,6 +188,29 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
                     </div>
                 </motion.div>
             </main>
-        </div>
+
+            {/* Sticky Conversion Footer */}
+            <motion.div
+                initial={{ y: 100 }}
+                animate={{ y: 0 }}
+                transition={{ delay: 2, duration: 0.5 }}
+                className="fixed bottom-0 left-0 right-0 p-4 bg-black/90 backdrop-blur border-t border-red-900/30 z-40 md:hidden"
+            >
+                <div className="flex items-center justify-between gap-4 max-w-3xl mx-auto">
+                    <div className="text-xs text-gray-400">
+                        <span className="block text-white font-bold">The Biblical Man Hub</span>
+                        <span>Lifetime Access • $3</span>
+                    </div>
+                    <a
+                        href="https://buy.stripe.com/3cIaEYgbC1uh5I45VIcMM26"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-6 py-3 bg-red-600 text-white text-sm font-bold rounded shadow-lg shadow-red-900/20"
+                    >
+                        Join Now
+                    </a>
+                </div>
+            </motion.div>
+        </div >
     );
 }

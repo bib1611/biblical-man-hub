@@ -2,12 +2,16 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ShoppingCart, Check, DollarSign, ExternalLink, Sparkles } from 'lucide-react';
+import { ShoppingCart, Check, DollarSign, ExternalLink, Sparkles, Lock } from 'lucide-react';
 import { products, categories } from '@/lib/data/products';
+import { useSession } from '@/lib/contexts/SessionContext';
+import SecurityUpgradeModal from '@/components/SecurityUpgradeModal';
 
 export default function ProductsHub() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState<'price-low' | 'price-high' | 'name'>('name');
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const { user } = useSession();
 
   const filteredProducts = products
     .filter((product) => selectedCategory === 'all' || product.category === selectedCategory)
@@ -41,11 +45,10 @@ export default function ProductsHub() {
               <button
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
-                className={`px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-semibold transition-all whitespace-nowrap ${
-                  selectedCategory === category.id
-                    ? `bg-${category.color}-600/40 text-${category.color}-200 border border-${category.color}-600/50`
-                    : 'bg-gray-800/40 text-gray-400 border border-gray-700/30 hover:bg-gray-800/60'
-                }`}
+                className={`px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-semibold transition-all whitespace-nowrap ${selectedCategory === category.id
+                  ? `bg-${category.color}-600/40 text-${category.color}-200 border border-${category.color}-600/50`
+                  : 'bg-gray-800/40 text-gray-400 border border-gray-700/30 hover:bg-gray-800/60'
+                  }`}
               >
                 {category.name}
               </button>
@@ -63,6 +66,34 @@ export default function ProductsHub() {
           </select>
         </div>
       </div>
+
+      {/* 🔒 MEMBER VAULT TEASER (Conversion Engine) */}
+      {!user?.preferences?.isMember && (
+        <div className="mx-4 md:mx-6 mt-4 p-6 rounded-xl border border-red-900/50 bg-gradient-to-r from-red-950/40 to-black relative overflow-hidden group cursor-pointer"
+          onClick={() => setShowUpgradeModal(true)}>
+
+          {/* Blurred Content Effect */}
+          <div className="absolute inset-0 flex items-center justify-center z-10 bg-black/60 backdrop-blur-sm transition-all group-hover:bg-black/50">
+            <div className="text-center transform group-hover:scale-105 transition-transform">
+              <div className="w-12 h-12 mx-auto mb-3 bg-red-600 rounded-full flex items-center justify-center shadow-lg shadow-red-900/50">
+                <Lock size={24} className="text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-1">Member's Vault</h3>
+              <p className="text-sm text-gray-300 mb-4">Unlock 5+ Exclusive Resources</p>
+              <button className="px-6 py-2 bg-red-600 hover:bg-red-500 text-white font-bold rounded-lg text-sm transition-colors">
+                Unlock Access ($3)
+              </button>
+            </div>
+          </div>
+
+          {/* Background Teaser Content (Blurred) */}
+          <div className="grid grid-cols-3 gap-4 opacity-30">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="aspect-video bg-gray-800 rounded-lg border border-gray-700"></div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Products Grid */}
       <div className="flex-1 overflow-auto p-4 md:p-6">
@@ -165,6 +196,9 @@ export default function ProductsHub() {
           </button>
         </div>
       </div>
+
+      {/* Security Upgrade Modal */}
+      {showUpgradeModal && <SecurityUpgradeModal appName="Member's Vault" />}
     </div>
   );
 }

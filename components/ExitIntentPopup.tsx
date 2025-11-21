@@ -227,10 +227,10 @@ export default function ExitIntentPopup() {
                 </span>
               </div>
               <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 leading-tight">
-                {config.exitIntentOffer}
+                Wait! Get the 7-Day War Room Challenge Free
               </h2>
               <p className="text-lg md:text-xl text-gray-300">
-                Join 20,000+ men and women getting Biblical truth delivered weekly.
+                Don't leave empty-handed. Join 20,000+ men getting the tactical email series that rebuilds biblical masculinity from the ground up.
               </p>
             </div>
 
