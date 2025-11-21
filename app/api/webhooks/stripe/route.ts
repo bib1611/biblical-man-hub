@@ -93,8 +93,16 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
   }
 
   // Get line items to see what they purchased
-  const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
-  const productNames = lineItems.data.map(item => item.description).join(', ');
+  let productNames = 'Biblical Man Hub Access';
+  try {
+    const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
+    if (lineItems.data.length > 0) {
+      productNames = lineItems.data.map(item => item.description).join(', ');
+    }
+  } catch (error) {
+    console.error('⚠️ Failed to fetch line items (check STRIPE_SECRET_KEY):', error);
+    // Continue anyway so the user gets their email
+  }
 
   console.log(`📧 Sending welcome email to: ${customerEmail}`);
   console.log(`🛒 Products purchased: ${productNames}`);
