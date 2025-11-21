@@ -25,8 +25,10 @@ export default function HubPage() {
     useEffect(() => {
         // Get app from URL params
         const appParam = searchParams.get('app');
+        console.log('📍 Hub loaded with app param:', appParam);
         if (appParam) {
             setActiveApp(appParam);
+            console.log('✅ Setting active app to:', appParam);
         }
     }, [searchParams]);
 

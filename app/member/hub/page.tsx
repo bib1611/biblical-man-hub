@@ -55,7 +55,9 @@ export default function MemberHubPage() {
   useEffect(() => {
     if (currentApp) {
       // Redirect to dedicated hub route
-      window.location.href = '/hub?app=' + currentApp;
+      const targetUrl = '/hub?app=' + currentApp;
+      console.log('🔄 Redirecting to:', targetUrl);
+      window.location.href = targetUrl;
     }
   }, [currentApp]);
 
