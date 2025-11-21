@@ -10,10 +10,17 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Email required' }, { status: 400 });
         }
 
+        // Special handling for Admin/Owner email
+        if (email.toLowerCase() === 'adam@thebiblicalmantruth.com') {
+            const { upgradeUserToMember } = await import('@/lib/session');
+            // Ensure this user exists and has member access
+            await upgradeUserToMember(email, 'Admin Access');
+        }
+
         const user = await getUserByEmail(email);
 
         if (!user) {
-            return NextResponse.json({ error: 'User not found' }, { status: 404 });
+            return NextResponse.json({ error: 'User not found. Please sign up first.' }, { status: 404 });
         }
 
         // Create new session for this user
