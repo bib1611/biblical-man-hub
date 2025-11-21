@@ -2,12 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import dynamic from 'next/dynamic';
-
-const BibleStudy = dynamic(() => import('@/components/BibleStudy'), { ssr: false });
-const RadioPlayer = dynamic(() => import('@/components/RadioPlayer'), { ssr: false });
-const Counseling = dynamic(() => import('@/components/Counseling'), { ssr: false });
-const Products = dynamic(() => import('@/components/Products'), { ssr: false });
 
 type AppMode = 'bible' | 'radio' | 'counseling' | 'products' | null;
 
@@ -57,60 +51,10 @@ export default function MemberHubPage() {
     );
   }
 
-  if (currentApp === 'bible') {
-    return (
-      <div className="min-h-screen bg-black text-white">
-        <button
-          onClick={() => setCurrentApp(null)}
-          className="fixed top-4 left-4 z-50 bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded border border-gray-700"
-        >
-          ← Back to Hub
-        </button>
-        <BibleStudy />
-      </div>
-    );
-  }
-
-  if (currentApp === 'radio') {
-    return (
-      <div className="min-h-screen bg-black text-white">
-        <button
-          onClick={() => setCurrentApp(null)}
-          className="fixed top-4 left-4 z-50 bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded border border-gray-700"
-        >
-          ← Back to Hub
-        </button>
-        <RadioPlayer />
-      </div>
-    );
-  }
-
-  if (currentApp === 'counseling') {
-    return (
-      <div className="min-h-screen bg-black text-white">
-        <button
-          onClick={() => setCurrentApp(null)}
-          className="fixed top-4 left-4 z-50 bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded border border-gray-700"
-        >
-          ← Back to Hub
-        </button>
-        <Counseling />
-      </div>
-    );
-  }
-
-  if (currentApp === 'products') {
-    return (
-      <div className="min-h-screen bg-black text-white">
-        <button
-          onClick={() => setCurrentApp(null)}
-          className="fixed top-4 left-4 z-50 bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded border border-gray-700"
-        >
-          ← Back to Hub
-        </button>
-        <Products />
-      </div>
-    );
+  // Redirect to main site for now - we'll integrate the apps later
+  if (currentApp) {
+    router.push('/');
+    return null;
   }
 
   return (
