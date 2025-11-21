@@ -105,19 +105,31 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
                     </p>
 
                     <ul className="grid md:grid-cols-2 gap-4 my-8 not-prose">
-                        <li className="bg-gray-900/50 p-4 rounded border border-gray-800">
+                        <li
+                            onClick={() => onEnter('bible')}
+                            className="bg-gray-900/50 p-4 rounded border border-gray-800 hover:border-red-700 hover:bg-gray-900/70 cursor-pointer transition-all"
+                        >
                             <strong className="text-white block mb-1">⚔️ The War Room</strong>
                             <span className="text-sm text-gray-400">Deep KJV Bible study tools to sharpen your sword.</span>
                         </li>
-                        <li className="bg-gray-900/50 p-4 rounded border border-gray-800">
+                        <li
+                            onClick={() => onEnter('radio')}
+                            className="bg-gray-900/50 p-4 rounded border border-gray-800 hover:border-red-700 hover:bg-gray-900/70 cursor-pointer transition-all"
+                        >
                             <strong className="text-white block mb-1">📻 King's Radio</strong>
                             <span className="text-sm text-gray-400">24/7 streaming of uncompromising biblical teaching.</span>
                         </li>
-                        <li className="bg-gray-900/50 p-4 rounded border border-gray-800">
+                        <li
+                            onClick={() => onEnter('counseling')}
+                            className="bg-gray-900/50 p-4 rounded border border-gray-800 hover:border-red-700 hover:bg-gray-900/70 cursor-pointer transition-all"
+                        >
                             <strong className="text-white block mb-1">🧠 Intel Articles</strong>
                             <span className="text-sm text-gray-400">Tactical guides on marriage, fatherhood, and leadership.</span>
                         </li>
-                        <li className="bg-gray-900/50 p-4 rounded border border-gray-800">
+                        <li
+                            onClick={() => onEnter('products')}
+                            className="bg-gray-900/50 p-4 rounded border border-gray-800 hover:border-red-700 hover:bg-gray-900/70 cursor-pointer transition-all"
+                        >
                             <strong className="text-white block mb-1">🛡️ The Armory</strong>
                             <span className="text-sm text-gray-400">Resources to equip you for the spiritual battle.</span>
                         </li>
@@ -160,7 +172,7 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
                         </button>
 
                         <p className="mt-4 text-sm text-gray-600">
-                            Already a member? <button onClick={() => onEnter()} className="underline hover:text-gray-400">Login here</button>
+                            Already a member? <button onClick={() => onEnter()} className="text-red-500 underline hover:text-red-400 transition-colors">Access Member Hub</button>
                         </p>
                     </div>
                 </motion.div>
