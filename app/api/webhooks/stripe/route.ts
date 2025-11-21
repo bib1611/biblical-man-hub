@@ -73,12 +73,24 @@ export async function POST(request: NextRequest) {
 async function handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent) {
   console.log('💰 Payment succeeded:', paymentIntent.id);
 
-  const email = paymentIntent.receipt_email || paymentIntent.metadata?.email;
+  let email = paymentIntent.receipt_email || paymentIntent.metadata?.email;
   const customerId = paymentIntent.customer as string;
   const amount = paymentIntent.amount;
 
+  // If no email found, try to get it from the customer object
+  if (!email && customerId) {
+    try {
+      const customer = await stripe.customers.retrieve(customerId);
+      if ('email' in customer && customer.email) {
+        email = customer.email;
+      }
+    } catch (error) {
+      console.error('Failed to retrieve customer:', error);
+    }
+  }
+
   if (!email) {
-    console.error('No email found in payment intent');
+    console.error('No email found in payment intent or customer');
     return;
   }
 
