@@ -112,7 +112,7 @@ export default function MemberLoginPage() {
               </a>
             </p>
             <p className="text-xs text-gray-600">
-              Problems logging in? Email adam@biblicalman.com
+              Problems logging in? Email biblicalmancustomers1611@yahoo.com
             </p>
           </div>
         </div>

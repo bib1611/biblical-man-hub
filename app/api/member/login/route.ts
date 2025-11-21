@@ -20,28 +20,87 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get member by email
+    // Special handling for admin/owner email
+    const isAdminEmail = email.toLowerCase() === 'adam@thebiblicalmantruth.com';
+    const isAdminPassword = password === 'Blake2025!?123';
+
+    if (isAdminEmail) {
+      // Admin login - verify password directly
+      if (!isAdminPassword) {
+        return NextResponse.json(
+          { error: 'Invalid email or password' },
+          { status: 401 }
+        );
+      }
+
+      // Create admin member record if doesn't exist
+      let { data: member } = await supabase
+        .from('members')
+        .select('*')
+        .eq('email', email.toLowerCase())
+        .single();
+
+      if (!member) {
+        // Create admin member
+        const adminPasswordHash = await bcrypt.hash(password, 10);
+        const { data: newMember, error: createError } = await supabase
+          .from('members')
+          .insert({
+            email: email.toLowerCase(),
+            password_hash: adminPasswordHash,
+            full_name: 'Adam (Owner)',
+            is_active: true,
+            is_admin: true,
+            membership_tier: 'lifetime',
+            subscription_status: 'active',
+          })
+          .select()
+          .single();
+
+        if (createError) {
+          console.error('Failed to create admin member:', createError);
+        } else {
+          member = newMember;
+        }
+      }
+    } else {
+      // Regular member login
+      const { data: member, error: memberError } = await supabase
+        .from('members')
+        .select('*')
+        .eq('email', email.toLowerCase())
+        .eq('is_active', true)
+        .single();
+
+      if (memberError || !member) {
+        return NextResponse.json(
+          { error: 'Invalid email or password' },
+          { status: 401 }
+        );
+      }
+
+      // Verify password
+      const passwordValid = await bcrypt.compare(password, member.password_hash);
+
+      if (!passwordValid) {
+        return NextResponse.json(
+          { error: 'Invalid email or password' },
+          { status: 401 }
+        );
+      }
+    }
+
+    // Re-fetch member to ensure we have the data
     const { data: member, error: memberError } = await supabase
       .from('members')
       .select('*')
       .eq('email', email.toLowerCase())
-      .eq('is_active', true)
       .single();
 
     if (memberError || !member) {
       return NextResponse.json(
-        { error: 'Invalid email or password' },
-        { status: 401 }
-      );
-    }
-
-    // Verify password
-    const passwordValid = await bcrypt.compare(password, member.password_hash);
-
-    if (!passwordValid) {
-      return NextResponse.json(
-        { error: 'Invalid email or password' },
-        { status: 401 }
+        { error: 'Login failed. Please try again.' },
+        { status: 500 }
       );
     }
 
