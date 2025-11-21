@@ -33,9 +33,23 @@ import GlobalAudioProvider from '@/components/GlobalAudioProvider';
 
 export default function Home() {
   const { windows, openWindow } = useAppStore();
-  const [viewMode, setViewMode] = useState<'landing' | 'hub'>('landing');
-  const [showHub, setShowHub] = useState(false);
-  const [activeApp, setActiveApp] = useState<string>('bible');
+
+  // Check URL params immediately on mount to determine initial state
+  const getInitialViewMode = (): 'landing' | 'hub' => {
+    if (typeof window === 'undefined') return 'landing';
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('app') ? 'hub' : 'landing';
+  };
+
+  const getInitialApp = (): string => {
+    if (typeof window === 'undefined') return 'bible';
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('app') || 'bible';
+  };
+
+  const [viewMode, setViewMode] = useState<'landing' | 'hub'>(getInitialViewMode);
+  const [showHub, setShowHub] = useState(getInitialViewMode() === 'hub');
+  const [activeApp, setActiveApp] = useState<string>(getInitialApp);
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -81,9 +95,7 @@ export default function Home() {
     const appParam = urlParams.get('app');
 
     if (appParam) {
-      // Auto-enter hub and open the requested app
-      enterHub(appParam);
-      // Clean up URL
+      // Clean up URL (state is already initialized from URL params above)
       window.history.replaceState({}, '', '/');
     }
   }, []);
