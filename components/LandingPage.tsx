@@ -172,7 +172,7 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
                                 One-time payment. Lifetime access. After payment, you'll receive an email to create your account.
                             </p>
                             <a
-                                href="https://buy.stripe.com/YOUR_STRIPE_LINK"
+                                href="https://buy.stripe.com/3cIaEYgbC1uh5I45VIcMM26"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="group inline-flex items-center gap-3 px-8 py-4 bg-red-600 text-white rounded font-bold text-lg transition-all hover:bg-red-700"
