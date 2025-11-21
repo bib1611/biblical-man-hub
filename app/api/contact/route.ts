@@ -20,8 +20,8 @@ export async function POST(request: NextRequest) {
     // Send email via Resend if configured
     if (resend) {
       await resend.emails.send({
-        from: process.env.EMAIL_FROM || 'hub@biblicalman.com',
-        to: process.env.EMAIL_TO || 'adam@biblicalman.com',
+        from: process.env.EMAIL_FROM || 'adam@thebiblicalmantruth.com',
+        to: process.env.EMAIL_TO || 'adam@thebiblicalmantruth.com',
         subject: `[Biblical Man Hub] ${subject}`,
         html: `
           <h2>New Message from Biblical Man Hub</h2>

@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
       hasInteractedWithSam: user.uiState?.interactedWithSam || false,
       hasUsedBible: user.uiState?.windowsOpened?.includes('bible-study') || false,
       hasUsedRadio: user.uiState?.windowsOpened?.includes('radio') || false,
-      hasPurchased: false, // TODO: integrate with Gumroad
+      hasPurchased: user.preferences?.isMember || false,
       leadScore: 0,
       status: 'active',
       timeOnSite: 0,

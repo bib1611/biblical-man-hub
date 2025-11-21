@@ -1,4 +1,5 @@
 // Session Management & User Recognition System
+import 'server-only';
 import { createClient } from '@supabase/supabase-js';
 import crypto from 'crypto';
 
@@ -397,6 +398,62 @@ export async function getCreatorInsights(userId: string): Promise<any> {
   } catch (error) {
     console.error('Error fetching creator insights:', error);
     return null;
+  }
+}
+
+/**
+ * Upgrade user to member (after payment)
+ */
+export async function upgradeUserToMember(email: string, products: string): Promise<boolean> {
+  try {
+    // 1. Check if user exists
+    let user = await getUserByEmail(email);
+
+    // 2. If not, create them (we need a way to create by email only)
+    if (!user) {
+      // We'll use a direct insert since getOrCreateUser requires fingerprint/ip
+      const userId = generateUserId();
+      const { error: createError } = await supabase
+        .from('user_accounts')
+        .insert({
+          id: userId,
+          email: email,
+          role: 'user',
+          preferences: { isMember: true, products: products },
+          login_count: 0,
+          is_creator: false
+        });
+
+      if (createError) {
+        console.error('Error creating user for membership:', createError);
+        return false;
+      }
+      return true;
+    }
+
+    // 3. If exists, update preferences
+    const currentPreferences = user.preferences || {};
+    const updatedPreferences = {
+      ...currentPreferences,
+      isMember: true,
+      products: products,
+      memberSince: new Date().toISOString()
+    };
+
+    const { error: updateError } = await supabase
+      .from('user_accounts')
+      .update({ preferences: updatedPreferences })
+      .eq('id', user.id);
+
+    if (updateError) {
+      console.error('Error upgrading user:', updateError);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error in upgradeUserToMember:', error);
+    return false;
   }
 }
 

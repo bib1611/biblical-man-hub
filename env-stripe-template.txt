@@ -1,0 +1,64 @@
+# ============================================
+# STRIPE WEBHOOK - ENVIRONMENT VARIABLES
+# ============================================
+# Copy this to your .env.local and fill in your actual values
+
+# =====================================
+# STRIPE CONFIGURATION
+# =====================================
+# Get your keys from: https://dashboard.stripe.com/apikeys
+# For test mode, use keys that start with sk_test_
+# For live mode, use keys that start with sk_live_
+
+STRIPE_SECRET_KEY=sk_test_YOUR_STRIPE_SECRET_KEY_HERE
+
+# Webhook secret from:
+# LOCAL: Output of `stripe listen --forward-to localhost:3000/api/webhooks/stripe`
+# PRODUCTION: Stripe Dashboard > Developers > Webhooks > [Your endpoint] > Signing secret
+
+STRIPE_WEBHOOK_SECRET=whsec_YOUR_WEBHOOK_SECRET_HERE
+
+# =====================================
+# EMAIL (RESEND) - YOU ALREADY HAVE THIS
+# =====================================
+# Get your API key from: https://resend.com/api-keys
+
+RESEND_API_KEY=re_YOUR_RESEND_API_KEY_HERE
+EMAIL_FROM=adam@biblicalman.com
+EMAIL_TO=your@email.com
+
+# =====================================
+# SITE CONFIGURATION
+# =====================================
+# Your website URL (used in emails for login links)
+# LOCAL: http://localhost:3000
+# PRODUCTION: https://thebiblicalmantruth.com
+
+NEXT_PUBLIC_SITE_URL=https://thebiblicalmantruth.com
+
+# =====================================
+# OPTIONAL: GOOGLE SHEETS
+# =====================================
+# GOOGLE_SHEET_WEBHOOK_URL=https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec
+
+# =====================================
+# OPTIONAL: ANTHROPIC API (for AI features)
+# =====================================
+# ANTHROPIC_API_KEY=your_anthropic_api_key_here
+
+# =====================================
+# OPTIONAL: DATABASE
+# =====================================
+# If you want to store member data in Supabase or PostgreSQL
+# DATABASE_URL=postgresql://user:password@localhost:5432/biblical_man_hub
+# NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+# NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+# SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+
+# =====================================
+# TESTING
+# =====================================
+# For local testing, you can use Stripe test mode:
+# Test cards: 4242 4242 4242 4242 (success)
+#             4000 0000 0000 0002 (decline)
+# Any future expiry date, any CVC, any ZIP code

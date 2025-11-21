@@ -100,7 +100,7 @@ async function storeInGoogleSheets(email: string): Promise<boolean> {
 async function sendEmailDay(email: string, day: number): Promise<void> {
   if (!resend) return;
 
-  const fromEmail = process.env.EMAIL_FROM || 'adam@biblicalman.com';
+  const fromEmail = process.env.EMAIL_FROM || 'adam@thebiblicalmantruth.com';
   const emailTemplate = emailSequence.find((e) => e.day === day);
 
   if (!emailTemplate) {
