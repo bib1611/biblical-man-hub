@@ -1,7 +1,8 @@
 'use client';
 
-import { ArrowRight, CheckCircle } from 'lucide-react';
+import { ArrowRight, CheckCircle, Shield, AlertTriangle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import ChallengeForm from '@/components/ChallengeForm';
 
 interface LandingPageProps {
     onEnter: (appId?: string) => void;
@@ -9,98 +10,161 @@ interface LandingPageProps {
 
 export default function LandingPage({ onEnter }: LandingPageProps) {
     return (
-        <div className="min-h-screen bg-black text-white flex flex-col relative overflow-hidden">
-            {/* Subtle Background Texture */}
-            <div
-                className="absolute inset-0 opacity-[0.03] pointer-events-none"
-                style={{
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-                }}
-            />
+        <div className="min-h-screen bg-black text-gray-200 font-serif selection:bg-red-900 selection:text-white">
+            {/* Top Bar */}
+            <div className="border-b border-gray-800 bg-black/90 backdrop-blur sticky top-0 z-50">
+                <div className="max-w-3xl mx-auto px-6 py-4 flex justify-between items-center">
+                    <div className="font-sans font-bold tracking-widest text-sm uppercase text-gray-500">
+                        The Biblical Man Truth
+                    </div>
+                    <button
+                        onClick={() => onEnter()}
+                        className="text-xs font-sans uppercase tracking-widest text-red-500 hover:text-red-400 transition-colors"
+                    >
+                        Enter Member Hub →
+                    </button>
+                </div>
+            </div>
 
-            {/* Main Content - Centered */}
-            <main className="flex-1 flex flex-col items-center justify-center px-6 text-center z-10">
+            <main className="max-w-3xl mx-auto px-6 py-16 md:py-24">
+                {/* Headline */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, ease: "easeOut" }}
-                    className="max-w-4xl mx-auto"
+                    transition={{ duration: 0.6 }}
+                    className="mb-12"
                 >
-                    {/* Minimalist Badge */}
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 mb-8 backdrop-blur-sm">
-                        <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                        <span className="text-xs font-medium tracking-widest uppercase text-gray-400">The Biblical Man Hub</span>
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-red-900/20 border border-red-900/40 text-red-400 text-xs font-sans font-bold uppercase tracking-wider mb-6">
+                        <AlertTriangle size={12} />
+                        Warning: Uncomfortable Truth Ahead
                     </div>
 
-                    {/* Hero Headline */}
-                    <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-8 font-heading leading-[1.1]">
-                        Lead Your <br className="hidden md:block" />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-500">
-                            Family.
-                        </span>
+                    <h1 className="text-4xl md:text-6xl font-bold text-white leading-tight mb-6 font-sans">
+                        "I got kicked out of Bible school for preaching what the King James Bible <span className="text-red-500 italic">actually</span> says about manhood."
                     </h1>
 
-                    {/* Subheadline */}
-                    <p className="text-lg md:text-2xl text-gray-400 mb-12 max-w-2xl mx-auto leading-relaxed font-light">
-                        Stop being passive. Stop making excuses. <br className="hidden md:block" />
-                        Get the tools, guidance, and brotherhood you need to lead.
+                    <p className="text-xl md:text-2xl text-gray-400 leading-relaxed font-light italic border-l-4 border-red-900 pl-6 my-8">
+                        They wanted me to be "nice." They wanted me to compromise. I chose to tell the truth instead.
+                    </p>
+                </motion.div>
+
+                {/* Sales Letter Body */}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3, duration: 0.8 }}
+                    className="prose prose-invert prose-lg max-w-none prose-headings:font-sans prose-headings:font-bold prose-p:text-gray-300 prose-strong:text-white prose-li:text-gray-300"
+                >
+                    <p>
+                        <strong>Dear Christian Man,</strong>
                     </p>
 
-                    {/* Dual CTAs - Radio & Hub */}
-                    <div className="flex flex-col sm:flex-row items-center gap-4 justify-center">
-                        {/* PRIMARY: Radio Live */}
-                        <motion.button
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            onClick={() => onEnter('radio')}
-                            className="group relative inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white rounded-full text-lg font-bold transition-all shadow-lg hover:shadow-xl hover:shadow-red-900/50"
-                        >
-                            <span className="relative flex h-3 w-3">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
-                            </span>
-                            <span>Listen Live Now</span>
-                            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                        </motion.button>
+                    <p>
+                        If you look around your church and feel like something is missing... if you're tired of "soft" sermons that sound more like therapy than theology... if you're wondering where the <em>men</em> have gone...
+                    </p>
 
-                        {/* SECONDARY: Enter Hub */}
-                        <motion.button
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            onClick={() => onEnter()}
-                            className="group relative inline-flex items-center gap-3 px-8 py-4 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-full text-lg font-bold transition-all backdrop-blur-sm"
-                        >
-                            <span>Browse Articles</span>
-                            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                        </motion.button>
+                    <p>
+                        <strong>You are not alone.</strong>
+                    </p>
+
+                    <p>
+                        I'm a preacher with calluses. I learned biblical truth the hard way—through 22 years of marriage, raising children, working with my hands, and refusing to compromise when the cost was high.
+                    </p>
+
+                    <p>
+                        The modern church has been feminized. It tells men to be passive. To "share their feelings" instead of leading their families. To apologize for their God-given authority.
+                    </p>
+
+                    <p>
+                        The result?
+                    </p>
+
+                    <ul className="list-none pl-0 space-y-2 my-8">
+                        <li className="flex items-start gap-3">
+                            <span className="text-red-500 mt-1">❌</span>
+                            <span>Men who abdicate their role as spiritual leaders.</span>
+                        </li>
+                        <li className="flex items-start gap-3">
+                            <span className="text-red-500 mt-1">❌</span>
+                            <span>Wives who are forced to lead because their husbands won't.</span>
+                        </li>
+                        <li className="flex items-start gap-3">
+                            <span className="text-red-500 mt-1">❌</span>
+                            <span>Children who grow up without a strong example of biblical masculinity.</span>
+                        </li>
+                    </ul>
+
+                    <h3>It's Time to Stop Apologizing.</h3>
+
+                    <p>
+                        The <strong>Biblical Man Hub</strong> is not for everyone. It is a command center for men who are done with games. Men who want the raw, undiluted truth of Scripture.
+                    </p>
+
+                    <p>
+                        Inside, you won't find safe, comfortable devotionals. You'll find:
+                    </p>
+
+                    <ul className="grid md:grid-cols-2 gap-4 my-8 not-prose">
+                        <li className="bg-gray-900/50 p-4 rounded border border-gray-800">
+                            <strong className="text-white block mb-1">⚔️ The War Room</strong>
+                            <span className="text-sm text-gray-400">Deep KJV Bible study tools to sharpen your sword.</span>
+                        </li>
+                        <li className="bg-gray-900/50 p-4 rounded border border-gray-800">
+                            <strong className="text-white block mb-1">📻 King's Radio</strong>
+                            <span className="text-sm text-gray-400">24/7 streaming of uncompromising biblical teaching.</span>
+                        </li>
+                        <li className="bg-gray-900/50 p-4 rounded border border-gray-800">
+                            <strong className="text-white block mb-1">🧠 Intel Articles</strong>
+                            <span className="text-sm text-gray-400">Tactical guides on marriage, fatherhood, and leadership.</span>
+                        </li>
+                        <li className="bg-gray-900/50 p-4 rounded border border-gray-800">
+                            <strong className="text-white block mb-1">🛡️ The Armory</strong>
+                            <span className="text-sm text-gray-400">Resources to equip you for the spiritual battle.</span>
+                        </li>
+                    </ul>
+
+                    <p>
+                        I am inviting you to join <strong>20,000+ men</strong> who have decided to stop being passive and start leading.
+                    </p>
+
+                    <p>
+                        But first, I want to challenge you.
+                    </p>
+
+                    <div className="my-12 p-8 bg-red-950/30 border-2 border-red-900/50 rounded-xl text-center not-prose">
+                        <h3 className="text-2xl font-bold text-white mb-4 font-sans">Take The 7-Day Challenge</h3>
+                        <p className="text-gray-300 mb-6 max-w-lg mx-auto">
+                            I've put together a 7-day email series that will deprogram the "nice guy" Christianity you've been fed and replace it with biblical authority. It's free.
+                        </p>
+
+                        <div className="max-w-md mx-auto">
+                            <ChallengeForm />
+                        </div>
+
+                        <p className="text-xs text-gray-500 mt-4">
+                            Warning: This content may offend your modern sensibilities. That's the point.
+                        </p>
                     </div>
 
-                    {/* Minimal Social Proof */}
-                    <div className="mt-16 flex items-center justify-center gap-8 text-sm text-gray-500">
-                        <div className="flex items-center gap-2">
-                            <CheckCircle size={16} className="text-gray-600" />
-                            <span>20,000+ Members</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <CheckCircle size={16} className="text-gray-600" />
-                            <span>Biblical Frameworks</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <CheckCircle size={16} className="text-gray-600" />
-                            <span>AI Guidance</span>
-                        </div>
+                    <div className="text-center pt-8 border-t border-gray-800">
+                        <p className="text-gray-400 mb-6 italic">
+                            "Stop being soft. Stop compromising Scripture. Start leading like the man God called you to be."
+                        </p>
+
+                        <button
+                            onClick={() => onEnter()}
+                            className="group inline-flex items-center gap-3 px-8 py-4 bg-white text-black rounded font-bold text-lg transition-all hover:bg-gray-200"
+                        >
+                            <span>Enter The Hub</span>
+                            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        </button>
+
+                        <p className="mt-4 text-sm text-gray-600">
+                            Already a member? <button onClick={() => onEnter()} className="underline hover:text-gray-400">Login here</button>
+                        </p>
                     </div>
                 </motion.div>
             </main>
-
-            {/* Minimal Footer */}
-            <footer className="p-8 text-center z-10">
-                <div className="flex items-center justify-center gap-6 text-xs text-gray-600 uppercase tracking-widest">
-                    <button onClick={() => onEnter()} className="hover:text-white transition-colors">Manifesto</button>
-                    <button onClick={() => onEnter()} className="hover:text-white transition-colors">About</button>
-                    <button onClick={() => onEnter()} className="hover:text-white transition-colors">Login</button>
-                </div>
-            </footer>
         </div>
     );
 }
