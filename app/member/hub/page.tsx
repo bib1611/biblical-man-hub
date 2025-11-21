@@ -51,12 +51,11 @@ export default function MemberHubPage() {
     );
   }
 
-  // Route to main app with session
+  // Route to member hub with session
   useEffect(() => {
     if (currentApp) {
-      // Redirect to dedicated hub route
-      const targetUrl = '/hub?app=' + currentApp;
-      console.log('🔄 Redirecting to:', targetUrl);
+      const targetUrl = '/member/hub?app=' + currentApp;
+      console.log('🔄 Redirecting to member hub:', targetUrl);
       window.location.href = targetUrl;
     }
   }, [currentApp]);
