@@ -51,11 +51,14 @@ export default function MemberHubPage() {
     );
   }
 
-  // Redirect to main site for now - we'll integrate the apps later
-  if (currentApp) {
-    router.push('/');
-    return null;
-  }
+  // Route to main app with session
+  useEffect(() => {
+    if (currentApp) {
+      // Instead of redirecting, we'll open the main app
+      // The main app will recognize the member session
+      window.location.href = '/?app=' + currentApp;
+    }
+  }, [currentApp]);
 
   return (
     <div className="min-h-screen bg-black text-white">

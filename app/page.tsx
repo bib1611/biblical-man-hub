@@ -75,6 +75,19 @@ export default function Home() {
     };
   }, []);
 
+  // Check URL params for auto-opening app (from member hub)
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const appParam = urlParams.get('app');
+
+    if (appParam) {
+      // Auto-enter hub and open the requested app
+      enterHub(appParam);
+      // Clean up URL
+      window.history.replaceState({}, '', '/');
+    }
+  }, []);
+
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
