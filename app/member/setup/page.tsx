@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Lock, Mail, CheckCircle, AlertCircle } from 'lucide-react';
 
-export default function MemberSetupPage() {
+function MemberSetupContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const token = searchParams.get('token');
