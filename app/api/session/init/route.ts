@@ -30,14 +30,52 @@ export async function POST(request: Request) {
 
     // Get client IP
     const ip = request.headers.get('x-forwarded-for')?.split(',')[0] ||
-               request.headers.get('x-real-ip') ||
-               'unknown';
+      request.headers.get('x-real-ip') ||
+      'unknown';
 
-    // Get or create user by fingerprint
+    // Check if there's a member session (from /member/login)
+    const cookieStore = await cookies();
+    const memberSessionToken = cookieStore.get('member_session')?.value;
+    let memberEmail: string | undefined;
+
+    if (memberSessionToken) {
+      // Verify member session and get email
+      try {
+        const { createClient } = await import('@supabase/supabase-js');
+        const supabase = createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.SUPABASE_SERVICE_ROLE_KEY!
+        );
+
+        const { data: memberSession } = await supabase
+          .from('member_sessions')
+          .select('member_id')
+          .eq('session_token', memberSessionToken)
+          .eq('is_active', true)
+          .single();
+
+        if (memberSession) {
+          const { data: member } = await supabase
+            .from('members')
+            .select('email')
+            .eq('id', memberSession.member_id)
+            .single();
+
+          if (member) {
+            memberEmail = member.email;
+            console.log('✅ Member session found:', memberEmail);
+          }
+        }
+      } catch (error) {
+        console.error('Error checking member session:', error);
+      }
+    }
+
+    // Get or create user by fingerprint (with member email if available)
     const user = await getOrCreateUser({
       fingerprint,
       ip,
-      email,
+      email: memberEmail || email,
       userAgent: request.headers.get('user-agent') || undefined,
       deviceInfo
     });
@@ -50,7 +88,6 @@ export async function POST(request: Request) {
     }
 
     // Check if there's an existing valid session
-    const cookieStore = await cookies();
     const existingToken = cookieStore.get('session_token')?.value;
 
     let session;
