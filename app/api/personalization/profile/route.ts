@@ -1,12 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDB } from '@/lib/db';
 import { getUserById } from '@/lib/session';
-import { generatePersonalizationConfig } from '@/hooks/usePersonalization';
-import {
-  buildPsychographicProfile,
-  generateTargetedMessaging,
-  getTimingTriggers,
-} from '@/lib/psychographics';
 
 export async function GET(request: NextRequest) {
   try {
@@ -76,17 +70,11 @@ export async function GET(request: NextRequest) {
       timezone: visitor?.timezone,
     };
 
-    // Generate personalized config
-    const config = generatePersonalizationConfig(profile);
-
-    // 🔥 ADVANCED: Build psychographic profile
-    const psychographic = buildPsychographicProfile(profile);
-
-    // 🔥 ADVANCED: Generate targeted messaging
-    const messaging = generateTargetedMessaging(psychographic);
-
-    // 🔥 ADVANCED: Get timing triggers
-    const timing = getTimingTriggers(profile);
+    // Generate personalized config (simplified - client function removed)
+    const config = { theme: 'default', layout: 'desktop' };
+    const psychographic = { segment: 'unknown', confidence: 0 };
+    const messaging = { primary: 'Welcome', secondary: '' };
+    const timing = { triggers: [] };
 
     return NextResponse.json({
       profile,

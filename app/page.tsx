@@ -26,6 +26,7 @@ import { useABTest } from '@/hooks/useABTest';
 import ExitIntentPopup from '@/components/ExitIntentPopup';
 import StickyMobileCTA from '@/components/StickyMobileCTA';
 import LandingPage from '@/components/LandingPage';
+import HubHero from '@/components/HubHero';
 import { AnimatePresence, motion } from 'framer-motion';
 import { SilentErrorBoundary } from '@/components/ErrorBoundary';
 import GlobalAudioProvider from '@/components/GlobalAudioProvider';
@@ -113,30 +114,30 @@ export default function Home() {
     setShowHub(true);
   };
 
-  // Landing page is the default view
-  if (viewMode === 'landing') {
-    console.log('Rendering Landing Page Mode');
-    return <LandingPage onEnter={enterHub} />;
-  }
-
-  // Hub view after user clicks "Enter The Hub"
+  // Wrap everything in SessionProvider so session is initialized immediately
   return (
     <SessionProvider>
       <AuthProvider>
-        <GlobalAudioProvider />
-        <DashboardLayout activeApp={activeApp} onAppChange={setActiveApp}>
-          {activeApp === 'bible' && <BibleStudy />}
-          {activeApp === 'radio' && <RadioPlayer />}
-          {activeApp === 'sam' && <SamAssistant />}
-          {activeApp === 'admin' && <ProtectedAdminDashboard />}
-          {activeApp === 'products' && <ProductsHub />}
-          {activeApp === 'content-feed' && <ContentFeed />}
-          {activeApp === 'counseling' && <SubstackArticles />}
-          {activeApp === 'community' && <CommunityChat />}
-          {activeApp === 'about' && <About />}
-          {activeApp === 'start-here' && <StartHere />}
-          {activeApp === 'contact' && <ContactForm />}
-        </DashboardLayout>
+        {viewMode === 'landing' ? (
+          <LandingPage onEnter={enterHub} />
+        ) : (
+          <>
+            <GlobalAudioProvider />
+            <DashboardLayout activeApp={activeApp} onAppChange={setActiveApp}>
+              {activeApp === 'bible' && <BibleStudy />}
+              {activeApp === 'radio' && <RadioPlayer />}
+              {activeApp === 'sam' && <SamAssistant />}
+              {activeApp === 'admin' && <ProtectedAdminDashboard />}
+              {activeApp === 'products' && <ProductsHub />}
+              {activeApp === 'content-feed' && <ContentFeed />}
+              {activeApp === 'counseling' && <SubstackArticles />}
+              {activeApp === 'community' && <CommunityChat />}
+              {activeApp === 'about' && <About />}
+              {activeApp === 'start-here' && <StartHere />}
+              {activeApp === 'contact' && <ContactForm />}
+            </DashboardLayout>
+          </>
+        )}
       </AuthProvider>
     </SessionProvider>
   );

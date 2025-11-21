@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FFBR Stream URL Tester</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .stream {
+            margin: 20px 0;
+            padding: 15px;
+            background: #2a2a2a;
+            border-radius: 8px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            background: #333;
+            color: #fff;
+            border: 1px solid #555;
+            border-radius: 4px;
+        }
+        button {
+            padding: 8px 16px;
+            margin: 5px;
+            background: #dc2626;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #b91c1c;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success { background: #065f46; }
+        .error { background: #7f1d1d; }
+    </style>
+</head>
+<body>
+    <h1>🎵 FFBR Stream URL Tester</h1>
+    <p>Paste stream URLs from FFBR and test if they work</p>
+
+    <div class="stream">
+        <h3>Test Stream URL</h3>
+        <input type="text" id="testUrl" placeholder="Paste stream URL here..." />
+        <button onclick="testStream()">Test Stream</button>
+        <button onclick="playStream()">Play</button>
+        <button onclick="stopStream()">Stop</button>
+        <div id="status"></div>
+    </div>
+
+    <audio id="audioPlayer"></audio>
+
+    <script>
+        const audio = document.getElementById('audioPlayer');
+        const statusDiv = document.getElementById('status');
+
+        function testStream() {
+            const url = document.getElementById('testUrl').value.trim();
+            if (!url) {
+                showStatus('Please enter a URL', 'error');
+                return;
+            }
+
+            showStatus('Testing stream...', '');
+
+            audio.src = url;
+            audio.load();
+
+            audio.addEventListener('canplay', function() {
+                showStatus('✅ Stream URL is valid and ready to play!', 'success');
+            }, { once: true });
+
+            audio.addEventListener('error', function(e) {
+                showStatus('❌ Stream failed: ' + (audio.error?.message || 'Unknown error'), 'error');
+            }, { once: true });
+        }
+
+        function playStream() {
+            const url = document.getElementById('testUrl').value.trim();
+            if (!url) {
+                showStatus('Please enter a URL', 'error');
+                return;
+            }
+
+            audio.src = url;
+            audio.load();
+            audio.play()
+                .then(() => showStatus('▶️ Playing...', 'success'))
+                .catch(err => showStatus('❌ Play error: ' + err.message, 'error'));
+        }
+
+        function stopStream() {
+            audio.pause();
+            audio.src = '';
+            showStatus('⏸️ Stopped', '');
+        }
+
+        function showStatus(message, type) {
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+    </script>
+</body>
+</html>

@@ -24,9 +24,9 @@ interface DashboardLayoutProps {
 }
 
 const navItems = [
+    { id: 'radio', label: 'Radio', icon: Radio, isLive: true, featured: true },
+    { id: 'counseling', label: 'Articles', icon: FileText, featured: true },
     { id: 'bible', label: 'Bible', icon: BookOpen },
-    { id: 'radio', label: 'Radio', icon: Radio },
-    { id: 'counseling', label: 'Articles', icon: FileText },
     { id: 'sam', label: 'Ask Sam', icon: MessageSquare },
     { id: 'admin', label: 'Admin', icon: ShieldAlert },
 ];
@@ -55,18 +55,29 @@ export default function DashboardLayout({ children, activeApp, onAppChange }: Da
                     {navItems.map((item) => {
                         const Icon = item.icon;
                         const isActive = activeApp === item.id;
+                        const isFeatured = 'featured' in item && item.featured;
+                        const isLive = 'isLive' in item && item.isLive;
 
                         return (
                             <button
                                 key={item.id}
                                 onClick={() => onAppChange(item.id)}
-                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${isActive
-                                    ? 'bg-white text-black font-medium'
-                                    : 'text-gray-400 hover:bg-white/5 hover:text-white'
-                                    }`}
+                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 relative ${
+                                    isActive
+                                        ? 'bg-white text-black font-medium'
+                                        : isFeatured
+                                        ? 'text-white hover:bg-white/10 font-medium border border-white/20'
+                                        : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                                }`}
                             >
                                 <Icon size={20} />
-                                <span>{item.label}</span>
+                                <span className="flex-1 text-left">{item.label}</span>
+                                {isLive && !isActive && (
+                                    <span className="relative flex h-2 w-2">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                                    </span>
+                                )}
                             </button>
                         );
                     })}
@@ -117,16 +128,33 @@ export default function DashboardLayout({ children, activeApp, onAppChange }: Da
                     {navItems.map((item) => {
                         const Icon = item.icon;
                         const isActive = activeApp === item.id;
+                        const isFeatured = 'featured' in item && item.featured;
+                        const isLive = 'isLive' in item && item.isLive;
 
                         return (
                             <button
                                 key={item.id}
                                 onClick={() => onAppChange(item.id)}
-                                className={`flex flex-col items-center justify-center p-2 rounded-lg transition-all ${isActive ? 'text-white' : 'text-gray-500'
-                                    }`}
+                                className={`flex flex-col items-center justify-center p-2 rounded-lg transition-all relative ${
+                                    isActive
+                                        ? 'text-white'
+                                        : isFeatured
+                                        ? 'text-white'
+                                        : 'text-gray-500'
+                                }`}
                             >
-                                <Icon size={24} className={isActive ? 'fill-current' : ''} />
-                                <span className="text-[10px] mt-1 font-medium">{item.label}</span>
+                                <div className="relative">
+                                    <Icon size={24} className={isActive ? 'fill-current' : ''} />
+                                    {isLive && !isActive && (
+                                        <span className="absolute -top-1 -right-1 flex h-2 w-2">
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                            <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                                        </span>
+                                    )}
+                                </div>
+                                <span className={`text-[10px] mt-1 ${isFeatured ? 'font-bold' : 'font-medium'}`}>
+                                    {item.label}
+                                </span>
                             </button>
                         );
                     })}

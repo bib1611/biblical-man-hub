@@ -67,16 +67,35 @@ function generateSecureToken(): string {
 // Middleware function to verify admin access on server-side
 export async function verifyAdminAuth(request: NextRequest): Promise<boolean> {
   try {
-    // Get session token from cookie
     const cookieStore = await cookies();
-    const sessionToken = cookieStore.get('admin_session')?.value;
 
-    if (!sessionToken) {
-      return false;
+    // Check for admin session cookie (password-based login)
+    const adminSessionToken = cookieStore.get('admin_session')?.value;
+    if (adminSessionToken && validateSession(adminSessionToken)) {
+      return true;
     }
 
-    return validateSession(sessionToken);
-  } catch {
+    // Check for creator session (automatic creator authentication)
+    const sessionToken = cookieStore.get('session_token')?.value;
+    if (sessionToken) {
+      // Import here to avoid circular dependency
+      const { getSessionByToken } = await import('@/lib/session');
+      const session = await getSessionByToken(sessionToken);
+
+      if (session) {
+        const { getUserById } = await import('@/lib/session');
+        const user = await getUserById(session.userId);
+
+        // Allow access if user is creator
+        if (user && user.isCreator) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  } catch (error) {
+    console.error('Auth verification error:', error);
     return false;
   }
 }
