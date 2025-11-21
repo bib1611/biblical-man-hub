@@ -10,6 +10,8 @@ import BibleNotepad from './BibleNotepad';
 import ScourbyAudioLibrary from './ScourbyAudioLibrary';
 import BibleHome from './BibleHome';
 import { useBibleEngagement } from '@/hooks/useBibleEngagement';
+import { useSession } from '@/lib/contexts/SessionContext';
+import SecurityUpgradeModal from '@/components/SecurityUpgradeModal';
 
 export default function BibleStudy() {
   const [currentView, setCurrentView] = useState<'home' | 'read'>('home');
@@ -35,6 +37,35 @@ export default function BibleStudy() {
 
   // Initialize Bible engagement tracking
   const bibleTracking = useBibleEngagement(selectedBook, selectedChapter);
+
+  // Session & Security
+  const { user } = useSession();
+  const [hasPremiumAccess, setHasPremiumAccess] = useState(false);
+  const [showLimitModal, setShowLimitModal] = useState(false);
+  const [sessionTime, setSessionTime] = useState(0);
+
+  useEffect(() => {
+    if (user?.preferences?.isMember) {
+      setHasPremiumAccess(true);
+    }
+  }, [user]);
+
+  // Enforce 5-minute limit
+  useEffect(() => {
+    if (hasPremiumAccess) return;
+
+    const timer = setInterval(() => {
+      setSessionTime(prev => {
+        if (prev >= 300) { // 5 minutes
+          setShowLimitModal(true);
+          return prev;
+        }
+        return prev + 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [hasPremiumAccess]);
 
   const highlightColors = [
     { name: 'yellow', class: 'bg-yellow-500/20 border-yellow-700/30', button: 'bg-yellow-600/20 hover:bg-yellow-600/40 text-yellow-400' },
@@ -326,11 +357,10 @@ export default function BibleStudy() {
                   setSelectedChapter(1);
                   setIsSidebarOpen(false); // Close sidebar on mobile after selection
                 }}
-                className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                  selectedBook === book.name
-                    ? 'bg-blue-100 text-blue-900 font-semibold'
-                    : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
-                }`}
+                className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${selectedBook === book.name
+                  ? 'bg-blue-100 text-blue-900 font-semibold'
+                  : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                  }`}
               >
                 {book.name}
               </button>
@@ -379,11 +409,10 @@ export default function BibleStudy() {
                     <button
                       key={ch}
                       onClick={() => setSelectedChapter(ch)}
-                      className={`w-8 h-8 rounded text-xs flex-shrink-0 transition-colors ${
-                        selectedChapter === ch
-                          ? 'bg-blue-600 text-white font-bold'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      }`}
+                      className={`w-8 h-8 rounded text-xs flex-shrink-0 transition-colors ${selectedChapter === ch
+                        ? 'bg-blue-600 text-white font-bold'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        }`}
                     >
                       {ch}
                     </button>
@@ -499,11 +528,10 @@ export default function BibleStudy() {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: verse.verse * 0.02 }}
-                  className={`group p-2 md:p-3 rounded transition-all ${
-                    highlightStyle
-                      ? `${highlightStyle} border`
-                      : 'hover:bg-blue-50/50'
-                  }`}
+                  className={`group p-2 md:p-3 rounded transition-all ${highlightStyle
+                    ? `${highlightStyle} border`
+                    : 'hover:bg-blue-50/50'
+                    }`}
                 >
                   <div className="flex gap-2 md:gap-3">
                     <a
@@ -522,11 +550,10 @@ export default function BibleStudy() {
                         <div className="relative">
                           <button
                             onClick={() => setShowHighlightMenu(showHighlightMenu === verseKey ? null : verseKey)}
-                            className={`px-2 py-1 rounded text-xs transition-colors ${
-                              highlightColor
-                                ? highlightColors.find(c => c.name === highlightColor)?.button
-                                : 'bg-gray-600/20 hover:bg-gray-600/40 text-gray-400'
-                            }`}
+                            className={`px-2 py-1 rounded text-xs transition-colors ${highlightColor
+                              ? highlightColors.find(c => c.name === highlightColor)?.button
+                              : 'bg-gray-600/20 hover:bg-gray-600/40 text-gray-400'
+                              }`}
                           >
                             {highlightColor ? 'Change Color' : 'Highlight'}
                           </button>
@@ -574,11 +601,10 @@ export default function BibleStudy() {
                         <div className="relative">
                           <button
                             onClick={() => setShowCopyMenu(showCopyMenu === verseKey ? null : verseKey)}
-                            className={`px-2 py-1 rounded text-xs transition-colors ${
-                              copySuccess === verseKey
-                                ? 'bg-green-600/20 text-green-400'
-                                : 'bg-gray-600/20 hover:bg-gray-600/40 text-gray-400'
-                            }`}
+                            className={`px-2 py-1 rounded text-xs transition-colors ${copySuccess === verseKey
+                              ? 'bg-green-600/20 text-green-400'
+                              : 'bg-gray-600/20 hover:bg-gray-600/40 text-gray-400'
+                              }`}
                           >
                             {copySuccess === verseKey ? '✓ Copied' : 'Copy'}
                           </button>
@@ -637,6 +663,9 @@ export default function BibleStudy() {
       {showTutorial && <BibleTutorial onClose={() => setShowTutorial(false)} />}
       {showNotepad && <BibleNotepad onClose={() => setShowNotepad(false)} />}
       {showAudioLibrary && <ScourbyAudioLibrary onClose={() => setShowAudioLibrary(false)} />}
+
+      {/* Security Limit Modal */}
+      {showLimitModal && <SecurityUpgradeModal appName="Bible Tools" />}
     </div>
   );
 }

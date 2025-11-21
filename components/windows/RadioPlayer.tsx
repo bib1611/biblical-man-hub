@@ -8,6 +8,7 @@ import { useAnalytics } from '@/hooks/useAnalytics';
 import { useRadioStore } from '@/lib/store/radio';
 import { useSession } from '@/lib/contexts/SessionContext';
 import RadioVisualization from '@/components/RadioVisualization';
+import SecurityUpgradeModal from '@/components/SecurityUpgradeModal';
 
 interface NowPlayingData {
   title?: string;
@@ -133,6 +134,47 @@ export default function RadioPlayer() {
     const interval = setInterval(() => identifySong(currentFeed.streamUrl), 30000);
     return () => clearInterval(interval);
   }, [currentFeed]);
+
+  // ENFORCE 5-MINUTE LIMIT FOR FREE USERS
+  const [showLimitModal, setShowLimitModal] = useState(false);
+  const sessionTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    // Reset if user becomes premium
+    if (hasPremiumAccess) {
+      setShowLimitModal(false);
+      if (sessionTimerRef.current) clearInterval(sessionTimerRef.current);
+      return;
+    }
+
+    // Start timer if playing and not premium
+    if (isPlaying && !hasPremiumAccess) {
+      sessionTimerRef.current = setInterval(() => {
+        // Check if current session time exceeds 5 minutes (300 seconds)
+        // We use radioTracking.currentSessionTime directly if possible, 
+        // but since it's a hook return value, we might need to rely on a local counter or the hook's internal state if exposed.
+        // For simplicity and robustness, we'll use a local check here synced with the hook's logic roughly.
+
+        // Actually, let's just use a simple local timeout since start of play
+        // The hook tracks analytics, this tracks enforcement.
+      }, 1000);
+
+      // Set a timeout for 5 minutes from NOW (or resume)
+      // To be safe against refreshes, we should ideally store start time in localStorage, 
+      // but for now, a simple "5 minutes per session" is a good start.
+      // Let's use a simple timeout for 5 minutes.
+      const limitTimeout = setTimeout(() => {
+        setIsPlaying(false);
+        setShowLimitModal(true);
+        radioTracking.trackPlayStop(); // Log the stop
+      }, 300000); // 5 minutes = 300,000 ms
+
+      return () => {
+        clearTimeout(limitTimeout);
+        if (sessionTimerRef.current) clearInterval(sessionTimerRef.current);
+      };
+    }
+  }, [isPlaying, hasPremiumAccess]);
 
   // Volume and playback are now controlled by GlobalAudioProvider
   // No local audio element needed
@@ -362,6 +404,9 @@ export default function RadioPlayer() {
       </div>
 
       {/* Audio is handled by GlobalAudioProvider - no local audio element */}
+
+      {/* Security Limit Modal */}
+      {showLimitModal && <SecurityUpgradeModal appName="Radio Feed" />}
     </div>
   );
 }
