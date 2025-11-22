@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowRight, CheckCircle, Shield, AlertTriangle } from 'lucide-react';
+import { ArrowRight, Shield, Target, Sparkles, BookOpen, Headphones, Clock, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import ChallengeForm from '@/components/ChallengeForm';
 
@@ -13,7 +13,7 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
         <div className="min-h-screen bg-black text-gray-200 font-serif selection:bg-red-900 selection:text-white">
             {/* Top Bar */}
             <div className="border-b border-gray-800 bg-black/90 backdrop-blur sticky top-0 z-50">
-                <div className="max-w-3xl mx-auto px-6 py-4 flex justify-between items-center">
+                <div className="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
                     <div className="font-sans font-bold tracking-widest text-sm uppercase text-gray-500">
                         The Biblical Man Truth
                     </div>
@@ -26,167 +26,180 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
                 </div>
             </div>
 
-            <main className="max-w-3xl mx-auto px-6 py-16 md:py-24">
+            <main className="max-w-5xl mx-auto px-6 py-16 md:py-24 space-y-16">
                 {/* Headline */}
-                <motion.div
+                <motion.section
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6 }}
-                    className="mb-12"
+                    className="space-y-8"
                 >
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-red-900/20 border border-red-900/40 text-red-400 text-xs font-sans font-bold uppercase tracking-wider mb-6">
-                        <AlertTriangle size={12} />
-                        Warning: Uncomfortable Truth Ahead
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-red-900/20 border border-red-900/40 text-red-400 text-xs font-sans font-bold uppercase tracking-wider">
+                        <Shield size={14} />
+                        Built for men serious about Scripture
                     </div>
 
-                    <h1 className="text-4xl md:text-6xl font-bold text-white leading-tight mb-6 font-sans">
-                        "I got kicked out of Bible school for preaching what the King James Bible <span className="text-red-500 italic">actually</span> says about manhood."
+                    <h1 className="text-4xl md:text-6xl font-bold text-white leading-tight font-sans">
+                        Turn conviction into action without losing your family or your faith
                     </h1>
 
-                    <p className="text-xl md:text-2xl text-gray-400 leading-relaxed font-light italic border-l-4 border-red-900 pl-6 my-8">
-                        They wanted me to be "nice." They wanted me to compromise. I chose to tell the truth instead.
+                    <p className="text-lg md:text-2xl text-gray-300 leading-relaxed max-w-3xl font-light">
+                        The Biblical Man Hub is a calm, confident path to lead, provide, and protect using the King James Bible as your playbook. No noise, no posturing—just practical guidance you can act on today.
                     </p>
-                </motion.div>
 
-                {/* Sales Letter Body */}
-                <motion.div
+                    <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+                        <a
+                            href="#challenge"
+                            className="group inline-flex items-center gap-3 px-6 py-3 bg-red-600 text-white rounded font-bold text-lg transition-all hover:bg-red-700"
+                        >
+                            Start the 7-day challenge
+                            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        </a>
+                        <button
+                            onClick={() => onEnter('start-here')}
+                            className="inline-flex items-center gap-2 px-6 py-3 border border-gray-700 text-white rounded font-semibold hover:border-red-600 hover:text-red-200 transition"
+                        >
+                            Preview the Hub
+                            <Sparkles className="w-5 h-5" />
+                        </button>
+                    </div>
+
+                    <p className="text-sm text-gray-400 max-w-2xl font-sans">
+                        No gimmicks. You get the notes, the radio feed, and the accountability steps exactly as you will inside the hub so you can judge the value in minutes, not weeks.
+                    </p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
+                        {[{ label: 'Men already inside', value: '20,000+' }, { label: 'Action plan', value: '7-day email series' }, { label: 'Lifetime access', value: '$3 one-time' }].map(item => (
+                            <div key={item.label} className="p-4 rounded border border-gray-800 bg-gray-900/40">
+                                <div className="text-sm uppercase tracking-widest text-gray-500 font-sans">{item.label}</div>
+                                <div className="text-2xl font-bold text-white font-sans mt-1">{item.value}</div>
+                            </div>
+                        ))}
+                    </div>
+                </motion.section>
+
+                {/* Conversion clarity */}
+                <motion.section
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ delay: 0.3, duration: 0.8 }}
-                    className="prose prose-invert prose-lg max-w-none prose-headings:font-sans prose-headings:font-bold prose-p:text-gray-300 prose-strong:text-white prose-li:text-gray-300"
+                    transition={{ delay: 0.2, duration: 0.8 }}
+                    className="grid md:grid-cols-2 gap-8 items-start"
                 >
-                    <p>
-                        <strong>Dear Christian Man,</strong>
-                    </p>
-
-                    <p>
-                        If you look around your church and feel like something is missing... if you're tired of "soft" sermons that sound more like therapy than theology... if you're wondering where the <em>men</em> have gone...
-                    </p>
-
-                    <p>
-                        <strong>You are not alone.</strong>
-                    </p>
-
-                    <p>
-                        I'm a preacher with calluses. I learned biblical truth the hard way—through 22 years of marriage, raising children, working with my hands, and refusing to compromise when the cost was high.
-                    </p>
-
-                    <p>
-                        The modern church has been feminized. It tells men to be passive. To "share their feelings" instead of leading their families. To apologize for their God-given authority.
-                    </p>
-
-                    <p>
-                        The result?
-                    </p>
-
-                    <ul className="list-none pl-0 space-y-2 my-8">
-                        <li className="flex items-start gap-3">
-                            <span className="text-red-500 mt-1">❌</span>
-                            <span>Men who abdicate their role as spiritual leaders.</span>
-                        </li>
-                        <li className="flex items-start gap-3">
-                            <span className="text-red-500 mt-1">❌</span>
-                            <span>Wives who are forced to lead because their husbands won't.</span>
-                        </li>
-                        <li className="flex items-start gap-3">
-                            <span className="text-red-500 mt-1">❌</span>
-                            <span>Children who grow up without a strong example of biblical masculinity.</span>
-                        </li>
-                    </ul>
-
-                    <h3>It's Time to Stop Apologizing.</h3>
-
-                    <p>
-                        The <strong>Biblical Man Hub</strong> is not for everyone. It is a command center for men who are done with games. Men who want the raw, undiluted truth of Scripture.
-                    </p>
-
-                    <p>
-                        Inside, you won't find safe, comfortable devotionals. You'll find:
-                    </p>
-
-                    <ul className="grid md:grid-cols-2 gap-4 my-8 not-prose">
-                        <li
-                            onClick={() => onEnter('bible')}
-                            className="bg-gray-900/50 p-4 rounded border border-gray-800 hover:border-red-700 hover:bg-gray-900/70 cursor-pointer transition-all"
-                        >
-                            <strong className="text-white block mb-1">⚔️ The War Room</strong>
-                            <span className="text-sm text-gray-400">Deep KJV Bible study tools to sharpen your sword.</span>
-                        </li>
-                        <li
-                            onClick={() => onEnter('radio')}
-                            className="bg-gray-900/50 p-4 rounded border border-gray-800 hover:border-red-700 hover:bg-gray-900/70 cursor-pointer transition-all"
-                        >
-                            <strong className="text-white block mb-1">📻 King's Radio</strong>
-                            <span className="text-sm text-gray-400">24/7 streaming of uncompromising biblical teaching.</span>
-                        </li>
-                        <li
-                            onClick={() => onEnter('counseling')}
-                            className="bg-gray-900/50 p-4 rounded border border-gray-800 hover:border-red-700 hover:bg-gray-900/70 cursor-pointer transition-all"
-                        >
-                            <strong className="text-white block mb-1">🧠 Intel Articles</strong>
-                            <span className="text-sm text-gray-400">Tactical guides on marriage, fatherhood, and leadership.</span>
-                        </li>
-                        <li
-                            onClick={() => onEnter('products')}
-                            className="bg-gray-900/50 p-4 rounded border border-gray-800 hover:border-red-700 hover:bg-gray-900/70 cursor-pointer transition-all"
-                        >
-                            <strong className="text-white block mb-1">🛡️ The Armory</strong>
-                            <span className="text-sm text-gray-400">Resources to equip you for the spiritual battle.</span>
-                        </li>
-                    </ul>
-
-                    <p>
-                        I am inviting you to join <strong>20,000+ men</strong> who have decided to stop being passive and start leading.
-                    </p>
-
-                    <p>
-                        But first, I want to challenge you.
-                    </p>
-
-                    <div className="my-12 p-8 bg-red-950/30 border-2 border-red-900/50 rounded-xl text-center not-prose">
-                        <h3 className="text-2xl font-bold text-white mb-4 font-sans">Take The 7-Day Challenge</h3>
-                        <p className="text-gray-300 mb-6 max-w-lg mx-auto">
-                            I've put together a 7-day email series that will deprogram the "nice guy" Christianity you've been fed and replace it with biblical authority. It's free.
+                    <div className="space-y-4">
+                        <h2 className="text-3xl font-bold text-white font-sans">A hub that respects your time</h2>
+                        <p className="text-gray-300 leading-relaxed">
+                            Every lesson, broadcast, and guide is built to create momentum. You will know exactly what to do, how long it takes, and what outcome to expect so you can lead with clarity instead of reacting to pressure.
                         </p>
+                        <div className="space-y-3">
+                            {[{ title: 'Scripture first', copy: 'KJV passages paired with practical application so you can teach and model truth immediately.' }, { title: 'One dashboard', copy: 'Bible study, radio, counseling articles, and resources are organized in one clean interface.' }, { title: 'Action steps', copy: 'Short prompts and checklists help you turn conviction into daily practice with your family and church.' }].map(feature => (
+                                <div key={feature.title} className="flex gap-3 items-start">
+                                    <CheckCircle className="w-5 h-5 text-red-500 mt-1" />
+                                    <div>
+                                        <h3 className="text-lg font-semibold text-white">{feature.title}</h3>
+                                        <p className="text-gray-400 text-sm md:text-base">{feature.copy}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
 
+                    <div className="p-6 rounded-xl border border-gray-800 bg-gray-900/40 space-y-4">
+                        <div className="flex items-center gap-3">
+                            <Target className="text-red-500" />
+                            <div>
+                                <p className="text-sm uppercase tracking-widest text-gray-500 font-sans">What you will unlock</p>
+                                <p className="text-xl font-bold text-white font-sans">The Biblical Man Hub in three moves</p>
+                            </div>
+                        </div>
+                        <div className="space-y-3">
+                            <div className="flex items-center gap-3 p-3 rounded bg-black/40 border border-gray-800">
+                                <BookOpen className="text-red-400" />
+                                <div>
+                                    <p className="text-white font-semibold">War Room Bible study</p>
+                                    <p className="text-gray-400 text-sm">Dig into Scripture with tools that remove guesswork and give you ready-to-teach notes.</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-3 p-3 rounded bg-black/40 border border-gray-800">
+                                <Headphones className="text-red-400" />
+                                <div>
+                                    <p className="text-white font-semibold">King&apos;s Radio streaming</p>
+                                    <p className="text-gray-400 text-sm">Uncompromising teaching you can keep on in the truck, at work, or with your son beside you.</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-3 p-3 rounded bg-black/40 border border-gray-800">
+                                <Clock className="text-red-400" />
+                                <div>
+                                    <p className="text-white font-semibold">Weekly Intel briefings</p>
+                                    <p className="text-gray-400 text-sm">Focused guides on marriage, fatherhood, and leadership so you always know the next step.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => onEnter('bible')}
+                            className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-red-600 text-white rounded font-semibold hover:bg-red-700 transition"
+                        >
+                            Step inside the hub now
+                            <ArrowRight className="w-5 h-5" />
+                        </button>
+                    </div>
+                </motion.section>
+
+                {/* Challenge */}
+                <motion.section
+                    id="challenge"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1, duration: 0.6 }}
+                    className="my-4"
+                >
+                    <div className="p-8 bg-red-950/40 border-2 border-red-900/50 rounded-xl text-center space-y-6">
+                        <div className="flex items-center justify-center gap-2 text-red-200 uppercase text-xs font-sans tracking-[0.25em]">
+                            <Sparkles size={16} />
+                            7-day challenge
+                        </div>
+                        <h3 className="text-2xl md:text-3xl font-bold text-white font-sans">Reset how you lead in the next week</h3>
+                        <p className="text-gray-200 max-w-2xl mx-auto leading-relaxed">
+                            Receive one concise email per day with a Scripture focus, a conversation prompt for your family, and a simple action to build authority without becoming harsh. The series is free and built to deliver quick wins.
+                        </p>
                         <div className="max-w-md mx-auto">
                             <ChallengeForm />
                         </div>
-
-                        <p className="text-xs text-gray-500 mt-4">
-                            Warning: This content may offend your modern sensibilities. That's the point.
+                        <p className="text-xs text-gray-500">
+                            We protect your inbox. Unsubscribe anytime.
                         </p>
                     </div>
+                </motion.section>
 
-                    <div className="text-center pt-8 border-t border-gray-800">
-                        <p className="text-gray-400 mb-6 italic">
-                            "Stop being soft. Stop compromising Scripture. Start leading like the man God called you to be."
-                        </p>
-
-                        <div className="max-w-2xl mx-auto mb-8 p-6 bg-gray-900/50 border border-gray-800 rounded-lg">
-                            <h4 className="text-xl font-bold text-white mb-3 font-sans">Get Full Access to The Biblical Man Hub</h4>
-                            <p className="text-gray-300 mb-4">
-                                Access all resources, the War Room, King's Radio, Intel Articles, and The Armory for just <strong className="text-red-500 text-2xl">$3</strong>
-                            </p>
-                            <p className="text-sm text-gray-400 mb-6">
-                                One-time payment. Lifetime access. After payment, you'll receive an email to create your account.
-                            </p>
-                            <a
-                                href="https://buy.stripe.com/3cIaEYgbC1uh5I45VIcMM26"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="group inline-flex items-center gap-3 px-8 py-4 bg-red-600 text-white rounded font-bold text-lg transition-all hover:bg-red-700"
-                            >
-                                <span>Get Access Now ($3)</span>
-                                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                            </a>
+                {/* Offer */}
+                <motion.section
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.15, duration: 0.6 }}
+                    className="text-center space-y-6 border border-gray-800 rounded-xl p-8 bg-gray-900/40"
+                >
+                    <h4 className="text-2xl font-bold text-white font-sans">Lifetime access without monthly pressure</h4>
+                    <p className="text-gray-300 max-w-2xl mx-auto leading-relaxed">
+                        Join the hub, get every tool, and keep it forever for a one-time payment. No upsells, no hidden steps, and immediate access to the dashboard once your purchase completes.
+                    </p>
+                    <div className="flex flex-col md:flex-row items-center justify-center gap-4">
+                        <a
+                            href="https://buy.stripe.com/3cIaEYgbC1uh5I45VIcMM26"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group inline-flex items-center gap-3 px-8 py-4 bg-red-600 text-white rounded font-bold text-lg transition-all hover:bg-red-700"
+                        >
+                            Get lifetime access for $3
+                            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        </a>
+                        <div className="flex items-center gap-2 text-gray-400 text-sm">
+                            <Shield className="text-red-400" size={18} />
+                            Secure checkout via Stripe
                         </div>
-
-                        <p className="text-sm text-gray-500">
-                            Already a member? <a href="/member/login" className="text-red-500 underline hover:text-red-400 transition-colors">Login here</a>
-                        </p>
                     </div>
-                </motion.div>
+                    <p className="text-sm text-gray-500">
+                        Already a member? <a href="/member/login" className="text-red-500 underline hover:text-red-400 transition-colors">Login here</a>
+                    </p>
+                </motion.section>
             </main>
 
             {/* Sticky Conversion Footer */}
@@ -211,6 +224,6 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
                     </a>
                 </div>
             </motion.div>
-        </div >
+        </div>
     );
 }
