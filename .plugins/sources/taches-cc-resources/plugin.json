@@ -1,0 +1,25 @@
+{
+  "name": "taches-cc-resources",
+  "version": "1.0.0",
+  "description": "A collection of Claude Code resources, prompts, and templates for task management",
+  "author": "glittercowboy",
+  "homepage": "https://github.com/glittercowboy/taches-cc-resources",
+  "repository": "https://github.com/glittercowboy/taches-cc-resources",
+  "keywords": ["claude-code", "resources", "prompts", "templates", "tasks"],
+  "license": "MIT",
+  "type": "resource",
+  "resources": [
+    {
+      "name": "task-prompts",
+      "type": "prompt",
+      "path": "prompts/tasks.md",
+      "description": "Prompts for task management workflows"
+    },
+    {
+      "name": "project-templates",
+      "type": "template",
+      "path": "templates/project.md",
+      "description": "Project planning and organization templates"
+    }
+  ]
+}

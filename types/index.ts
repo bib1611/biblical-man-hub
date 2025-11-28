@@ -206,3 +206,58 @@ export interface AnalyticsSnapshot {
   hotLeads?: any[];
   dbStatus?: boolean;
 }
+
+// Plugin Marketplace Types
+export interface PluginMarketplaceSource {
+  id: string;
+  owner: string;
+  repo: string;
+  url: string;
+  addedAt: string;
+}
+
+export interface PluginManifest {
+  name: string;
+  version: string;
+  description: string;
+  author: string;
+  homepage?: string;
+  repository?: string;
+  keywords?: string[];
+  license?: string;
+  main?: string;
+  type: 'window' | 'command' | 'hook' | 'resource';
+  config?: Record<string, any>;
+  dependencies?: Record<string, string>;
+  resources?: PluginResource[];
+}
+
+export interface PluginResource {
+  name: string;
+  type: 'prompt' | 'template' | 'config' | 'data';
+  path: string;
+  description?: string;
+}
+
+export interface InstalledPlugin {
+  id: string;
+  name: string;
+  version: string;
+  source: string;
+  installedAt: string;
+  enabled: boolean;
+  manifest: PluginManifest;
+  localPath: string;
+}
+
+export interface MarketplaceConfig {
+  version: string;
+  sources: PluginMarketplaceSource[];
+  lastUpdated: string | null;
+}
+
+export interface InstalledPluginsConfig {
+  version: string;
+  plugins: InstalledPlugin[];
+  lastUpdated: string | null;
+}
