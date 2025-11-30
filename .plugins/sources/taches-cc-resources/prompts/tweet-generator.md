@@ -1,6 +1,22 @@
 # @biblicalman Tweet Generator
 
-## Meta Prompt for Claude
+## Two Registers
+
+@biblicalman operates in two distinct voices:
+
+| Register | Style | Frequency | File |
+|----------|-------|-----------|------|
+| **Narrative (Bukowski)** | Personal confession, 7-beat formula | 9 of 10 posts | This file |
+| **Prophetic (Psalm)** | Dense poetry, "you" accusations, fire | 1 of 10 posts | `prophetic-psalm-style.md` |
+
+**Narrative** = Builds followers through relatability
+**Prophetic** = Builds authority through conviction
+
+Master both. Use narrative as your bread and butter. Drop prophetic psalms sparingly for maximum impact.
+
+---
+
+## Meta Prompt for Claude (Narrative Voice)
 
 Copy this entire prompt and fill in the `{{variables}}` to generate viral tweets.
 
