@@ -1,0 +1,237 @@
+{
+  "metadata": {
+    "niche": "Biblical Masculinity",
+    "target_audience": "Christian men 30-55",
+    "last_updated": null,
+    "total_keywords": 50
+  },
+  "seed_categories": {
+    "identity": {
+      "description": "Core biblical masculinity identity keywords",
+      "seeds": [
+        "biblical masculinity",
+        "christian manhood",
+        "godly man",
+        "man of God",
+        "biblical man",
+        "what does it mean to be a man",
+        "christian male identity",
+        "masculine christianity",
+        "biblical view of masculinity",
+        "godly masculinity"
+      ]
+    },
+    "marriage": {
+      "description": "Biblical husband and marriage keywords",
+      "seeds": [
+        "christian husband",
+        "biblical husband",
+        "husband leadership",
+        "spiritual head of household",
+        "ephesians 5 husband",
+        "how to lead your wife",
+        "biblical marriage roles",
+        "servant leader husband",
+        "loving your wife biblically",
+        "headship in marriage"
+      ]
+    },
+    "fatherhood": {
+      "description": "Biblical fatherhood and parenting keywords",
+      "seeds": [
+        "christian father",
+        "biblical fatherhood",
+        "faith and fatherhood",
+        "raising sons biblically",
+        "discipling children",
+        "father wounds healing",
+        "being a godly dad",
+        "teaching sons to be men",
+        "proverbs 22:6 parenting",
+        "leaving a legacy"
+      ]
+    },
+    "spiritual_disciplines": {
+      "description": "Prayer, Bible study, and spiritual growth",
+      "seeds": [
+        "mens bible study",
+        "prayer life for men",
+        "spiritual disciplines men",
+        "scripture memorization",
+        "daily devotions for men",
+        "fasting for men",
+        "hearing from God",
+        "quiet time men",
+        "growing in faith men",
+        "spiritual maturity"
+      ]
+    },
+    "struggle": {
+      "description": "Sin, temptation, and overcoming keywords",
+      "seeds": [
+        "christian men temptation",
+        "overcoming lust christian",
+        "porn addiction christian men",
+        "anger christian man",
+        "fear christian man",
+        "laziness christian",
+        "pride christian man",
+        "overcoming sin",
+        "accountability men",
+        "spiritual warfare men"
+      ]
+    }
+  },
+  "high_opportunity_keywords": [
+    {
+      "keyword": "biblical masculinity vs toxic masculinity",
+      "intent": "informational",
+      "competition": "medium",
+      "opportunity_score": 9,
+      "content_type": "article",
+      "notes": "Hot cultural topic - we can own the biblical counter-narrative"
+    },
+    {
+      "keyword": "how to be a godly husband",
+      "intent": "informational",
+      "competition": "medium",
+      "opportunity_score": 8,
+      "content_type": "guide",
+      "notes": "High search volume, soft competition - room for confrontational take"
+    },
+    {
+      "keyword": "christian men leaving church",
+      "intent": "informational",
+      "competition": "low",
+      "opportunity_score": 9,
+      "content_type": "article",
+      "notes": "Addresses pain point directly - can link to solution (our content)"
+    },
+    {
+      "keyword": "why men need the church",
+      "intent": "informational",
+      "competition": "low",
+      "opportunity_score": 8,
+      "content_type": "article",
+      "notes": "Flip side of 'leaving church' - can own both angles"
+    },
+    {
+      "keyword": "biblical leadership in the home",
+      "intent": "informational",
+      "competition": "medium",
+      "opportunity_score": 8,
+      "content_type": "guide",
+      "notes": "Practical keyword with product potential"
+    },
+    {
+      "keyword": "overcoming pornography christian",
+      "intent": "informational",
+      "competition": "high",
+      "opportunity_score": 7,
+      "content_type": "guide",
+      "notes": "Competitive but high intent - product opportunity"
+    },
+    {
+      "keyword": "christian father wounds",
+      "intent": "informational",
+      "competition": "low",
+      "opportunity_score": 9,
+      "content_type": "article",
+      "notes": "Deep topic most avoid - we can go there biblically"
+    },
+    {
+      "keyword": "what the bible says about being a man",
+      "intent": "informational",
+      "competition": "medium",
+      "opportunity_score": 8,
+      "content_type": "guide",
+      "notes": "Cornerstone content - should be pillar page"
+    },
+    {
+      "keyword": "husband not leading spiritually",
+      "intent": "informational",
+      "competition": "low",
+      "opportunity_score": 8,
+      "content_type": "article",
+      "notes": "Written FOR men who know they're failing"
+    },
+    {
+      "keyword": "teaching boys to be men",
+      "intent": "informational",
+      "competition": "low",
+      "opportunity_score": 9,
+      "content_type": "guide",
+      "notes": "Fathers searching - high intent, product potential"
+    }
+  ],
+  "content_calendar_queue": [
+    {
+      "keyword": "biblical masculinity vs toxic masculinity",
+      "priority": 1,
+      "status": "not_started",
+      "assigned_week": null
+    },
+    {
+      "keyword": "christian men leaving church",
+      "priority": 2,
+      "status": "not_started",
+      "assigned_week": null
+    },
+    {
+      "keyword": "christian father wounds",
+      "priority": 3,
+      "status": "not_started",
+      "assigned_week": null
+    },
+    {
+      "keyword": "teaching boys to be men",
+      "priority": 4,
+      "status": "not_started",
+      "assigned_week": null
+    },
+    {
+      "keyword": "what the bible says about being a man",
+      "priority": 5,
+      "status": "not_started",
+      "assigned_week": null
+    }
+  ],
+  "long_tail_expansions": {
+    "biblical masculinity": [
+      "what is biblical masculinity",
+      "biblical masculinity in the modern world",
+      "how to develop biblical masculinity",
+      "biblical masculinity vs worldly masculinity",
+      "characteristics of biblical masculinity",
+      "bible verses about masculinity",
+      "biblical masculinity books",
+      "biblical masculinity quotes",
+      "biblical masculinity podcast",
+      "biblical masculinity for young men"
+    ],
+    "christian husband": [
+      "how to be a better christian husband",
+      "christian husband responsibilities",
+      "christian husband wife relationship",
+      "christian husband prayer",
+      "christian husband leadership",
+      "christian husband duties",
+      "christian husband bible verses",
+      "being a christian husband and father",
+      "christian husband loving wife like christ",
+      "struggles of a christian husband"
+    ],
+    "godly father": [
+      "how to be a godly father",
+      "godly father characteristics",
+      "godly father bible verses",
+      "godly father quotes",
+      "being a godly father in todays world",
+      "godly father to daughter",
+      "godly father to son",
+      "prayers of a godly father",
+      "godly father role model",
+      "raising children as a godly father"
+    ]
+  }
+}

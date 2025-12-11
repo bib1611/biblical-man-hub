@@ -1,0 +1,39 @@
+# Biblical SEO Machine - Python Dependencies
+
+# Core dependencies (stdlib - no install needed)
+# - json
+# - pathlib
+# - dataclasses
+# - datetime
+# - re
+# - argparse
+
+# Optional: API integrations (uncomment when needed)
+# anthropic>=0.18.0          # Claude API for content generation
+# openai>=1.0.0              # Alternative LLM
+# requests>=2.31.0           # HTTP requests for APIs
+# python-dotenv>=1.0.0       # Load .env files
+
+# Optional: DataForSEO integration
+# dataforseo-client>=1.0.0   # DataForSEO API
+
+# Optional: Google APIs
+# google-api-python-client>=2.0.0    # Google Analytics/Search Console
+# google-auth>=2.0.0
+# google-auth-oauthlib>=1.0.0
+
+# Optional: SerpAPI
+# google-search-results>=2.4.0  # SerpAPI
+
+# Development dependencies
+# pytest>=7.0.0              # Testing
+# black>=23.0.0              # Code formatting
+# mypy>=1.0.0                # Type checking
+
+# Note: This project is designed to work with Claude Code's built-in
+# capabilities. The Python modules generate prompts that are run through
+# Claude directly in the Claude Code environment, so external API
+# dependencies are optional.
+#
+# To install optional dependencies:
+#   pip install anthropic requests python-dotenv

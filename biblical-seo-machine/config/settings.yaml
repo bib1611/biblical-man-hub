@@ -1,0 +1,85 @@
+# Biblical SEO Machine - Configuration Settings
+
+# Niche Configuration
+niche:
+  name: "Biblical Masculinity"
+  primary_audience: "Christian men 30-55"
+  platforms:
+    - substack
+    - gumroad
+    - blog
+
+# Content Parameters
+content:
+  default_word_count: 1500
+  min_word_count: 800
+  max_word_count: 3000
+  keyword_density_target: 0.015  # 1.5%
+  keyword_density_max: 0.025     # 2.5%
+
+# SEO Settings
+seo:
+  title_max_length: 60
+  meta_description_max_length: 160
+  min_h2_count: 3
+  max_h2_count: 8
+  internal_links_per_article: 3
+
+# Voice Parameters (see voice_guidelines.md for full details)
+voice:
+  style: "confrontational"
+  rhythm: "staccato"
+  scripture_version: "KJV"
+  direct_address: true
+  max_paragraph_sentences: 4
+
+# Keyword Research Settings
+keywords:
+  min_opportunity_score: 6
+  preferred_intent_types:
+    - informational
+    - commercial
+  competition_preference: "low_medium"
+
+# Competitor Analysis Settings
+competitors:
+  serp_depth: 10  # Analyze top 10 results
+  content_gap_threshold: 0.3
+
+# Output Settings
+output:
+  articles_path: "outputs/articles"
+  products_path: "outputs/product_pages"
+  meta_path: "outputs/meta_content"
+  format: "markdown"
+
+# Workflow Settings
+workflow:
+  weekly_content_target: 5
+  monthly_audit_day: 1
+  auto_voice_check: true
+
+# Banned Terms (trigger voice violation warnings)
+banned_terms:
+  therapy_speak:
+    - "boundaries"
+    - "toxic"
+    - "triggered"
+    - "trauma"
+    - "safe space"
+    - "self-care"
+    - "validate"
+    - "journey"
+  soft_qualifiers:
+    - "I think"
+    - "maybe"
+    - "perhaps"
+    - "sort of"
+    - "kind of"
+    - "in my opinion"
+  prosperity_gospel:
+    - "blessed and highly favored"
+    - "breakthrough"
+    - "abundance mindset"
+    - "destiny"
+    - "unlock your potential"

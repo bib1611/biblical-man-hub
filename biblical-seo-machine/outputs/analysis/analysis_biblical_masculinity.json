@@ -1,0 +1,22 @@
+{
+  "keyword": "biblical masculinity",
+  "intent": "informational",
+  "benchmark": {
+    "keyword": "biblical masculinity",
+    "intent": "informational",
+    "min_word_count": 1200,
+    "recommended_word_count": 1800,
+    "max_word_count": 2500,
+    "h2_count": 5,
+    "h3_count": 8,
+    "note": "Estimated benchmark - run full analysis for accuracy"
+  },
+  "content_gaps": [
+    "Avoids confrontational language",
+    "Uses soft qualifiers ('maybe', 'consider')",
+    "Scripture is decorative, not structural",
+    "Missing working-class perspective",
+    "No personal struggle/testimony"
+  ],
+  "analysis_prompt": "Analyze the top-ranking content for the keyword: \"biblical masculinity\"\n\nImagine you have access to the top 10 Google search results. For each of the top 5 results, analyze:\n\n1. **Content Metrics:**\n   - Estimated word count\n   - Number of H2 and H3 headings\n   - Content type (article, guide, listicle, video, forum)\n\n2. **Heading Structure:**\n   - List the likely H2 headings based on the keyword\n   - Common subtopics covered\n\n3. **Tone Analysis:**\n   - soft: Accommodating, gentle, avoiding confrontation\n   - moderate: Balanced, mainstream Christian perspective\n   - bold: Direct, challenging, takes strong positions\n\n4. **Scripture Usage:**\n   - Does competing content use Scripture heavily?\n   - Which versions (NIV, ESV, KJV)?\n   - Is it integrated or decorative?\n\n5. **Content Gaps:**\n   - What are they NOT saying that Biblical Man would say?\n   - Where is the soft underbelly?\n   - What hard truths are they avoiding?\n\n6. **Opportunities for Biblical Differentiation:**\n   - Where can we be more confrontational?\n   - What working-man perspective is missing?\n   - What KJV truth would cut through their softness?\n\nOUTPUT FORMAT (JSON):\n{\n  \"keyword\": \"biblical masculinity\",\n  \"serp_overview\": {\n    \"total_results_analyzed\": 5,\n    \"dominant_content_type\": \"article|guide|listicle\",\n    \"dominant_tone\": \"soft|moderate|bold\",\n    \"scripture_presence\": \"none|light|heavy\"\n  },\n  \"benchmarks\": {\n    \"avg_word_count\": 1500,\n    \"min_word_count\": 800,\n    \"max_word_count\": 2500,\n    \"recommended_word_count\": 1800,\n    \"avg_h2_count\": 5,\n    \"recommended_h2_count\": 6\n  },\n  \"common_h2_topics\": [\n    \"What is [topic]\",\n    \"Why [topic] matters\",\n    \"How to [topic]\",\n    \"Bible verses about [topic]\"\n  ],\n  \"competitors\": [\n    {\n      \"rank\": 1,\n      \"url_type\": \"major_christian_site|personal_blog|church|secular\",\n      \"estimated_word_count\": 1500,\n      \"tone\": \"soft\",\n      \"strengths\": [\"comprehensive\", \"well-structured\"],\n      \"weaknesses\": [\"avoids hard truths\", \"generic advice\", \"no personal voice\"]\n    }\n  ],\n  \"content_gaps\": [\n    \"No confrontation of comfortable Christianity\",\n    \"Missing working-class perspective\",\n    \"Scripture used decoratively, not structurally\",\n    \"No binary challenges - everything is 'consider this'\"\n  ],\n  \"biblical_man_opportunities\": [\n    \"Lead with challenge instead of comfort\",\n    \"Use KJV with actual interpretation\",\n    \"Include personal blue-collar experience\",\n    \"End with binary choice, not soft landing\"\n  ],\n  \"recommended_approach\": {\n    \"word_count\": 1800,\n    \"structure\": \"Problem \u2192 Hard Truth \u2192 Scripture \u2192 Challenge\",\n    \"tone\": \"confrontational but pastoral\",\n    \"unique_angle\": \"What mainstream content won't say\"\n  }\n}"
+}

@@ -1,0 +1,57 @@
+{
+  "metadata": {
+    "description": "Content calendar for Biblical SEO Machine",
+    "created": null,
+    "weekly_target": 5
+  },
+  "calendar": {},
+  "content_inventory": {
+    "published": [],
+    "drafts": [],
+    "briefs": []
+  },
+  "content_types": {
+    "pillar_content": {
+      "description": "Comprehensive guides (2000+ words) targeting main keywords",
+      "frequency": "1 per month",
+      "examples": [
+        "What is Biblical Masculinity: Complete Guide",
+        "How to Be a Godly Husband: A Biblical Framework",
+        "Biblical Fatherhood: Raising Sons and Daughters"
+      ]
+    },
+    "supporting_articles": {
+      "description": "Standard articles (1200-1800 words) targeting long-tail keywords",
+      "frequency": "3-4 per week",
+      "examples": [
+        "5 Signs You're Leading Your Family Biblically",
+        "Why Christian Men Are Leaving Church",
+        "The Hard Truth About Father Wounds"
+      ]
+    },
+    "devotionals": {
+      "description": "Short Scripture-focused pieces (500-800 words)",
+      "frequency": "1-2 per week",
+      "examples": [
+        "Quit You Like Men: 1 Corinthians 16:13",
+        "The Proverbs 31 Man Nobody Talks About",
+        "What Joshua Teaches About Leadership"
+      ]
+    },
+    "product_content": {
+      "description": "Gumroad product pages and sales content",
+      "frequency": "As needed",
+      "examples": [
+        "Biblical Manhood Blueprint - Product Page",
+        "30-Day Prayer Challenge - Landing Page"
+      ]
+    }
+  },
+  "recurring_themes": {
+    "monday": "Marriage/Husband content",
+    "tuesday": "Fatherhood content",
+    "wednesday": "Identity/Masculinity content",
+    "thursday": "Struggle/Overcoming content",
+    "friday": "Devotional/Scripture content"
+  }
+}

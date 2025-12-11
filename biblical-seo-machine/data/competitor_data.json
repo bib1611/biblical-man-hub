@@ -1,0 +1,81 @@
+{
+  "metadata": {
+    "description": "Competitor analysis cache for biblical masculinity niche",
+    "last_updated": null
+  },
+  "analyses": {},
+  "known_competitors": {
+    "major_christian_sites": [
+      {
+        "name": "Desiring God",
+        "url": "desiringgod.org",
+        "tone": "moderate",
+        "strengths": ["theological depth", "large audience", "SEO authority"],
+        "weaknesses": ["can be academic", "less confrontational", "reformed bubble"],
+        "opportunity": "More direct, working-class perspective"
+      },
+      {
+        "name": "Crossway/TGC",
+        "url": "thegospelcoalition.org",
+        "tone": "soft-moderate",
+        "strengths": ["academic credibility", "wide reach"],
+        "weaknesses": ["very soft on cultural issues", "avoids confrontation"],
+        "opportunity": "Say what they won't say"
+      },
+      {
+        "name": "Focus on the Family",
+        "url": "focusonthefamily.com",
+        "tone": "soft",
+        "strengths": ["family focus", "large platform"],
+        "weaknesses": ["very soft", "boomer-oriented", "psychology-heavy"],
+        "opportunity": "Biblical vs psychological framing"
+      }
+    ],
+    "masculinity_specific": [
+      {
+        "name": "Art of Manliness",
+        "url": "artofmanliness.com",
+        "tone": "moderate-secular",
+        "strengths": ["huge audience", "practical content"],
+        "weaknesses": ["secular", "lacks biblical foundation"],
+        "opportunity": "Same practical focus + Scripture"
+      },
+      {
+        "name": "Man in the Arena",
+        "url": "various",
+        "tone": "moderate",
+        "strengths": ["men-focused"],
+        "weaknesses": ["often soft Christianity"],
+        "opportunity": "Harder edge, KJV foundation"
+      }
+    ]
+  },
+  "content_gap_patterns": {
+    "universal_gaps": [
+      "Avoidance of direct confrontation",
+      "Therapy-speak infiltration",
+      "Missing working-class perspective",
+      "Scripture as decoration not structure",
+      "Soft endings without challenge",
+      "Avoidance of binary choices",
+      "Fear of cultural offense"
+    ],
+    "topic_specific_gaps": {
+      "masculinity": [
+        "Won't define masculinity clearly",
+        "Hedge on complementarianism",
+        "Avoid toxic masculinity debate"
+      ],
+      "marriage": [
+        "Soft on headship",
+        "Psychology over Scripture",
+        "Fear of appearing patriarchal"
+      ],
+      "fatherhood": [
+        "Generic advice",
+        "Avoid discipline topic",
+        "Missing legacy emphasis"
+      ]
+    }
+  }
+}

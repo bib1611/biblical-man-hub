@@ -1,0 +1,23 @@
+{
+  "seeds_processed": 1,
+  "expansions": [
+    {
+      "seed": "biblical masculinity",
+      "intent": "informational",
+      "pattern_expansions": 28,
+      "sample_expansions": [
+        "how to be a biblical masculinity",
+        "how to become biblical masculinity",
+        "steps to biblical masculinity",
+        "guide to biblical masculinity",
+        "what is biblical masculinity"
+      ]
+    }
+  ],
+  "prompts_generated": [
+    {
+      "seed": "biblical masculinity",
+      "prompt": "Given the seed keyword \"biblical masculinity\" in the biblical masculinity niche:\n\n1. Generate 20 long-tail keyword variations\n2. Classify each by search intent:\n   - informational: seeking knowledge/answers\n   - navigational: looking for specific resource\n   - transactional: ready to buy/download\n   - commercial: researching before purchase\n\n3. Estimate relative competition (low/medium/high) based on:\n   - Low: Niche specific, less commercial\n   - Medium: Some competition, moderate search volume\n   - High: Competitive terms, high commercial intent\n\n4. Score opportunity (1-10) based on:\n   - Relevance to Christian men 30-55\n   - Alignment with biblical masculinity message\n   - Content gap potential (can we say something unique?)\n   - Conversion potential for Substack/Gumroad\n\n5. Recommend content type for each:\n   - article: Standard blog post (800-1500 words)\n   - guide: Comprehensive resource (2000+ words)\n   - product_page: Gumroad product optimization\n   - listicle: List-based article\n   - devotional: Scripture-focused short piece\n\nOutput as JSON array with this structure:\n{\n  \"seed_keyword\": \"biblical masculinity\",\n  \"expansions\": [\n    {\n      \"keyword\": \"example long tail keyword\",\n      \"intent\": \"informational\",\n      \"competition\": \"low\",\n      \"opportunity_score\": 8,\n      \"content_type\": \"article\",\n      \"search_volume_estimate\": \"medium\",\n      \"notes\": \"Good angle for confrontational piece on X\"\n    }\n  ]\n}\n\nFocus on keywords that:\n- A working-class Christian man would actually search\n- Have room for a bold, biblical perspective\n- Aren't dominated by soft, mainstream Christian content\n- Could lead to Substack subscriptions or Gumroad sales"
+    }
+  ]
+}
