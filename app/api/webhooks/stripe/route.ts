@@ -138,8 +138,124 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
 }
 
 async function handleSubscriptionChange(subscription: Stripe.Subscription) {
-  console.log('📅 Subscription changed:', subscription.id);
-  // Handle subscription updates
+  console.log('📅 Subscription changed:', subscription.id, 'Status:', subscription.status);
+
+  try {
+    // Import subscription module dynamically to avoid circular deps
+    const { upsertSubscription, recordSubscriptionRevenue } = await import('@/lib/subscription');
+
+    // Get customer email
+    let customerEmail = '';
+    if (typeof subscription.customer === 'string') {
+      const customer = await stripe.customers.retrieve(subscription.customer);
+      if ('email' in customer && customer.email) {
+        customerEmail = customer.email;
+      }
+    }
+
+    if (!customerEmail) {
+      console.error('No customer email found for subscription:', subscription.id);
+      return;
+    }
+
+    // Get the price/amount from the subscription
+    const item = subscription.items.data[0];
+    const amount = item?.price?.unit_amount || 1999;
+
+    // Upsert subscription in our database
+    const sub = await upsertSubscription({
+      stripeCustomerId: subscription.customer as string,
+      stripeSubscriptionId: subscription.id,
+      stripePriceId: item?.price?.id || '',
+      email: customerEmail,
+      status: subscription.status,
+      currentPeriodStart: new Date(subscription.current_period_start * 1000),
+      currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+      cancelAtPeriodEnd: subscription.cancel_at_period_end,
+      amount: amount,
+    });
+
+    if (sub) {
+      console.log('✅ Subscription upserted:', sub.id, 'for', customerEmail);
+
+      // If subscription just became active, send welcome email
+      if (subscription.status === 'active' && !subscription.cancel_at_period_end) {
+        await sendPremiumWelcomeEmail(customerEmail);
+      }
+    }
+  } catch (error) {
+    console.error('Error handling subscription change:', error);
+  }
+}
+
+async function sendPremiumWelcomeEmail(email: string) {
+  if (!resend) {
+    console.warn('⚠️ Resend not configured for premium welcome email');
+    return;
+  }
+
+  const fromEmail = process.env.EMAIL_FROM || 'adam@thebiblicalmantruth.com';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://thebiblicalmantruth.com';
+
+  try {
+    await resend.emails.send({
+      from: fromEmail,
+      to: email,
+      subject: '🔥 Welcome to Biblical Man Premium - Your Access Is Ready',
+      html: `
+        <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 40px 20px; background: #1a1a1a; color: #fff;">
+          <h1 style="color: #dc2626; font-size: 32px; text-align: center; margin-bottom: 30px;">
+            Welcome to the Inner Circle
+          </h1>
+
+          <p style="font-size: 18px; line-height: 1.8; color: #e5e5e5;">
+            Brother,
+          </p>
+
+          <p style="font-size: 18px; line-height: 1.8; color: #e5e5e5;">
+            Your Premium membership is now active. You've made a decision that separates you from 99% of Christian men who consume but never commit.
+          </p>
+
+          <div style="background: #2a2a2a; border-left: 4px solid #dc2626; padding: 25px; margin: 30px 0;">
+            <h2 style="color: #dc2626; margin: 0 0 15px;">What You Now Have Access To:</h2>
+            <ul style="color: #d4d4d4; font-size: 16px; line-height: 2;">
+              <li>Daily AI-Generated Devotionals delivered to your inbox</li>
+              <li>Premium 7-Day Bible Study Plans</li>
+              <li>The Leadership Transformation Course</li>
+              <li>Marriage Dominion Study Guide</li>
+              <li>Priority Support & Community Access</li>
+            </ul>
+          </div>
+
+          <div style="text-align: center; margin: 40px 0;">
+            <a href="${siteUrl}/hub" style="display: inline-block; padding: 20px 50px; background: #dc2626; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 18px;">
+              Access Your Premium Content
+            </a>
+          </div>
+
+          <p style="font-size: 16px; line-height: 1.8; color: #e5e5e5;">
+            Your first daily devotional will arrive tomorrow morning at 6 AM. Be ready.
+          </p>
+
+          <p style="font-size: 16px; line-height: 1.8; color: #e5e5e5;">
+            Lead boldly,<br>
+            <strong style="color: #dc2626;">Adam</strong><br>
+            The Biblical Man
+          </p>
+
+          <hr style="margin: 40px 0; border: none; border-top: 1px solid #333;">
+
+          <p style="font-size: 12px; color: #666; text-align: center;">
+            Manage your subscription at ${siteUrl}/premium/dashboard<br>
+            Questions? Reply to this email.
+          </p>
+        </div>
+      `,
+    });
+    console.log('✅ Premium welcome email sent to:', email);
+  } catch (error) {
+    console.error('❌ Failed to send premium welcome email:', error);
+  }
 }
 
 async function sendMemberWelcomeEmail(params: {
