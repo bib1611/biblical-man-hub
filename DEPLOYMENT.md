@@ -37,6 +37,27 @@ git push -u origin main
 
 Your site will be live in ~2 minutes!
 
+### Ship updates to your production domain with the Vercel CLI
+
+If your domain (e.g., `thebiblicalmantruth.com`) is already attached to a Vercel project, run a production deployment straight from this repo without needing the dashboard:
+
+1. Install the Vercel CLI locally if you haven't yet:
+   ```bash
+   npm i -g vercel
+   ```
+2. Make sure the project is linked locally (run `vercel link` once, if needed).
+3. Export your Vercel credentials in your shell (from the Vercel dashboard → Settings → General):
+   ```bash
+   export VERCEL_ORG_ID=your_org_id
+   export VERCEL_PROJECT_ID=your_project_id
+   export VERCEL_TOKEN=your_token
+   ```
+4. Deploy the latest code in this branch directly to production:
+   ```bash
+   npm run deploy:vercel
+   ```
+5. Verify the deployment on your live domain and in Vercel's "Deployments" tab.
+
 ## Manual Deployment
 
 ### Build for Production
